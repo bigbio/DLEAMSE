@@ -306,7 +306,6 @@ class NewMGFDataSet(data.dataset.Dataset):
         self.mgf_dataset = []
         self.load_file(mgf_file, csv_file)
         self.transform(reference_spectra_number)
-        # print(self.mgf_dataset)info
 
     def load_file(self, mgf_path, csv_path):
         print('Start to load file data...')
@@ -493,15 +492,9 @@ class EmbedDataSet():
 
             spectrum01 = test_data.reshape(test_data.shape[0], 1, test_data.shape[1])
 
-            # input1_1 = spectrum01[:, :, :50]
-            # input1_2 = spectrum01[:, :, 50:2499]
-            # input1_3 = spectrum01[:, :, 2499:]
-            input1_1 = spectrum01[:, :, :100]
-            input1_2 = spectrum01[:, :, 100:2549]
-            input1_3 = spectrum01[:, :, 2549:]
-            # input1_1 = spectrum01[:, :, :500]
-            # input1_2 = spectrum01[:, :, 500:2949]
-            # input1_3 = spectrum01[:, :, 2949:]
+            input1_1 = spectrum01[:, :, :500]
+            input1_2 = spectrum01[:, :, 500:2949]
+            input1_3 = spectrum01[:, :, 2949:]
 
             output01 = net.forward_once(input1_3, input1_2, input1_1)
 
@@ -1063,4 +1056,3 @@ if __name__ == '__main__':
     # ExecuteModelCompare_AT(1, model, model_data_version)
     # ExecuteModelCompare_Yeast(1, model, model_data_version)
     ExecuteModelCompare_Mouse(1, model, model_data_version)
-#
