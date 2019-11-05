@@ -27,99 +27,23 @@ from numpy import concatenate
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-class SiameseNetwork1(nn.Module):
-
-    def __init__(self):
-        super(SiameseNetwork1, self).__init__()
-
-        # self.fc1_1 = nn.Linear(61, 32)
-        self.fc1_1 = nn.Linear(34, 32)
-        # self.fc1_2 = nn.Linear(16, 5)
-        self.fc1_2 = nn.Linear(32, 5)
-
-        self.cnn1 = nn.Conv1d(1, 30, 3)
-        self.maxpool1 = nn.MaxPool1d(2)
-
-        self.cnn2 = nn.Conv1d(1, 30, 3)
-        self.maxpool2 = nn.MaxPool1d(2)
-
-        self.fc2 = nn.Linear(1 * 44165, 32)
-        # self.fc2 = nn.Linear(38165, 32)
-
-        # self.dropout = nn.Dropout(0.01)
-
-    def forward_once(self, preInfo, fragInfo, refSpecInfo):
-        preInfo = self.fc1_1(preInfo)
-        preInfo = F.selu(preInfo)
-        preInfo = self.fc1_2(preInfo)
-        preInfo = F.selu(preInfo)
-        preInfo = preInfo.view(preInfo.size(0), -1)
-
-        fragInfo = self.cnn1(fragInfo)
-        fragInfo = F.selu(fragInfo)
-        fragInfo = self.maxpool1(fragInfo)
-        fragInfo = F.selu(fragInfo)
-        fragInfo = fragInfo.view(fragInfo.size(0), -1)
-
-        refSpecInfo = self.cnn2(refSpecInfo)
-        refSpecInfo = F.selu(refSpecInfo)
-        refSpecInfo = self.maxpool2(refSpecInfo)
-        refSpecInfo = F.selu(refSpecInfo)
-        refSpecInfo = refSpecInfo.view(refSpecInfo.size(0), -1)  # 改变数据的形状，-1表示不确定，视情况而定
-
-        output = torch.cat((preInfo, fragInfo, refSpecInfo), 1)
-        # output = self.dropout(output)
-        output = self.fc2(output)
-        output = F.selu(output)
-        return output
-
-    def forward(self, spectrum01, spectrum02):
-
-        spectrum01 = spectrum01.reshape(spectrum01.shape[0], 1, spectrum01.shape[1])
-        spectrum02 = spectrum02.reshape(spectrum02.shape[0], 1, spectrum02.shape[1])
-
-        input1_1 = spectrum01[:, :, :500]
-        input1_2 = spectrum01[:, :, 500:2949]
-        input1_3 = spectrum01[:, :, 2949:]
-
-        input2_1 = spectrum02[:, :, :500]
-        input2_2 = spectrum02[:, :, 500:2949]
-        input2_3 = spectrum02[:, :, 2949:]
-
-        output01 = self.forward_once(input1_3, input1_2, input1_1)
-        output02 = self.forward_once(input2_3, input2_2, input2_1)
-
-        return output01, output02
-
 class SiameseNetwork2(nn.Module):
 
     def __init__(self):
         super(SiameseNetwork2, self).__init__()
 
-        # self.fc1_1 = nn.Linear(34, 32)
         self.fc1_1 = nn.Linear(34, 16)
-        # self.fc1_1 = nn.Linear(61, 32)
         self.fc1_2 = nn.Linear(16, 5)
-        # self.fc1_2 = nn.Linear(32, 5)
 
         self.cnn11 = nn.Conv1d(1, 30, 3)
         self.maxpool11 = nn.MaxPool1d(2)
-        # self.cnn12 = nn.Conv1d(30, 30, 3)
-        # self.maxpool12 = nn.MaxPool1d(6)
-        # self.cnn13 = nn.Conv1d(30, 30, 3)
-        # self.maxpool13 = nn.MaxPool1d(3)
 
         self.cnn21 = nn.Conv1d(1, 30, 3)
         self.maxpool21 = nn.MaxPool1d(2)
         self.cnn22 = nn.Conv1d(30, 30, 3)
         self.maxpool22 = nn.MaxPool1d(2)
-        # self.cnn23 = nn.Conv1d(30, 30, 3)
-        # self.maxpool23 = nn.MaxPool1d(6)
-        # self.cnn24 = nn.Conv1d(30, 30, 3)
-        # self.maxpool24 = nn.MaxPool1d(3)
 
         self.fc2 = nn.Linear(25775, 32)
-        # self.fc2 = nn.Linear(19775, 32)
 
     def forward_once(self, preInfo, fragInfo, refSpecInfo):
         preInfo = self.fc1_1(preInfo)
@@ -145,7 +69,6 @@ class SiameseNetwork2(nn.Module):
         refSpecInfo = refSpecInfo.view(refSpecInfo.size(0), -1)  # 改变数据的形状，-1表示不确定，视情况而定
 
         output = torch.cat((preInfo, fragInfo, refSpecInfo), 1)
-        # output = self.dropout(output)
         output = self.fc2(output)
         output = F.selu(output)
         return output
@@ -155,99 +78,16 @@ class SiameseNetwork2(nn.Module):
         spectrum01 = spectrum01.reshape(spectrum01.shape[0], 1, spectrum01.shape[1])
         spectrum02 = spectrum02.reshape(spectrum02.shape[0], 1, spectrum02.shape[1])
 
-        input1_1 = spectrum01[:, :, :100]
-        input1_2 = spectrum01[:, :, 100:2549]
-        input1_3 = spectrum01[:, :, 2549:]
+        input1_1 = spectrum01[:, :, :500]
+        input1_2 = spectrum01[:, :, 500:2949]
+        input1_3 = spectrum01[:, :, 2949:]
 
-        input2_1 = spectrum02[:, :, :100]
-        input2_2 = spectrum02[:, :, 100:2549]
-        input2_3 = spectrum02[:, :, 2549:]
+        input2_1 = spectrum02[:, :, :500]
+        input2_2 = spectrum02[:, :, 500:2949]
+        input2_3 = spectrum02[:, :, 2949:]
 
         output01 = self.forward_once(input1_3, input1_2, input1_1)
         output02 = self.forward_once(input2_3, input2_2, input2_1)
-
-        return output01, output02
-
-class SiameseNetwork3(nn.Module):
-
-    def __init__(self):
-        super(SiameseNetwork3, self).__init__()
-
-        # self.fc1_1 = nn.Linear(34, 32)
-        self.fc1_1 = nn.Linear(34, 16)
-        self.fc1_2 = nn.Linear(16, 5)
-        # self.fc1_2 = nn.Linear(32, 5)
-
-        # self.fc3 = nn.Linear(50, 32)
-        self.fc3 = nn.Linear(100, 32)
-
-        self.cnn21 = nn.Conv1d(1, 30, 3)
-        self.maxpool21 = nn.MaxPool1d(2)
-        self.cnn22 = nn.Conv1d(30, 30, 3)
-        self.maxpool22 = nn.MaxPool1d(2)
-        self.cnn23 = nn.Conv1d(30, 30, 3)
-        self.maxpool23 = nn.MaxPool1d(2)
-
-        self.dropout = nn.Dropout(0.001)
-
-        # self.fc2 = nn.Linear(25775, 32)
-        # self.fc2 = nn.Linear(9157, 32)
-        # self.fc2 = nn.Linear(18355, 32)
-        self.fc2 = nn.Linear(18337, 32)
-        # self.fc2 = nn.Linear(36727, 32)
-        # self.fc2_1 = nn.Linear(5000, 32)
-        # self.fc2 = nn.Linear(19775, 32)
-
-    def forward_once(self, preInfo, fragInfo, refSpecInfo):
-        preInfo = self.fc1_1(preInfo)
-        preInfo = F.selu(preInfo)
-        preInfo = self.fc1_2(preInfo)
-        preInfo = F.selu(preInfo)
-        preInfo = preInfo.view(preInfo.size(0), -1)
-
-        fragInfo = self.cnn21(fragInfo)
-        fragInfo = F.selu(fragInfo)
-        fragInfo = self.maxpool21(fragInfo)
-        # fragInfo = F.selu(fragInfo)
-        fragInfo = self.cnn22(fragInfo)
-        fragInfo = F.selu(fragInfo)
-        fragInfo = self.maxpool22(fragInfo)
-        # fragInfo = F.selu(fragInfo)
-        # fragInfo = self.cnn23(fragInfo)
-        # fragInfo = F.selu(fragInfo)
-        # fragInfo = self.maxpool23(fragInfo)
-        # fragInfo = F.selu(fragInfo)
-        fragInfo = fragInfo.view(fragInfo.size(0), -1)
-
-        refSpecInfo = self.fc3(refSpecInfo)
-        refSpecInfo = F.selu(refSpecInfo)
-        refSpecInfo = refSpecInfo.view(refSpecInfo.size(0), -1)  # 改变数据的形状，-1表示不确定，视情况而定
-
-        output = torch.cat((preInfo, fragInfo, refSpecInfo), 1)
-        # output = self.dropout(output)
-        # output = self.dropout(output)
-        output = self.fc2(output)
-        # output = self.fc2(output)
-        return output
-
-    def forward(self, spectrum01, spectrum02):
-
-        spectrum01 = spectrum01.reshape(spectrum01.shape[0], 1, spectrum01.shape[1])
-        spectrum02 = spectrum02.reshape(spectrum02.shape[0], 1, spectrum02.shape[1])
-
-        input1_1 = spectrum01[:, :, :50]
-        input1_2 = spectrum01[:, :, 50:2499]
-        input1_3 = spectrum01[:, :, 2499:]
-
-        input2_1 = spectrum02[:, :, :50]
-        input2_2 = spectrum02[:, :, 50:2499]
-        input2_3 = spectrum02[:, :, 2499:]
-
-        refSpecInfo1, fragInfo1, preInfo1 = input1_3.cuda(), input1_2.cuda(), input1_1.cuda()
-        refSpecInfo2, fragInfo2, preInfo2 = input2_3.cuda(), input2_2.cuda(), input2_1.cuda()
-
-        output01 = self.forward_once(refSpecInfo1, fragInfo1, preInfo1)
-        output02 = self.forward_once(refSpecInfo2, fragInfo2, preInfo2)
 
         return output01, output02
 
@@ -269,8 +109,6 @@ class RawDataSet01():
         info = pd.read_csv(csv_path, header=None)
         self.pairs_num = info.shape[0]
         self.spectrum1 = info[0].tolist()
-        # self.spectrum2 = info[1].tolist()
-        # self.label = info[2].tolist()
         for mgf in read(mgf_path, convert_arrays=1):
             self.MGF[mgf.get('params').get('title').replace('id=', '')] = mgf
         print('Finish to load data...')
@@ -281,17 +119,11 @@ class RawDataSet01():
         global spectrum_dict
         spectrum_dict = {}
         #五百个参考的谱图
-        # reference_spectra = read("../SpectraPairsData/0715_50_rf_spectra.mgf", convert_arrays=1)
-        # reference_spectra = read("../SpectraPairsData/0628_100_rf_spectra.mgf", convert_arrays=1)
         reference_spectra = read("../SpectraPairsData/0722_500_rf_spectra.mgf", convert_arrays=1)
         reference_intensity = np.array([self.bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
         # 先将500个参考谱图的点积结果计算出来
-        # ndp_r_spec_list = np.zeros(50)
-        # ndp_r_spec_list = np.zeros(100)
         ndp_r_spec_list = np.zeros(500)
 
-        # for x in range(50):
-        # for x in range(100):
         for x in range(500):
             ndp_r_spec = np.math.sqrt(np.dot(reference_intensity[x], reference_intensity[x]))
             ndp_r_spec_list[x] = ndp_r_spec
@@ -314,7 +146,6 @@ class RawDataSet01():
 
             if len(peakslist1) == 500:
                 i += 1
-
                 tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
 
                 intensList01 = np.array(peakslist1)
@@ -484,14 +315,7 @@ class NewMGFDataSet(data.dataset.Dataset):
         for mgf in read(mgf_path, convert_arrays=1):
             #只是选出scan作为id
             title = mgf.get('params').get('title').replace('id=', '')
-            # if len(title.split(",")) > 1:
-            #     NativeID = title.strip(" ").split(",")[1]
-            #     id = NativeID.strip(" ").split(":")[1]
-            #     final_id = id.strip("\"")
-            #     self.MGF[final_id] = mgf
-            # else:
             self.MGF[title] = mgf
-
         print('Finish to load data...')
 
     def transform(self, reference_spectra_number):
