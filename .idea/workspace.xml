@@ -3,6 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="14c80203-ee85-49d7-b17b-597cc6ce1ff6" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calculateEuDistanceUseModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/calculateEuDistanceUseModel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/exeSearchUseModel_0712_nomass.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -13,41 +15,34 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="exeSearchUseModel_0712_nomass.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/exeSearchUseModel_0712_nomass.py">
+      <file leaf-file-name="080802_20_1000_NM500R_model.pkl" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/siamese_modle_reference/080802_20_1000_NM500R_model.pkl">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-183">
-              <caret line="297" selection-start-line="297" selection-end-line="297" />
-              <folding>
-                <element signature="e#602#2738#0" />
-                <element signature="e#2767#10102#0" />
-                <element signature="e#10156#10582#0" />
-                <element signature="e#10632#16161#0" />
-                <element signature="e#16189#18755#0" />
-                <element signature="e#18805#21966#0" />
-                <element signature="e#22000#22981#0" />
-                <element signature="e#23048#24383#0" />
-                <element signature="e#24429#25133#0" />
-                <element signature="e#25185#26215#0" />
-                <element signature="e#26247#26291#0" />
-                <element signature="e#26363#28515#0" />
-                <element signature="e#28605#31238#0" />
-                <element signature="e#31308#33893#0" />
-                <element signature="e#33968#35294#0" />
-                <element signature="e#35387#38011#0" />
-                <element signature="e#38084#41155#0" />
-                <element signature="e#41230#42514#0" />
-                <element signature="e#42607#45205#0" />
-                <element signature="e#45277#47663#0" />
-                <element signature="e#47696#48136#0" />
-              </folding>
-            </state>
+            <state relative-caret-position="-1170" />
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="080802_20_1000_NM500R_model.pkl" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/siamese_modle_reference/080802_20_1000_NM500R_model.pkl">
-          <provider selected="true" editor-type-id="text-editor" />
+      <file leaf-file-name="calculateEuDistanceUseModel.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/calculateEuDistanceUseModel.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1072">
+              <caret line="401" column="39" selection-start-line="401" selection-start-column="39" selection-end-line="401" selection-end-column="39" />
+              <folding>
+                <element signature="e#98#109#0" expanded="true" />
+                <element signature="e#602#3290#0" />
+                <element signature="e#1619#2637#0" />
+                <element signature="e#3319#11087#0" />
+                <element signature="e#11141#11567#0" />
+                <element signature="e#17486#20348#0" />
+                <element signature="e#12233#13129#0" />
+                <element signature="e#21430#22765#0" />
+                <element signature="e#22811#23515#0" />
+                <element signature="e#23590#24564#0" />
+                <element signature="e#24657#27255#0" />
+                <element signature="e#27328#29190#0" />
+              </folding>
+            </state>
+          </provider>
         </entry>
       </file>
     </leaf>
@@ -66,10 +61,11 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/src/exeSearchUseModel_0712_nomass.py" />
+        <option value="$PROJECT_DIR$/src/calculateEuDistanceUseModel.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="-27" />
     <option name="y" value="7" />
     <option name="width" value="993" />
@@ -92,6 +88,12 @@
               <item name="FADLEAMSE" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="FADLEAMSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="FADLEAMSE" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="siamese_modle_reference" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -103,10 +105,13 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Learn_Python\FADLEAMSE\src" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\Learn_Python\FADLEAMSE\src" />
-      <recent name="D:\Learn_Python\FADLEAMSE\src\picture" />
       <recent name="D:\Learn_Python\FADLEAMSE\src\siamese_modle_reference" />
+      <recent name="D:\Learn_Python\FADLEAMSE\src\picture" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -135,10 +140,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16754478" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2065332" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Run" order="2" />
@@ -205,9 +210,6 @@
     <entry file="file://$PROJECT_DIR$/src/__init__.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/siamese_modle_reference/080802_20_1000_NM500R_model.pkl">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/exeSearchUseModel_0712_nomass.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-183">
@@ -234,6 +236,32 @@
             <element signature="e#42607#45205#0" />
             <element signature="e#45277#47663#0" />
             <element signature="e#47696#48136#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/siamese_modle_reference/080802_20_1000_NM500R_model.pkl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1170" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/calculateEuDistanceUseModel.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1072">
+          <caret line="401" column="39" selection-start-line="401" selection-start-column="39" selection-end-line="401" selection-end-column="39" />
+          <folding>
+            <element signature="e#98#109#0" expanded="true" />
+            <element signature="e#602#3290#0" />
+            <element signature="e#1619#2637#0" />
+            <element signature="e#3319#11087#0" />
+            <element signature="e#11141#11567#0" />
+            <element signature="e#17486#20348#0" />
+            <element signature="e#12233#13129#0" />
+            <element signature="e#21430#22765#0" />
+            <element signature="e#22811#23515#0" />
+            <element signature="e#23590#24564#0" />
+            <element signature="e#24657#27255#0" />
+            <element signature="e#27328#29190#0" />
           </folding>
         </state>
       </provider>
