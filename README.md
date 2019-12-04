@@ -1,2 +1,2 @@
 # FADLEAMSE
-A FAst Deep LEArning-based Mass Spectra Embedder for spectral similarity scoring 
+A Deep LEArning-based Mass Spectra Embedder for spectral similarity scoring 
