@@ -1,7 +1,4 @@
 #! -*- codinf:utf-8 -*-
-"""
-created by qincy
-"""
 
 import time
 import pandas as pd
@@ -11,7 +8,7 @@ from pyteomics.mgf import read
 
 
 """
-This script is used to compare the use-time of Pearson and DSMapper
+This script is used to compare the use-time of NDP and DLEAMS
 """
 @njit
 def caculate_spec(bin_spec):
@@ -88,6 +85,7 @@ def ndp_bin_spectrum(mz_array, intensity_array):
         final_results[rst[0]] = rst[1]
 
     return final_results
+
 def caculate_nornalization_dp(bin_spectrum01, bin_spectrum02):
 
     tmp_01 = caculate_spec(bin_spectrum01)

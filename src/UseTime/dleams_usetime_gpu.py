@@ -1,8 +1,4 @@
 # -*- coding:utf-8 -*-
-"""
-This is a search program!
-Create by qincy, April 17,2019
-"""
 
 #将数据进行嵌入
 import os
@@ -110,6 +106,7 @@ class RawDataSet01():
         #五百个参考的谱图
         # reference_spectra = read("./0715_50_rf_spectra.mgf", convert_arrays=1)
         reference_spectra = read("../SpectraPairsData/0722_500_rf_spectra.mgf", convert_arrays=1)
+        # reference_spectra = read("./data/0722_500_rf_spectra.mgf", convert_arrays=1)
         # reference_spectra = read("../SpectraPairsData/0628_100_rf_spectra.mgf", convert_arrays=1)
         reference_intensity = np.array([bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
         # 先将500个参考谱图的点积结果计算出来
@@ -137,7 +134,7 @@ class RawDataSet01():
             precursor_feature1 = np.concatenate((self.gray_code(mass1), self.charge_to_one_hot(charge1)))
             precursor_feature_list1.append(precursor_feature1)
 
-            if len(peakslist1) == 2000:
+            if len(peakslist1) == 10000:
                 i += 1
                 tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
                 intensList01 = np.array(peakslist1)
@@ -161,9 +158,9 @@ class RawDataSet01():
                 precursor_feature_list1.clear()
                 ndp_spec_list.clear()
 
-                j = i * 2000
+                j = i * 10000
 
-            elif (j+2000) > self.len:
+            elif (j+10000) > self.len:
                 num = self.len - j
                 k += 1
                 if num == k:
@@ -317,7 +314,13 @@ def embedding_dataset(model, spectrum_list):
 
     out_list = None
 
-    net = torch.load(model, map_location='cpu')
+    # net = torch.load(model, map_location='cpu')
+    time_load_model = time.perf_counter()
+    net = torch.load(model)
+    time_end_load_model = time.perf_counter()
+    print("模型加载用时：{}".format(time_end_load_model - time_load_model))
+
+
     # net = torch.load(model, map_location='cpu')
     print("Start encoding all spectra ...")
     # 生成RAW文件，在存在的情况下不需要重复执行
@@ -330,7 +333,7 @@ def embedding_dataset(model, spectrum_list):
     tmp_time_02 = time.perf_counter()
     print("Dataset data use time : {}".format(tmp_time_02 - tmp_time_011))
     print("enconding use time : {}".format(tmp_time_02 - tmp_time_01))
-    dataloader = data.DataLoader(dataset=dataset, batch_size=1, shuffle=False, num_workers=1)
+    dataloader = data.DataLoader(dataset=dataset, batch_size=1000, shuffle=False, num_workers=1)
 
     tmp_time_03 = time.perf_counter()
     print("load file use time : {}".format(tmp_time_03 - tmp_time_02))
@@ -345,18 +348,18 @@ def embedding_dataset(model, spectrum_list):
         input1_2 = spectrum01[:, :, 500:2949]
         input1_3 = spectrum01[:, :, 2949:]
 
-        # refSpecInfo1, fragInfo1, preInfo1 = input1_3.cuda(), input1_2.cuda(), input1_1.cuda()
-        # output01 = net.forward_once(refSpecInfo1, fragInfo1, preInfo1)
-        output01 = net.forward_once(input1_3, input1_2, input1_1)
-        out1 = output01.detach().numpy()
-        # out1 = output01.cpu().detach().numpy()
+        refSpecInfo1, fragInfo1, preInfo1 = input1_3.cuda(), input1_2.cuda(), input1_1.cuda()
+        output01 = net.forward_once(refSpecInfo1, fragInfo1, preInfo1)
+        # output01 = net.forward_once(input1_3, input1_2, input1_1)
+        # out1 = output01.detach().numpy()
+        out1 = output01.cpu().detach().numpy()
         if j == 0:
             out_list = out1
         else:
             out_list = np.vstack((out_list, out1))
 
-    tmp_time_03 = time.perf_counter()
-    print("embeding use time : {}".format(tmp_time_03 - tmp_time_02))
+    tmp_time_03_1 = time.perf_counter()
+    print("embeding use time : {}".format(tmp_time_03_1 - tmp_time_02))
     return out_list
 
 def calculate_dsmapper_time(spectra01, spectra02, mgf_01: dict, mgf_02: dict):
@@ -365,9 +368,9 @@ def calculate_dsmapper_time(spectra01, spectra02, mgf_01: dict, mgf_02: dict):
     # print(mgf_01.get(spectra01[1]))
     # print(type(mgf_01.get(spectra01[1])))
     # model = "../SpectraPairsData/080802_20_1000_NM500R_model.pkl"
+    # model = "../SpectraPairsData/080802_20_1000_NM500R_model.pkl"
     model = "./data/080802_20_1000_NM500R_model.pkl"
     spectrum01_list, spectrum02_list = [], []
-
 
     for i in range(spectra01.shape[0]):
         spectrum01 = mgf_01.get(spectra01[i])
@@ -375,6 +378,7 @@ def calculate_dsmapper_time(spectra01, spectra02, mgf_01: dict, mgf_02: dict):
         spectrum01_list.append(spectrum01)
         spectrum02_list.append(spectrum02)
 
+    tmp_time_01 = time.perf_counter()
     embedded_01 = embedding_dataset(model, spectrum01_list)
     embedded_02 = embedding_dataset(model, spectrum02_list)
 
@@ -382,12 +386,14 @@ def calculate_dsmapper_time(spectra01, spectra02, mgf_01: dict, mgf_02: dict):
     # embedded_02 = embedded_02.reshape(embedded_02.shape[0], 1, embedded_02.shape[1])
 
     time01 = time.perf_counter()
+    print("数据编码加嵌入的总用时：{}".format(time01 - tmp_time_01))
+
     for i in range(embedded_01.shape[0]):
         score = np.linalg.norm(embedded_01[i] - embedded_02[i])
         score_list.append(score)
-    np.savetxt("./data/091801_test_use_time_dsmapper.txt", score_list)
+    # np.savetxt("./data/091801_test_use_time_dsmapper.txt", score_list)
     time02 = time.perf_counter()
-    print("Use time: {}".format(time02 - time01))
+    print("calc_EU use time: {}".format(time02 - time01))
 
 if __name__ == '__main__':
 
@@ -411,7 +417,9 @@ if __name__ == '__main__':
     for mgf02 in spectra_mgf_data2:
         mgf_02[mgf02.get('params').get('title')] = mgf02
 
+    tmp_time_00 = time.perf_counter()
     calculate_dsmapper_time(spectra01, spectra02, mgf_01, mgf_02)
     time_02 = time.perf_counter()
+    print("编码和嵌入和计算相似性的总用时：{}".format(time_02 - tmp_time_00))
     print("Total use time: {}".format(time_02 - time_01))
 
