@@ -13,7 +13,7 @@ numba-0.45.0
 
 **GPU:**  
 Anaconda3(Python3.7)   
-torch-1.0.0 (gpu version)
+torch-1.0.0 (gpu version)  
 cuda-9.0
 pyteomics-3.5.1    
 numpy-1.13.3    
