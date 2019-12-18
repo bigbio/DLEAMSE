@@ -1,5 +1,7 @@
 # DLEAMSE
-A Deep LEArning-based Mass Spectra Embedder for spectral similarity scoring. DLEAMSE (based on Siamese Network) is trained and tested with a larger dataset from PRIDE Cluster. 
+A Deep LEArning-based Mass Spectra Embedder for spectral similarity scoring. 
+  
+DLEAMSE (based on Siamese Network) is trained and tested with a larger dataset from PRIDE Cluster. 
 
 # Requirements
 Python3 (Anaconda3)    
