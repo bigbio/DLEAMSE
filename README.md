@@ -1,7 +1,7 @@
 # DLEAMSE
 A Deep LEArning-based Mass Spectra Embedder for spectral similarity scoring 
 
-#Requirements
+# Requirements
 Python3 (Anaconda3)
 torch-1.0.0 (gpu or cpu version)
 pyteomics-3.5.1
