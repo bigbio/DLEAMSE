@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 """
-This is a spectra encoding and embeding program!
-Create by qincy, April 17,2019
+Encode and embed spectra.
+April 17,2019
 """
 
 import argparse
