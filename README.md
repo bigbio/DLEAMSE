@@ -14,10 +14,10 @@ numba-0.45.0
 **GPU:**  
 Anaconda3(Python3.7)   
 torch-1.0.0 (gpu version)  
-cuda-9.0
-pyteomics-3.5.1    
+cuda-9.0  
+pyteomics-3.5.1      
 numpy-1.13.3    
-numba-0.45.0
+numba-0.45.0  
 
 # Scripts
   1. **useFADLEAMSE.py**: encode and embed spectra, take one file (.mgf) as input and output a .csv file which contains 32d vectors.
