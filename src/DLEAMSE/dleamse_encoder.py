@@ -1,88 +1,17 @@
 # -*- coding:utf-8 -*-
 """
-Encode and embed spectra.
-April 17,2019
+Encode spectra.
 """
 
 import argparse
 import os
 
-import torch
 from pyteomics.mgf import read
 
-from torch.utils import data
-import torch.nn.functional as F
-import torch.nn as nn
 import pandas as pd
 import numpy as np
 from numpy import concatenate
 from numba import njit
-
-class SiameseNetwork2(nn.Module):
-
-    def __init__(self):
-        super(SiameseNetwork2, self).__init__()
-
-        self.fc1_1 = nn.Linear(34, 32)
-        self.fc1_2 = nn.Linear(32, 5)
-
-        self.cnn11 = nn.Conv1d(1, 30, 3)
-        self.maxpool11 = nn.MaxPool1d(2)
-
-        self.cnn21 = nn.Conv1d(1, 30, 3)
-        self.maxpool21 = nn.MaxPool1d(2)
-        self.cnn22 = nn.Conv1d(30, 30, 3)
-        self.maxpool22 = nn.MaxPool1d(2)
-
-        self.fc2 = nn.Linear(25775, 32)
-
-    def forward_once(self, preInfo, fragInfo, refSpecInfo):
-        preInfo = self.fc1_1(preInfo)
-        preInfo = F.selu(preInfo)
-        preInfo = self.fc1_2(preInfo)
-        preInfo = F.selu(preInfo)
-        preInfo = preInfo.view(preInfo.size(0), -1)
-
-        fragInfo = self.cnn21(fragInfo)
-        fragInfo = F.selu(fragInfo)
-        fragInfo = self.maxpool21(fragInfo)
-        fragInfo = F.selu(fragInfo)
-        fragInfo = self.cnn22(fragInfo)
-        fragInfo = F.selu(fragInfo)
-        fragInfo = self.maxpool22(fragInfo)
-        fragInfo = F.selu(fragInfo)
-        fragInfo = fragInfo.view(fragInfo.size(0), -1)
-
-        refSpecInfo = self.cnn11(refSpecInfo)
-        refSpecInfo = F.selu(refSpecInfo)
-        refSpecInfo = self.maxpool11(refSpecInfo)
-        refSpecInfo = F.selu(refSpecInfo)
-        refSpecInfo = refSpecInfo.view(refSpecInfo.size(0), -1)
-
-        output = torch.cat((preInfo, fragInfo, refSpecInfo), 1)
-        output = self.fc2(output)
-        return output
-
-    def forward(self, spectrum01, spectrum02):
-
-        spectrum01 = spectrum01.reshape(spectrum01.shape[0], 1, spectrum01.shape[1])
-        spectrum02 = spectrum02.reshape(spectrum02.shape[0], 1, spectrum02.shape[1])
-
-        input1_1 = spectrum01[:, :, :500]
-        input1_2 = spectrum01[:, :, 500:2949]
-        input1_3 = spectrum01[:, :, 2949:]
-
-        input2_1 = spectrum02[:, :, :500]
-        input2_2 = spectrum02[:, :, 500:2949]
-        input2_3 = spectrum02[:, :, 2949:]
-
-        refSpecInfo1, fragInfo1, preInfo1 = input1_3.cuda(), input1_2.cuda(), input1_1.cuda()
-        refSpecInfo2, fragInfo2, preInfo2 = input2_3.cuda(), input2_2.cuda(), input2_1.cuda()
-
-        output01 = self.forward_once(refSpecInfo1, fragInfo1, preInfo1)
-        output02 = self.forward_once(refSpecInfo2, fragInfo2, preInfo2)
-
-        return output01, output02
 
 class EncodeDataset():
 
@@ -92,9 +21,6 @@ class EncodeDataset():
 
         self.len = len(read(mgf_file, convert_arrays=1).__iter__())
         self.data = self.transform(mgf_file, ref_spectra, miss_saveName)
-
-        # print(self.MGF.__iter__())
-
 
     def transform(self, mgf_file, ref_spectra, miss_saveName):
         self.mgf_dataset = None
@@ -178,6 +104,7 @@ class EncodeDataset():
         np_mr = np.array(charge_none_list)
         df_mr = pd.DataFrame(np_mr, index=None, columns=None)
         df_mr.to_csv(miss_saveName)
+
         del charge_none_list
         print("Charge Missing Number:{}".format(charge_none_record))
         return self.mgf_dataset
@@ -283,91 +210,14 @@ def caculate_nornalization_dp(reference, ndp_r_spec_list, bin_spectra, ndp_bin_s
     result = tmp_dp_list / dvi
     return result
 
-class LoadDataset(data.dataset.Dataset):
-    def __init__(self, data):
-        self.dataset = data
-
-    def __getitem__(self, item):
-        return self.dataset[item]
-
-    def __len__(self):
-        return self.dataset.shape[0]
-
-class EmbedDataset():
-    def __init__(self):
-        self.out_list = []
-
-    def embedding_dataset(self, model, mgfFile, ref_spectra, storeEmbedFile, saveName):
-
-        # for gpu
-        # batch = 1000
-        # net = torch.load(model)
-
-        # for cpu
-        batch = 1
-        net = torch.load(model, map_location='cpu')
-
-        print("Start encoding all spectra ...")
-        vstack_data = EncodeDataset(mgfFile, ref_spectra, saveName).getData()
-        dataset = LoadDataset(vstack_data)
-        dataloader = data.DataLoader(dataset=dataset, batch_size=batch, shuffle=False, num_workers=1)
-
-        print("Start to embed all spectra ... ")
-        for j, test_data in enumerate(dataloader, 0):
-
-            spectrum01 = test_data.reshape(test_data.shape[0], 1, test_data.shape[1])
-
-            input1_1 = spectrum01[:, :, :500]
-            input1_2 = spectrum01[:, :, 500:2949]
-            input1_3 = spectrum01[:, :, 2949:]
-
-            # for gpu
-            # refSpecInfo1, fragInfo1, preInfo1 = input1_3.cuda(), input1_2.cuda(), input1_1.cuda()
-            # output01 = net.forward_once(refSpecInfo1, fragInfo1, preInfo1)
-            # out1 = output01.cpu().detach().numpy()
-
-            # for cpu
-            output01 = net.forward_once(input1_3, input1_2, input1_1)
-            out1 = output01.detach().numpy()[0]
-
-            if j == 0:
-                self.out_list = out1
-            else:
-                self.out_list = np.vstack((self.out_list, out1))
-
-        np.savetxt(storeEmbedFile, self.out_list)
-
-def executeEmbedding(model, input_mgf_file, ref_spectra, output_embedded_file):
-
-    charge_miss_sid = input_mgf_file + "_charge-missing.info"
-
-    embedder01 = EmbedDataset()
-    embedder01.embedding_dataset(model, input_mgf_file, ref_spectra, output_embedded_file, charge_miss_sid)
-
-def declare_gather_args():
+def encode_spectra(input, refrence_spectra,miss_record, output):
     """
-    Declare all arguments, parse them, and return the args dict.
-    Does no validation beyond the implicit validation done by argparse.
-    return: a dict mapping arg names to values
+    :param input: get .mgf file as input
+    :param refrence_spectra: get a .mgf file contained 500 spectra as referece spectra from normalized dot product calculation
+    :param miss_record: record title of some spectra which loss charge attribute
+    :param output: a file for save the final encode information
+    :return: None
     """
+    vstack_data = EncodeDataset(input, refrence_spectra,miss_record).getData()
+    np.savetxt(output, vstack_data)
 
-    # declare args
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('model', type=argparse.FileType('r'), help='input model file')
-    parser.add_argument('--input', type=argparse.FileType('r'), required=True, help='input mgf file')
-    parser.add_argument('--ref_spectra', type=argparse.FileType('r'), help='input ref. spectra file', default="./siamese_modle_reference/0722_500_rf_spectra.mgf")
-    parser.add_argument('--output', type=argparse.FileType('w'), required=True, help='output vectors file')
-    return parser.parse_args()
-
-if __name__ == '__main__':
-
-    #parameters
-    # python useFASLEAMSE.py ../siamese_modle_reference/080802_20_1000_NM500R_model.pkl --input ./data/130402_08.mgf --output ./data/test.csv
-    
-    args = declare_gather_args()
-    model = args.model.name
-    input_file = args.input.name
-    ref_spectra_file = args.ref_spectra.name
-    output_file = args.output.name
-
-    executeEmbedding(model, input_file, ref_spectra_file, output_file)
