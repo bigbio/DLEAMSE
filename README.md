@@ -29,15 +29,15 @@ DLEAMSE (based on Siamese Network) is trained and tested with a larger dataset f
 
 # Requirements
 
-Python3 (or Anaconda3)
+* Python3 (or Anaconda3)
 
-torch-1.0.0 (cpu or gpu version)
+* torch-1.0.0 (cpu or gpu version)
 
-pyteomics>=3.5.1
+* pyteomics>=3.5.1
 
-numpy>=1.13.3
+* numpy>=1.13.3
 
-numba>=0.45.0
+* numba>=0.45.0
 
 # Installation
 
@@ -47,16 +47,15 @@ numba>=0.45.0
 
 ## 1. Encode spectra
 
-```
+```python
 from dleamse.dleamse_encoder import encode_spectra
 if __name__ == "__main__":
 	encoded_spectra_data = encode_spectra("input.mgf", "500rf_spectra.mgf", "cmiss_record.txt","./encodes_result.txt")
-
 ```
 
 ## 2. Embed spectra from encoded_spectra file
 
-```
+```python
 from dleamse.dleamse_embeder import embed_spectra
 from dleamse.dleamse_embeder import SiameseNetwork2
 
