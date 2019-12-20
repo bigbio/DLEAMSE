@@ -21,7 +21,7 @@ numba-0.45.0
  2. 
  3.
 
- # DLEAMSE
+# DLEAMSE
 
 A Deep LEArning-based Mass Spectra Embedder for spectral similarity scoring.
 
@@ -29,15 +29,15 @@ DLEAMSE (based on Siamese Network) is trained and tested with a larger dataset f
 
 # Requirements
 
-`Python3 (or Anaconda3)`
+Python3 (or Anaconda3)
 
-`torch-1.0.0 (cpu or gpu version)`
+torch-1.0.0 (cpu or gpu version)
 
-`pyteomics>=3.5.1`
+pyteomics>=3.5.1
 
-`numpy>=1.13.3`
+numpy>=1.13.3
 
-`numba>=0.45.0`
+numba>=0.45.0
 
 # Installation
 
@@ -50,8 +50,7 @@ DLEAMSE (based on Siamese Network) is trained and tested with a larger dataset f
 ```
 from dleamse.dleamse_encoder import encode_spectra
 if __name__ == "__main__":
-	encoded_spectra_data = encode_spectra("input.mgf","500rf_spectra.mgf",
-									"cmiss_record.txt","./encodes_result.txt")
+	encoded_spectra_data = encode_spectra("input.mgf", "500rf_spectra.mgf", "cmiss_record.txt","./encodes_result.txt")
 
 ```
 
@@ -63,7 +62,7 @@ from dleamse.dleamse_embeder import SiameseNetwork2
 
 if __name__ == "__main__":
 	model = "model_file.pkl"
-	embedded_spectra_data = embed_spectra(model, encoded_spectra_data, 												"embedded_result.csv", use_gpu=False)
+	embedded_spectra_data = embed_spectra(model, encoded_spectra_data,"embedded_result.csv", use_gpu=False)
 ```
 
 
