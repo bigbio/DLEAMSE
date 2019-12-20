@@ -47,8 +47,8 @@
       <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="4" />
+            <state relative-caret-position="489">
+              <caret line="49" column="22" selection-start-line="49" selection-start-column="22" selection-end-line="49" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -173,17 +173,17 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\Learn_Python\DLEAMSE\src\DLEAMSE" />
-      <recent name="D:\Learn_Python\FADLEAMSE\src\FADLEAMSE" />
-      <recent name="D:\Learn_Python\FADLEAMSE\src" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Learn_Python\DLEAMSE" />
       <recent name="D:\Learn_Python\DLEAMSE\src\DLEAMSE" />
       <recent name="D:\Learn_Python\DLEAMSE\src\DLEAMSE\siamese_modle_reference" />
       <recent name="D:\Learn_Python\DLEAMSE\src\UseTime" />
       <recent name="D:\Learn_Python\FADLEAMSE\src\UseTime" />
-      <recent name="D:\Learn_Python\FADLEAMSE\src\data" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Learn_Python\DLEAMSE\src\DLEAMSE" />
+      <recent name="D:\Learn_Python\FADLEAMSE\src\FADLEAMSE" />
+      <recent name="D:\Learn_Python\FADLEAMSE\src" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -539,8 +539,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="4" />
+        <state relative-caret-position="489">
+          <caret line="49" column="22" selection-start-line="49" selection-start-column="22" selection-end-line="49" selection-end-column="22" />
         </state>
       </provider>
     </entry>
