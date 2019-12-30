@@ -51,7 +51,7 @@ if __name__ == "__main__":
 # Example
 The model file of DLEAMSE: [080802_20_1000_NM500R_model.pkl](https://github.com/qinchunyuan/DLEAMSE/tree/master/src/DLEAMSE/siamese_modle_reference)   
 The test .mgf data can download from [130402_08.mgf](https://github.com/qinchunyuan/DLEAMSE/tree/master/src/DLEAMSE/data)   
- * ** python use_dleamse.py ../siamese_modle_reference/080802_20_1000_NM500R_model.pkl --input ./data/130402_08.mgf --output ./data/test.csv
+ * python use_dleamse.py ../siamese_modle_reference/080802_20_1000_NM500R_model.pkl --input ./data/130402_08.mgf --output ./data/test.csv
 
 
 
