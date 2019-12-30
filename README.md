@@ -16,6 +16,10 @@ DLEAMSE (based on Siamese Network) is trained and tested with a larger dataset f
 * numba>=0.45.0
 
 # Installation
+<<<<<<< HEAD
+=======
+The model file of DLEAMSE: [080802_20_1000_NM500R_model.pkl](https://github.com/qinchunyuan/DLEAMSE/tree/master/src/DLEAMSE/siamese_modle_reference)    
+>>>>>>> 686cfbd0cbf650aa83c62f6ab9b7bb448c19ae3f
 DLEAMSE’s encoder and embedder have been packaged and uploaded to pypi library, the package’s url is https://pypi.org/project/dleamse/.
 
 `pip3 install dleamse`
