@@ -1,10 +1,15 @@
 # -*- coding:utf-8 -*-
+"""
+This is a search program!
+Create by qincy, April 17,2019
+"""
 
 #将数据进行嵌入
 import os
 import logging
 import time
 
+import more_itertools
 import torch
 from pyteomics.mgf import read
 
@@ -85,118 +90,100 @@ class SiameseNetwork2(nn.Module):
 
 class RawDataSet01():
 
-    def __init__(self, spectrum_list):
+    def __init__(self, spectra_pairs_num):
 
-        tmp_time_01 = time.perf_counter()
-        self.MGF = spectrum_list
-        self.len = len(self.MGF)
-        tmp_time_02 = time.perf_counter()
-        print("Load mgf file use time: {}".format(tmp_time_02 - tmp_time_01))
+        self.len = spectra_pairs_num
         self.mgf_dataset = None
 
-        # self.transform(saveName)
-        tmp_time_04 = time.perf_counter()
-        print('Caculate file use time: {}'.format(tmp_time_04 - tmp_time_02))
+    def transform(self, spectrum_list, reference_intensity):
 
-    def transform(self):
-        print('Start to calculate data set...')
-
-        # global spectrum_dict
-        # spectrum_dict = {}
-        #五百个参考的谱图
-        # reference_spectra = read("./0715_50_rf_spectra.mgf", convert_arrays=1)
-        reference_spectra = read("../SpectraPairsData/0722_500_rf_spectra.mgf", convert_arrays=1)
-        # reference_spectra = read("./data/0722_500_rf_spectra.mgf", convert_arrays=1)
-        # reference_spectra = read("../SpectraPairsData/0628_100_rf_spectra.mgf", convert_arrays=1)
-        reference_intensity = np.array([bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
         # 先将500个参考谱图的点积结果计算出来
-        # ndp_r_spec_list = np.zeros(500)
         ndp_r_spec_list = caculate_r_spec(reference_intensity)
-
-        # # for x in range(500):
-        # for x in range(100):
-        #     ndp_r_spec = np.math.sqrt(np.dot(reference_intensity[x], reference_intensity[x]))
-        #     ndp_r_spec_list[x] = ndp_r_spec
 
         peakslist1, precursor_feature_list1 = [], []
         ndp_spec_list = []
-        mgf_data_presist = None
+        encode_batch = 10000
         i, j, k = 0, 0, 0
-        for s1 in self.MGF:
+        self.MGF = read(spectrum_list, convert_arrays=1)
+        if encode_batch > self.len:
+            for s1 in self.MGF:
+                bin_s1 = bin_spectrum(s1.get('m/z array'), s1.get('intensity array'))
+                # ndp_spec1 = np.math.sqrt(np.dot(bin_s1, bin_s1))
+                ndp_spec1 = caculate_spec(bin_s1)
+                peakslist1.append(bin_s1)
+                ndp_spec_list.append(ndp_spec1)
+                mass1 = float(s1.get('params').get('pepmass')[0])
+                charge1 = int(s1.get('params').get('charge').__str__()[0])
+                precursor_feature1 = np.concatenate((self.gray_code(mass1), self.charge_to_one_hot(charge1)))
+                precursor_feature_list1.append(precursor_feature1)
 
-            bin_s1 = bin_spectrum(s1.get('m/z array'), s1.get('intensity array'))
-            ndp_spec1 = np.math.sqrt(np.dot(bin_s1, bin_s1))
-            # ndp_spec1 = caculate_spec(bin_s1)
-            peakslist1.append(bin_s1)
-            ndp_spec_list.append(ndp_spec1)
-            mass1 = float(s1.get('params').get('pepmass')[0])
-            charge1 = int(s1.get('params').get('charge').__str__()[0])
-            precursor_feature1 = np.concatenate((self.gray_code(mass1), self.charge_to_one_hot(charge1)))
-            precursor_feature_list1.append(precursor_feature1)
+            tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
+            intensList01 = np.array(peakslist1)
 
-            if len(peakslist1) == 10000:
-                i += 1
-                tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
-                intensList01 = np.array(peakslist1)
+            # 归一化点积的计算
+            tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list, np.array(peakslist1), np.array(ndp_spec_list))
+            tmp01 = concatenate((tmp_dplist01, intensList01), axis=1)
+            spectrum01 = concatenate((tmp01, tmp_precursor_feature_list1), axis=1)
 
-                # 归一化点积的计算
-                tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list, np.array(peakslist1), np.array(ndp_spec_list))
+            self.mgf_dataset = spectrum01
+            peakslist1.clear()
+            precursor_feature_list1.clear()
+            ndp_spec_list.clear()
+        else:
+            for s1 in self.MGF:
+                bin_s1 = bin_spectrum(s1.get('m/z array'), s1.get('intensity array'))
+                # ndp_spec1 = np.math.sqrt(np.dot(bin_s1, bin_s1))
+                ndp_spec1 = caculate_spec(bin_s1)
+                peakslist1.append(bin_s1)
+                ndp_spec_list.append(ndp_spec1)
+                mass1 = float(s1.get('params').get('pepmass')[0])
+                charge1 = int(s1.get('params').get('charge').__str__()[0])
+                precursor_feature1 = np.concatenate((self.gray_code(mass1), self.charge_to_one_hot(charge1)))
+                precursor_feature_list1.append(precursor_feature1)
 
-                tmp01 = concatenate((tmp_dplist01, intensList01), axis=1)
-                spectrum01 = concatenate((tmp01, tmp_precursor_feature_list1), axis=1)
-
-                if i == 1:
-                    self.mgf_dataset = spectrum01
-                else:
-                    self.mgf_dataset = np.vstack((self.mgf_dataset, spectrum01))
-
-                # df = pd.DataFrame(self.mgf_dataset)
-                # df.to_csv(saveName, mode="a+", header=False, index=False)
-
-                # del self.mgf_dataset
-                peakslist1.clear()
-                precursor_feature_list1.clear()
-                ndp_spec_list.clear()
-
-                j = i * 10000
-
-            elif (j+10000) > self.len:
-                num = self.len - j
-                k += 1
-                if num == k:
-
+                if len(peakslist1) == encode_batch:
+                    i += 1
                     tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
-
                     intensList01 = np.array(peakslist1)
 
                     # 归一化点积的计算
-                    tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list,
-                                                                  np.array(peakslist1), np.array(ndp_spec_list))
+                    tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list, np.array(peakslist1), np.array(ndp_spec_list))
 
                     tmp01 = concatenate((tmp_dplist01, intensList01), axis=1)
                     spectrum01 = concatenate((tmp01, tmp_precursor_feature_list1), axis=1)
 
-                    if num == self.len:
+                    if i == 1:
                         self.mgf_dataset = spectrum01
                     else:
+                        tt = time.perf_counter()
                         self.mgf_dataset = np.vstack((self.mgf_dataset, spectrum01))
-                    # self.mgf_dataset = spectrum01
-
-                    # df = pd.DataFrame(self.mgf_dataset)
-                    # df.to_csv(saveName, mode="a+", header=False, index=False)
-
-                    # del self.mgf_dataset
+                        tt_end = time.perf_counter()
+                        print(tt_end - tt)
                     peakslist1.clear()
                     precursor_feature_list1.clear()
                     ndp_spec_list.clear()
-                else:
-                    continue
-            else:
-                continue
+                    j = i * encode_batch
 
-        del self.MGF
-        print('Finish to calculate data set...')
-        return self.len, self.mgf_dataset
+                elif (j + encode_batch) > self.len:
+                    if len(peakslist1) == self.len - j:
+                        tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
+                        intensList01 = np.array(peakslist1)
+
+                        # 归一化点积的计算
+                        tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list, np.array(peakslist1), np.array(ndp_spec_list))
+
+                        tmp01 = concatenate((tmp_dplist01, intensList01), axis=1)
+                        spectrum01 = concatenate((tmp01, tmp_precursor_feature_list1), axis=1)
+
+                        self.mgf_dataset = np.vstack((self.mgf_dataset, spectrum01))
+
+                        peakslist1.clear()
+                        precursor_feature_list1.clear()
+                        ndp_spec_list.clear()
+                    else:
+                        continue
+
+        return self.mgf_dataset
 
     def gray_code(self, number):
         """
@@ -228,10 +215,7 @@ class RawDataSet01():
 
 class Dataset_RawDataset(data.dataset.Dataset):
     def __init__(self, data):
-        # if not os.path.exists(data_file):
-            # raise RuntimeError("Can not find mgf file: '%s'" % data_file)
         self.mgf_dataset = data
-        # self.mgf_dataset = pd.read_csv(data_file, error_bad_lines=False, header=None, index_col=None).values
 
     def __getitem__(self, item):
         return self.mgf_dataset[item]
@@ -310,35 +294,24 @@ def caculate_nornalization_dp(reference, ndp_r_spec_list, bin_spectra, ndp_bin_s
     result = tmp_dp_list / dvi
     return result
 
-def embedding_dataset(model, spectrum_list):
+def embedding_dataset(net, spectrum_list, reference_intensity, spectra_pairs_num):
 
     out_list = None
 
-    # net = torch.load(model, map_location='cpu')
-    time_load_model = time.perf_counter()
-    net = torch.load(model)
-    time_end_load_model = time.perf_counter()
-    print("模型加载用时：{}".format(time_end_load_model - time_load_model))
-
-
-    # net = torch.load(model, map_location='cpu')
-    print("Start encoding all spectra ...")
+    # net = torch.load(model)
     # 生成RAW文件，在存在的情况下不需要重复执行
     tmp_time_01 = time.perf_counter()
-    rdataset01 = RawDataSet01(spectrum_list)
-    batch, vstack_data = rdataset01.transform()
-    tmp_time_011 = time.perf_counter()
-    dataset = Dataset_RawDataset(vstack_data)
-
+    rdataset01 = RawDataSet01(spectra_pairs_num)
+    vstack_data = rdataset01.transform(spectrum_list, reference_intensity)
     tmp_time_02 = time.perf_counter()
-    print("Dataset data use time : {}".format(tmp_time_02 - tmp_time_011))
     print("enconding use time : {}".format(tmp_time_02 - tmp_time_01))
-    dataloader = data.DataLoader(dataset=dataset, batch_size=1000, shuffle=False, num_workers=1)
 
-    tmp_time_03 = time.perf_counter()
-    print("load file use time : {}".format(tmp_time_03 - tmp_time_02))
+    dataset = Dataset_RawDataset(vstack_data)
+    print(dataset.__len__())
+    dataloader = data.DataLoader(dataset=dataset, batch_size=192, shuffle=False, num_workers=1)
+    # tmp_time_03 = time.perf_counter()
+    # print("load file use time : {}".format(tmp_time_03 - tmp_time_02))
 
-    print("Start to embed all spectra ... ")
     for j, test_data in enumerate(dataloader, 0):
         # todo:放spectrum_title在文件的前方
 
@@ -348,11 +321,11 @@ def embedding_dataset(model, spectrum_list):
         input1_2 = spectrum01[:, :, 500:2949]
         input1_3 = spectrum01[:, :, 2949:]
 
-        refSpecInfo1, fragInfo1, preInfo1 = input1_3.cuda(), input1_2.cuda(), input1_1.cuda()
-        output01 = net.forward_once(refSpecInfo1, fragInfo1, preInfo1)
-        # output01 = net.forward_once(input1_3, input1_2, input1_1)
-        # out1 = output01.detach().numpy()
-        out1 = output01.cpu().detach().numpy()
+        # refSpecInfo1, fragInfo1, preInfo1 = input1_3.cuda(), input1_2.cuda(), input1_1.cuda()
+        # output01 = net.forward_once(refSpecInfo1, fragInfo1, preInfo1)
+        output01 = net.forward_once(input1_3, input1_2, input1_1)
+        out1 = output01.detach().numpy()
+        # out1 = output01.cpu().detach().numpy()
         if j == 0:
             out_list = out1
         else:
@@ -362,31 +335,34 @@ def embedding_dataset(model, spectrum_list):
     print("embeding use time : {}".format(tmp_time_03_1 - tmp_time_02))
     return out_list
 
-def calculate_dsmapper_time(spectra01, spectra02, mgf_01: dict, mgf_02: dict):
+def calculate_dsmapper_time(spectra_mgf_file1, spectra_mgf_file2):
 
     score_list = []
-    # print(mgf_01.get(spectra01[1]))
-    # print(type(mgf_01.get(spectra01[1])))
-    # model = "../SpectraPairsData/080802_20_1000_NM500R_model.pkl"
     # model = "../SpectraPairsData/080802_20_1000_NM500R_model.pkl"
     model = "./data/080802_20_1000_NM500R_model.pkl"
-    spectrum01_list, spectrum02_list = [], []
-
-    for i in range(spectra01.shape[0]):
-        spectrum01 = mgf_01.get(spectra01[i])
-        spectrum02 = mgf_02.get(spectra02[i])
-        spectrum01_list.append(spectrum01)
-        spectrum02_list.append(spectrum02)
 
     tmp_time_01 = time.perf_counter()
-    embedded_01 = embedding_dataset(model, spectrum01_list)
-    embedded_02 = embedding_dataset(model, spectrum02_list)
+    net = torch.load(model, map_location='cpu')
+    tmp_time_02 = time.perf_counter()
+    print("加载模型用时：{}".format(tmp_time_02 - tmp_time_01))
+    # 五百个参考的谱图
+    # reference_spectra = read("./0715_50_rf_spectra.mgf", convert_arrays=1)
+    reference_spectra = read("../SpectraPairsData/0722_500_rf_spectra.mgf", convert_arrays=1)
+    # reference_spectra = read("./data/0722_500_rf_spectra.mgf", convert_arrays=1)
+    reference_intensity = np.array([bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
+
+    spectra_pairs_num = more_itertools.ilen(read(spectra_mgf_file1, convert_arrays=1))
+    tmp_time_03 = time.perf_counter()
+    print("准备相关数据用时：{}".format(tmp_time_03 - tmp_time_02))
+
+    embedded_01 = embedding_dataset(net, spectra_mgf_file1, reference_intensity, spectra_pairs_num)
+    embedded_02 = embedding_dataset(net, spectra_mgf_file2, reference_intensity, spectra_pairs_num)
 
     # embedded_01 = embedded_01.reshape(embedded_01.shape[0], 1, embedded_01.shape[1])
     # embedded_02 = embedded_02.reshape(embedded_02.shape[0], 1, embedded_02.shape[1])
 
     time01 = time.perf_counter()
-    print("数据编码加嵌入的总用时：{}".format(time01 - tmp_time_01))
+    print("数据编码加嵌入的总用时：{}".format(time01 - tmp_time_03))
 
     for i in range(embedded_01.shape[0]):
         score = np.linalg.norm(embedded_01[i] - embedded_02[i])
@@ -400,25 +376,55 @@ if __name__ == '__main__':
     print("test")
     time_01 = time.perf_counter()
     #首先是定义代码的输入，需要输入谱图对数据，然后需要数据谱图对数据对应的mgf文件
-    spectra_pairs_file = "./data/062401_test_ups_specs_BC_NFTR_NFTR_NF_None_TR_None_PPR_None_CHR_givenCharge_PRECTOL_3.0_binScores.txt"
-    spectra_mgf_file1 = "./data/0622_Orbi2_study6a_W080314_6E008_yeast_S48_ft8_pc_SCAN.mgf"
-    spectra_mgf_file2 = "./data/0622_Orbi2_study6a_W080314_6QC1_sigma48_ft8_pc_SCAN.mgf"
+    # spectra_pairs_file = "./data/062401_test_ups_specs_BC_NFTR_NFTR_NF_None_TR_None_PPR_None_CHR_givenCharge_PRECTOL_3.0_binScores.txt"
+    # spectra_mgf_file1 = "./data/0622_Orbi2_study6a_W080314_6E008_yeast_S48_ft8_pc_SCAN.mgf"
+    # spectra_mgf_file2 = "./data/0622_Orbi2_study6a_W080314_6E008_yeast_S48_ft8_pc_SCAN.mgf"
+    # spectra_mgf_file1 = "./data/OEI04195.mgf"
+    # spectra_mgf_file2 = "./data/OEI04195.mgf"
+    spectra_mgf_file1 = "./data/crap_40000_mgf.mgf"
+    spectra_mgf_file2 = "./data/crap_40000_mgf.mgf"
 
-    spectra_pairs_data = pd.read_csv(spectra_pairs_file, sep="\t", header=None, index_col=None)
+    # spectra_mgf_file1 = "./data/crap.mgf"
+    # spectra_mgf_file2 = "./data/crap.mgf"
+    # spectra_mgf_file1 = "./data/sample10000_mgf.mgf"
+    # spectra_mgf_file2 = "./data/sample10000_mgf.mgf"
 
-    spectra01 = spectra_pairs_data[0]
-    spectra02 = spectra_pairs_data[3]
+    # spectra_mgf_file1 = "./data/sample20000_mgf.mgf"
+    # spectra_mgf_file2 = "./data/sample20000_mgf.mgf"
+    #
+    # spectra_mgf_file1 = "./data/sample40000_mgf.mgf"
+    # spectra_mgf_file2 = "./data/sample40000_mgf.mgf"
+    #
+    # spectra_mgf_file1 = "./data/sample80000_mgf.mgf"
+    # spectra_mgf_file2 = "./data/sample80000_mgf.mgf"
 
-    spectra_mgf_data1 = read(spectra_mgf_file1)
-    spectra_mgf_data2 = read(spectra_mgf_file2)
-    mgf_01, mgf_02 = {}, {}
-    for mgf01 in spectra_mgf_data1:
-        mgf_01[mgf01.get('params').get('title')] = mgf01
-    for mgf02 in spectra_mgf_data2:
-        mgf_02[mgf02.get('params').get('title')] = mgf02
+    # # 五百个参考的谱图
+    # # reference_spectra = read("./0715_50_rf_spectra.mgf", convert_arrays=1)
+    # reference_spectra = read("../SpectraPairsData/0722_500_rf_spectra.mgf", convert_arrays=1)
+    # # reference_spectra = read("./data/0722_500_rf_spectra.mgf", convert_arrays=1)
+    # reference_intensity = np.array([bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
+    #
+    # spectra_pairs_num = more_itertools.ilen(read(spectra_mgf_file1, convert_arrays=1))
+
+    # spectra_mgf_file1 = "../SimilarityScoring/data/before_0622/Orbi2_study6a_W080314_6E008_yeast_S48_ft8_pc.mgf"
+    # spectra_mgf_file2 = "../SimilarityScoring/data/before_0622/Orbi2_study6a_W080314_6E008_yeast_S48_ft8_pc.mgf"
+    # spectra_mgf_file2 = "./data/0622_Orbi2_study6a_W080314_6QC1_sigma48_ft8_pc_SCAN.mgf"
+
+    # spectra_pairs_data = pd.read_csv(spectra_pairs_file, sep="\t", header=None, index_col=None)
+    #
+    # spectra01 = spectra_pairs_data[0]
+    # spectra02 = spectra_pairs_data[3]
+    #
+    # spectra_mgf_data1 = read(spectra_mgf_file1)
+    # spectra_mgf_data2 = read(spectra_mgf_file2)
+    # mgf_01, mgf_02 = {}, {}
+    # for mgf01 in spectra_mgf_data1:
+    #     mgf_01[mgf01.get('params').get('title')] = mgf01
+    # for mgf02 in spectra_mgf_data2:
+    #     mgf_02[mgf02.get('params').get('title')] = mgf02
 
     tmp_time_00 = time.perf_counter()
-    calculate_dsmapper_time(spectra01, spectra02, mgf_01, mgf_02)
+    calculate_dsmapper_time(spectra_mgf_file1, spectra_mgf_file1)
     time_02 = time.perf_counter()
     print("编码和嵌入和计算相似性的总用时：{}".format(time_02 - tmp_time_00))
     print("Total use time: {}".format(time_02 - time_01))

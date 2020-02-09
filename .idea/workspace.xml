@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="14c80203-ee85-49d7-b17b-597cc6ce1ff6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-    </list>
+    <list default="true" id="14c80203-ee85-49d7-b17b-597cc6ce1ff6" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -27,7 +25,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
+      <file leaf-file-name="README.md" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="893">
@@ -48,10 +46,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="dleams_usetime_cpu.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="dleams_usetime_cpu.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/UseTime/dleams_usetime_cpu.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3116">
+            <state relative-caret-position="613">
               <caret line="374" column="58" selection-start-line="374" selection-start-column="43" selection-end-line="374" selection-end-column="58" />
               <folding>
                 <element signature="e#331#2674#0" />
@@ -127,6 +125,19 @@
               <item name="DLEAMSE" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="DLEAMSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DLEAMSE" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="UseTime" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DLEAMSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DLEAMSE" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="UseTime" type="462c0819:PsiDirectoryNode" />
+              <item name="data" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -178,9 +189,8 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.22721268" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.58454424" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Run" order="2" />
@@ -423,20 +433,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/UseTime/dleams_usetime_cpu.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3116">
-          <caret line="374" column="58" selection-start-line="374" selection-start-column="43" selection-end-line="374" selection-end-column="58" />
-          <folding>
-            <element signature="e#331#2674#0" />
-            <element signature="e#2747#3154#0" />
-            <element signature="e#3189#7293#0" />
-            <element signature="e#7336#7885#0" />
-            <element signature="e#7936#8216#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/DLEAMSE/use_dleamse.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1957">
@@ -507,6 +503,20 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="893">
           <caret line="47" column="47" selection-start-line="47" selection-start-column="47" selection-end-line="47" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/UseTime/dleams_usetime_cpu.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="613">
+          <caret line="374" column="58" selection-start-line="374" selection-start-column="43" selection-end-line="374" selection-end-column="58" />
+          <folding>
+            <element signature="e#331#2674#0" />
+            <element signature="e#2747#3154#0" />
+            <element signature="e#3189#7293#0" />
+            <element signature="e#7336#7885#0" />
+            <element signature="e#7936#8216#0" />
+          </folding>
         </state>
       </provider>
     </entry>
