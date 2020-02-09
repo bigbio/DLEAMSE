@@ -6,9 +6,12 @@ DLEAMSE (based on Siamese Network) is trained and tested with a larger dataset f
 # Training data set
 A larger spectral set from PRIDE Cluster is used to construct the training and test data, which use high confidence spectra retrieved from high consistency clusters. We chose PRIDE Cluster data to train and test DLEAMSE, for two reasons: 1. The spectra in high consistency clusters are high confidence spectra. 2. The spectral set from PRIDE Cluster covers more species and instrument types. Two filters were used for retrieving high confidence spectra. The first filter controls the quality of collected clusters. We customized clustering-file-converter (https://github.com/spectra-cluster/clustering-file-converter) to retain the high-quality spectral clusters (cluster size >= 30, cluster ratio >= 0.8, and the total ions current (TIC) >= 0.2). The second filter eliminates duplicate clusters assigned with same peptide sequence, only one in the dupli-cates has been chosen, to ensure that the retained clusters are from different peptides. Then 113,362 clusters have been retrained from PRIDE Cluster release 201504. The needed spectra in clusters are acquired from the PRIDE Archive.
 
-# Model and Training process
+# Model and Training
 In DLEAMSE, Siamese network (Figure 1a) trains two same embedding models (Figure 1c) with shared weights, and spectra are encoded by the same encoder (Figure 1b) before the embedding. (see details of determining of network structure and the final determined model in Supplementary Note 1). Based on the Euclidean distance between the pair of embedded spectra, the weights of embedding model is learned by contrastive loss function adapted from Hadsell et. al.[34] that penalizes far-apart same-label spectra (label=1) and nearby different-label spectra (label=0). Back propagation from the loss function is used to update the weights in the network. The net-work is trained by stochastic gradient descent with the Adam update rule[35] with a learning rate of 0.005. The codes are implemented in Python3 with the PyTorch framework[36].
-![model]()
+![model](https://github.com/qinchunyuan/DLEAMSE/blob/master/src/DLEAMSE/siamese_modle_reference/model.png)
+
+# Testing
+![loss and test](https://github.com/qinchunyuan/DLEAMSE/blob/master/src/DLEAMSE/siamese_modle_reference/loss_and_test.jpg)
 
 # Requirements
 
