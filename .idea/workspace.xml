@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="14c80203-ee85-49d7-b17b-597cc6ce1ff6" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/src/DLEAMSE/encode_and_embed.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DLEAMSE/dleamse_embeder.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/DLEAMSE/dleamse_embeder.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DLEAMSE/data/130412_08.mgf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DLEAMSE/siamese_modle_reference/0722_500_rf_spectra.mgf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DLEAMSE/siamese_modle_reference/080802_20_1000_NM500R_model.pkl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DLEAMSE/siamese_modle_reference/loss_and_test.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DLEAMSE/siamese_modle_reference/model.png" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -23,16 +26,22 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="encode_and_embed.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="encode_and_embed.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/DLEAMSE/encode_and_embed.py">
-          <provider selected="true" editor-type-id="text-editor" />
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-4">
+              <folding>
+                <element signature="e#464#527#0" />
+              </folding>
+            </state>
+          </provider>
         </entry>
       </file>
-      <file leaf-file-name="dleamse_embeder.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="dleamse_embeder.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/DLEAMSE/dleamse_embeder.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="322">
-              <caret line="148" column="62" lean-forward="true" selection-start-line="148" selection-start-column="62" selection-end-line="148" selection-end-column="62" />
+            <state relative-caret-position="228">
+              <caret line="143" column="84" selection-start-line="143" selection-start-column="84" selection-end-line="143" selection-end-column="84" />
               <folding>
                 <element signature="e#254#2532#0" />
                 <element signature="e#282#689#0" />
@@ -44,6 +53,7 @@
                 <element signature="e#2789#4666#0" />
                 <element signature="e#3011#3031#0" />
                 <element signature="e#3131#4666#0" />
+                <element signature="e#4756#5186#0" />
                 <element signature="e#5188#5216#0" />
               </folding>
             </state>
@@ -266,13 +276,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/DLEAMSE/encode_and_embed.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/DLEAMSE/dleamse_embeder.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="322">
-          <caret line="148" column="62" lean-forward="true" selection-start-line="148" selection-start-column="62" selection-end-line="148" selection-end-column="62" />
+        <state relative-caret-position="228">
+          <caret line="143" column="84" selection-start-line="143" selection-start-column="84" selection-end-line="143" selection-end-column="84" />
           <folding>
             <element signature="e#254#2532#0" />
             <element signature="e#282#689#0" />
@@ -284,7 +291,17 @@
             <element signature="e#2789#4666#0" />
             <element signature="e#3011#3031#0" />
             <element signature="e#3131#4666#0" />
+            <element signature="e#4756#5186#0" />
             <element signature="e#5188#5216#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/DLEAMSE/encode_and_embed.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-4">
+          <folding>
+            <element signature="e#464#527#0" />
           </folding>
         </state>
       </provider>
