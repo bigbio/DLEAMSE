@@ -141,7 +141,7 @@ class EmbedDataset():
 
         np.savetxt(storeEmbedFile, self.out_list)
 
-def embed_spectra(model, vstack_encoded_spectra, output_embedd_file, use_gpu:bool):
+def embed_spectra(model, vstack_encoded_spectra, output_embedd_file, use_gpu: bool):
     """
 
     :param model: .pkl format embedding model
