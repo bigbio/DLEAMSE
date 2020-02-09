@@ -46,12 +46,7 @@ if __name__ == "__main__":
 # Scripts
   * **dleamse_encoder.py**: DLEAMSE's encoder
   * **dleamse_embedder.py**: DLEAMSE's embedder
-  * **dleamse_usetime_gpu.py**: calculate computing time of dleamse based similarity socring with GPU, use @njit accelaration.
 
-# Example
-The model file of DLEAMSE: [080802_20_1000_NM500R_model.pkl](https://github.com/qinchunyuan/DLEAMSE/tree/master/src/DLEAMSE/siamese_modle_reference)   
-The test .mgf data can download from [130402_08.mgf](https://github.com/qinchunyuan/DLEAMSE/tree/master/src/DLEAMSE/data)   
- * python use_dleamse.py ../siamese_modle_reference/080802_20_1000_NM500R_model.pkl --input ./data/130402_08.mgf --output ./data/test.csv
 
 
 

@@ -16,7 +16,7 @@
       <file leaf-file-name="ndp_usetime.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/UseTime/ndp_usetime.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
+            <state relative-caret-position="95">
               <caret line="5" column="20" selection-start-line="5" selection-start-column="20" selection-end-line="5" selection-end-column="20" />
               <folding>
                 <element signature="e#501#2303#0" />
@@ -27,28 +27,23 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="dleamse_encoder.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/DLEAMSE/dleamse_encoder.py">
+      <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <folding>
-                <element signature="e#228#5074#0" />
-                <element signature="e#5115#5188#0" />
-                <element signature="e#5242#5455#0" />
-                <element signature="e#5508#5590#0" />
-                <element signature="e#5693#6925#0" />
-                <element signature="e#7021#7322#0" />
-                <element signature="e#7393#7850#0" />
-              </folding>
+            <state relative-caret-position="893">
+              <caret line="47" column="47" selection-start-line="47" selection-start-column="47" selection-end-line="47" selection-end-column="47" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/README.md">
+      <file leaf-file-name="dleamse_embeder.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/DLEAMSE/dleamse_embeder.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="503">
-              <caret line="53" column="54" selection-start-line="53" selection-start-column="54" selection-end-line="53" selection-end-column="54" />
+            <state relative-caret-position="210">
+              <caret line="143" column="80" selection-start-line="143" selection-start-column="80" selection-end-line="143" selection-end-column="80" />
+              <folding>
+                <element signature="e#4756#5186#0" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -56,7 +51,7 @@
       <file leaf-file-name="dleams_usetime_cpu.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/UseTime/dleams_usetime_cpu.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4920">
+            <state relative-caret-position="3116">
               <caret line="374" column="58" selection-start-line="374" selection-start-column="43" selection-end-line="374" selection-end-column="58" />
               <folding>
                 <element signature="e#331#2674#0" />
@@ -72,29 +67,10 @@
       <file leaf-file-name="dleams_usetime_gpu.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/UseTime/dleams_usetime_gpu.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
+            <state relative-caret-position="38">
               <caret line="2" selection-start-line="2" selection-end-line="2" />
               <folding>
                 <element signature="e#331#2674#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="use_dleamse.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/DLEAMSE/use_dleamse.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3090">
-              <caret line="312" column="52" selection-start-line="312" selection-start-column="45" selection-end-line="312" selection-end-column="52" />
-              <folding>
-                <element signature="e#359#2637#0" />
-                <element signature="e#2667#7551#0" />
-                <element signature="e#3092#6579#0" />
-                <element signature="e#6612#6628#0" />
-                <element signature="e#6671#7220#0" />
-                <element signature="e#9498#9799#0" />
-                <element signature="e#11639#11837#0" />
-                <element signature="e#11870#12634#0" />
               </folding>
             </state>
           </provider>
@@ -162,17 +138,17 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="D:\Learn_Python\DLEAMSE" />
-      <recent name="D:\Learn_Python\DLEAMSE\src\DLEAMSE" />
-      <recent name="D:\Learn_Python\DLEAMSE\src\DLEAMSE\siamese_modle_reference" />
-      <recent name="D:\Learn_Python\DLEAMSE\src\UseTime" />
-      <recent name="D:\Learn_Python\FADLEAMSE\src\UseTime" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\Learn_Python\DLEAMSE\src\DLEAMSE" />
       <recent name="D:\Learn_Python\FADLEAMSE\src\FADLEAMSE" />
       <recent name="D:\Learn_Python\FADLEAMSE\src" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\git_demo\DLEAMSE\src\DLEAMSE" />
+      <recent name="D:\Learn_Python\DLEAMSE" />
+      <recent name="D:\Learn_Python\DLEAMSE\src\DLEAMSE" />
+      <recent name="D:\Learn_Python\DLEAMSE\src\DLEAMSE\siamese_modle_reference" />
+      <recent name="D:\Learn_Python\DLEAMSE\src\UseTime" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -201,10 +177,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.11275026" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.22721268" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Run" order="2" />
@@ -228,7 +204,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="5" />
+      <option name="time" value="6" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -439,7 +415,7 @@
     <entry file="file://$PROJECT_DIR$/src/DLEAMSE/embeder.py" />
     <entry file="file://$PROJECT_DIR$/src/UseTime/dleams_usetime_gpu.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
+        <state relative-caret-position="38">
           <caret line="2" selection-start-line="2" selection-end-line="2" />
           <folding>
             <element signature="e#331#2674#0" />
@@ -449,7 +425,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/UseTime/dleams_usetime_cpu.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4920">
+        <state relative-caret-position="3116">
           <caret line="374" column="58" selection-start-line="374" selection-start-column="43" selection-end-line="374" selection-end-column="58" />
           <folding>
             <element signature="e#331#2674#0" />
@@ -461,14 +437,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/DLEAMSE/calc_ed_by_dleamse.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-179" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/DLEAMSE/use_dleamse.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3090">
+        <state relative-caret-position="1957">
           <caret line="312" column="52" selection-start-line="312" selection-start-column="45" selection-end-line="312" selection-end-column="52" />
           <folding>
             <element signature="e#359#2637#0" />
@@ -498,16 +469,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/DLEAMSE/dleamse_embeder.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="540">
-          <caret line="104" column="55" selection-start-line="104" selection-start-column="33" selection-end-line="104" selection-end-column="55" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/UseTime/ndp_usetime.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
+        <state relative-caret-position="95">
           <caret line="5" column="20" selection-start-line="5" selection-start-column="20" selection-end-line="5" selection-end-column="20" />
           <folding>
             <element signature="e#501#2303#0" />
@@ -517,10 +481,32 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/DLEAMSE/calc_ed_by_dleamse.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="47" selection-start-line="47" selection-end-line="47" />
+          <folding>
+            <element signature="e#630#1037#0" />
+            <element signature="e#1107#2053#0" />
+            <element signature="e#2111#2706#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/DLEAMSE/dleamse_embeder.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="143" column="80" selection-start-line="143" selection-start-column="80" selection-end-line="143" selection-end-column="80" />
+          <folding>
+            <element signature="e#4756#5186#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="503">
-          <caret line="53" column="54" selection-start-line="53" selection-start-column="54" selection-end-line="53" selection-end-column="54" />
+        <state relative-caret-position="893">
+          <caret line="47" column="47" selection-start-line="47" selection-start-column="47" selection-end-line="47" selection-end-column="47" />
         </state>
       </provider>
     </entry>
