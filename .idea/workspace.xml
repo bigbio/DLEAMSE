@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="14c80203-ee85-49d7-b17b-597cc6ce1ff6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DLEAMSE/dleamse_embeder.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/DLEAMSE/dleamse_embeder.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DLEAMSE/siamese_modle_reference/Figure 1.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/DLEAMSE/siamese_modle_reference/model.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DLEAMSE/siamese_modle_reference/Figure 4.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/src/DLEAMSE/siamese_modle_reference/loss_and_test.jpg" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -17,8 +19,8 @@
       <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="171">
-              <caret line="9" column="834" selection-start-line="9" selection-start-column="834" selection-end-line="9" selection-end-column="834" />
+            <state relative-caret-position="133">
+              <caret line="10" column="9" lean-forward="true" selection-start-line="10" selection-start-column="9" selection-end-line="10" selection-end-column="9" />
             </state>
           </provider>
         </entry>
@@ -26,10 +28,21 @@
       <file leaf-file-name="dleamse_embeder.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/DLEAMSE/dleamse_embeder.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2584">
-              <caret line="143" column="80" selection-start-line="143" selection-start-column="80" selection-end-line="143" selection-end-column="80" />
+            <state relative-caret-position="323">
+              <caret line="167" lean-forward="true" selection-start-line="167" selection-end-line="167" />
               <folding>
+                <element signature="e#254#2532#0" />
+                <element signature="e#282#689#0" />
+                <element signature="e#759#1680#0" />
+                <element signature="e#1738#2532#0" />
+                <element signature="e#2579#2761#0" />
+                <element signature="e#2613#2632#0" />
+                <element signature="e#2675#2700#0" />
+                <element signature="e#2789#4666#0" />
+                <element signature="e#3011#3031#0" />
+                <element signature="e#3131#4666#0" />
                 <element signature="e#4756#5186#0" />
+                <element signature="e#5188#5216#0" />
               </folding>
             </state>
           </provider>
@@ -63,6 +76,7 @@
         <option value="$PROJECT_DIR$/src/UseTime/ndp_usetime.py" />
         <option value="$PROJECT_DIR$/src/DLEAMSE/encoder.py" />
         <option value="$PROJECT_DIR$/src/DLEAMSE/use_dleamse.py" />
+        <option value="$PROJECT_DIR$/src/DLEAMSE/dleamse_embeder.py" />
         <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
@@ -90,6 +104,19 @@
               <item name="DLEAMSE" type="b2602c69:ProjectViewProjectNode" />
               <item name="DLEAMSE" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DLEAMSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DLEAMSE" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="DLEAMSE" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DLEAMSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DLEAMSE" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="DLEAMSE" type="462c0819:PsiDirectoryNode" />
+              <item name="siamese_modle_reference" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -142,9 +169,8 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.27741084" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2324967" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Run" order="2" />
@@ -221,26 +247,37 @@
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/DLEAMSE/calc_ed_by_dleamse.py" />
-    <entry file="file://$PROJECT_DIR$/src/UseTime/torch_dleamse_bigdata_usetime_cpu.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/UseTime/dleams_usetime_gpu.py" />
     <entry file="file://$PROJECT_DIR$/src/UseTime/ndp_usetime.py" />
     <entry file="file://$PROJECT_DIR$/src/UseTime/dleams_usetime_cpu.py" />
+    <entry file="file://$PROJECT_DIR$/src/UseTime/torch_dleamse_bigdata_usetime_cpu.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/DLEAMSE/dleamse_embeder.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2584">
-          <caret line="143" column="80" selection-start-line="143" selection-start-column="80" selection-end-line="143" selection-end-column="80" />
+        <state relative-caret-position="323">
+          <caret line="167" lean-forward="true" selection-start-line="167" selection-end-line="167" />
           <folding>
+            <element signature="e#254#2532#0" />
+            <element signature="e#282#689#0" />
+            <element signature="e#759#1680#0" />
+            <element signature="e#1738#2532#0" />
+            <element signature="e#2579#2761#0" />
+            <element signature="e#2613#2632#0" />
+            <element signature="e#2675#2700#0" />
+            <element signature="e#2789#4666#0" />
+            <element signature="e#3011#3031#0" />
+            <element signature="e#3131#4666#0" />
             <element signature="e#4756#5186#0" />
+            <element signature="e#5188#5216#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="171">
-          <caret line="9" column="834" selection-start-line="9" selection-start-column="834" selection-end-line="9" selection-end-column="834" />
+        <state relative-caret-position="133">
+          <caret line="10" column="9" lean-forward="true" selection-start-line="10" selection-start-column="9" selection-end-line="10" selection-end-column="9" />
         </state>
       </provider>
     </entry>

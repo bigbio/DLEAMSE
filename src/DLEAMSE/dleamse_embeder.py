@@ -165,5 +165,3 @@ def embed_spectra(model, vstack_encoded_spectra, output_embedd_file, use_gpu:boo
 #     print(embedded)
 
 
-
-
