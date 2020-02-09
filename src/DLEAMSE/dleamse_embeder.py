@@ -2,6 +2,7 @@
 """
 Embed spectra.
 """
+from dleamse.dleamse_encoder import encode_spectra
 
 import torch
 
@@ -88,7 +89,11 @@ class LoadDataset(data.dataset.Dataset):
 
 class EmbedDataset():
     def __init__(self, model, vstack_encoded_spectra, storeEmbedFile, use_gpu):
+        self.out_list = []
         self.embedding_dataset(model, vstack_encoded_spectra, storeEmbedFile, use_gpu)
+
+    def getData(self):
+        return self.out_list
 
     def embedding_dataset(self, model, vstack_encoded_spectra, storeEmbedFile, use_gpu):
 
@@ -101,12 +106,16 @@ class EmbedDataset():
             batch = 1
             net = torch.load(model, map_location='cpu')
 
-        print("Start encoding all spectra ...")
-        vstack_data = np.loadtxt(vstack_encoded_spectra)
+        if type(vstack_encoded_spectra) == np.ndarray:
+            vstack_data = vstack_encoded_spectra
+        else:
+            vstack_data = np.loadtxt(vstack_encoded_spectra)
+
         dataset = LoadDataset(vstack_data)
+
         dataloader = data.DataLoader(dataset=dataset, batch_size=batch, shuffle=False, num_workers=1)
 
-        print("Start to embed all spectra ... ")
+        print("Start spectra embedding ... ")
         for j, test_data in enumerate(dataloader, 0):
 
             spectrum01 = test_data.reshape(test_data.shape[0], 1, test_data.shape[1])
@@ -131,7 +140,6 @@ class EmbedDataset():
                 self.out_list = np.vstack((self.out_list, out1))
 
         np.savetxt(storeEmbedFile, self.out_list)
-        return(self.out_list)
 
 def embed_spectra(model, vstack_encoded_spectra, output_embedd_file, use_gpu:bool):
     """
@@ -142,5 +150,20 @@ def embed_spectra(model, vstack_encoded_spectra, output_embedd_file, use_gpu:boo
     :param use_gpu: bool
     :return: embedded spectra 32d vector
     """
-    embedded_spectra = EmbedDataset(model, vstack_encoded_spectra, output_embedd_file, use_gpu)
+    embedded_spectra = EmbedDataset(model, vstack_encoded_spectra, output_embedd_file, use_gpu).getData()
+    print("Finish spectra embedding!")
     return embedded_spectra
+
+# if __name__ == "__main__":
+#     model = "D:/Learn_Python/Spectra_Similarity_Prediction_Model/src/SpectraPairsData/080802_20_1000_NM500R_model.pkl"
+#
+#     # encode_data = encode_spectra("D:/Learn_Python/Spectra_Similarity_Prediction_Model/src/SpectraPairsData/0722_500_rf_spectra.mgf", "D:/Learn_Python/Spectra_Similarity_Prediction_Model/src/SpectraPairsData/0722_500_rf_spectra.mgf","./test_crecord.txt", "./test_result.txt")
+#     print("!!!!!")
+#     # embedded = embed_spectra(model, data, "./test.csv", use_gpu=False)
+#     embedded = embed_spectra(model, "./test_result.txt", "./test.csv", use_gpu=False)
+#
+#     print(embedded)
+
+
+
+
