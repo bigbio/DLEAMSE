@@ -149,7 +149,6 @@ class EmbedDataset:
 
 def embed_spectra(model, vstack_encoded_spectra, output_embedd_file, use_gpu: bool):
     """
-
     :param model: .pkl format embedding model
     :param vstack_encoded_spectra: encoded spectra file for embedding
     :param output_embedd_file: file to store the embedded data
