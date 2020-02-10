@@ -20,21 +20,23 @@ from numba import njit
 import torch
 
 from torch.utils import data
-import torch.nn.functional as F
+import torch.nn.functional as func
 import torch.nn as nn
 
-class EncodeDataset():
+
+class EncodeDataset:
 
     def __init__(self, input_specta_num):
         self.len = input_specta_num
         self.spectra_dataset = None
-        
-    def transform_mgf(self, input_spctra_file, ref_spectra, miss_saveName):
+
+    def transform_mgf(self, input_spctra_file, ref_spectra, miss_save_name):
         self.spectra_dataset = None
         print('Start spectra encoding ...')
-        #五百个参考的谱图
+        # 五百个参考的谱图
         reference_spectra = mgf_read(ref_spectra, convert_arrays=1)
-        reference_intensity = np.array([bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
+        reference_intensity = np.array(
+            [bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
 
         # 先将500个参考谱图的点积结果计算出来
         ndp_r_spec_list = caculate_r_spec(reference_intensity)
@@ -44,11 +46,11 @@ class EncodeDataset():
         i, j, k = 0, 0, 0
         charge_none_record, charge_none_list = 0, []
         encode_batch = 10000
-        
+
         self.MGF = mgf_read(input_spctra_file, convert_arrays=1)
         if encode_batch > self.len:
             for s1 in self.MGF:
-                
+
                 # missing charge
                 if s1.get('params').get('charge').__str__()[0] == "N":
                     charge_none_record += 1
@@ -57,7 +59,7 @@ class EncodeDataset():
                     continue
                 else:
                     charge1 = int(s1.get('params').get('charge').__str__()[0])
-                
+
                 bin_s1 = bin_spectrum(s1.get('m/z array'), s1.get('intensity array'))
                 # ndp_spec1 = np.math.sqrt(np.dot(bin_s1, bin_s1))
                 ndp_spec1 = caculate_spec(bin_s1)
@@ -92,7 +94,7 @@ class EncodeDataset():
                     continue
                 else:
                     charge1 = int(s1.get('params').get('charge').__str__()[0])
-                    
+
                 bin_s1 = bin_spectrum(s1.get('m/z array'), s1.get('intensity array'))
                 # ndp_spec1 = np.math.sqrt(np.dot(bin_s1, bin_s1))
                 ndp_spec1 = caculate_spec(bin_s1)
@@ -147,19 +149,19 @@ class EncodeDataset():
         if len(charge_none_list) > 0:
             np_mr = np.array(charge_none_list)
             df_mr = pd.DataFrame(np_mr, index=None, columns=None)
-            df_mr.to_csv(miss_saveName)
+            df_mr.to_csv(miss_save_name)
             print("Charge Missing Number:{}".format(charge_none_record))
             del charge_none_list
 
-
         return self.spectra_dataset
 
-    def transform_mzml(self, input_spctra_file, ref_spectra, miss_saveName):
+    def transform_mzml(self, input_spctra_file, ref_spectra, miss_save_name):
         self.spectra_dataset = None
         print('Start spectra encoding ...')
-        #五百个参考的谱图
+        # 五百个参考的谱图
         reference_spectra = mgf_read(ref_spectra, convert_arrays=1)
-        reference_intensity = np.array([bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
+        reference_intensity = np.array(
+            [bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
 
         # 先将500个参考谱图的点积结果计算出来
         ndp_r_spec_list = caculate_r_spec(reference_intensity)
@@ -175,13 +177,16 @@ class EncodeDataset():
             for s1 in self.MZML:
 
                 # missing charge
-                if s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get("charge state").__str__()[0] == "N":
+                if s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get(
+                        "charge state").__str__()[0] == "N":
                     charge_none_record += 1
                     spectrum_id = s1.get("spectrum title")
                     charge_none_list.append(spectrum_id)
                     continue
                 else:
-                    charge1 = int(s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get("charge state").__str__()[0])
+                    charge1 = int(
+                        s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get(
+                            "charge state").__str__()[0])
 
                 bin_s1 = bin_spectrum(s1.get('m/z array'), s1.get('intensity array'))
                 # ndp_spec1 = np.math.sqrt(np.dot(bin_s1, bin_s1))
@@ -279,7 +284,7 @@ class EncodeDataset():
         if len(charge_none_list) > 0:
             np_mr = np.array(charge_none_list)
             df_mr = pd.DataFrame(np_mr, index=None, columns=None)
-            df_mr.to_csv(miss_saveName)
+            df_mr.to_csv(miss_save_name)
             print("Charge Missing Number:{}".format(charge_none_record))
             del charge_none_list
 
@@ -313,10 +318,12 @@ class EncodeDataset():
         charge[c - 1] = c
         return charge
 
+
 @njit
 def caculate_spec(bin_spec):
     ndp_spec1 = np.math.sqrt(np.dot(bin_spec, bin_spec))
     return ndp_spec1
+
 
 @njit
 def caculate_r_spec(reference_intensity):
@@ -326,10 +333,12 @@ def caculate_r_spec(reference_intensity):
         ndp_r_spec_list[x] = ndp_r_spec
     return ndp_r_spec_list
 
+
 @njit
 def get_bin_index(mz, min_mz, bin_size):
     relative_mz = mz - min_mz
     return max(0, int(np.floor(relative_mz / bin_size)))
+
 
 @njit
 def bin_spectrum(mz_array, intensity_array, max_mz=2500, min_mz=50.5, bin_size=1.0005079):
@@ -374,9 +383,10 @@ def bin_spectrum(mz_array, intensity_array, max_mz=2500, min_mz=50.5, bin_size=1
         print('zero intensity found')
     return results
 
+
 @njit
 def caculate_nornalization_dp(reference, ndp_r_spec_list, bin_spectra, ndp_bin_sp):
-    ndp_r_spec_list = ndp_r_spec_list.reshape(ndp_r_spec_list.shape[0],1)
+    ndp_r_spec_list = ndp_r_spec_list.reshape(ndp_r_spec_list.shape[0], 1)
     ndp_bin_sp = ndp_bin_sp.reshape(ndp_bin_sp.shape[0], 1)
     tmp_dp_list = np.dot(bin_spectra, np.transpose(reference))
     dvi = np.dot(ndp_bin_sp, np.transpose(ndp_r_spec_list))
@@ -402,35 +412,34 @@ class SiameseNetwork2(nn.Module):
 
         self.fc2 = nn.Linear(25775, 32)
 
-    def forward_once(self, preInfo, fragInfo, refSpecInfo):
-        preInfo = self.fc1_1(preInfo)
-        preInfo = F.selu(preInfo)
-        preInfo = self.fc1_2(preInfo)
-        preInfo = F.selu(preInfo)
-        preInfo = preInfo.view(preInfo.size(0), -1)
+    def forward_once(self, pre_info, frag_info, ref_spec_info):
+        pre_info = self.fc1_1(pre_info)
+        pre_info = func.selu(pre_info)
+        pre_info = self.fc1_2(pre_info)
+        pre_info = func.selu(pre_info)
+        pre_info = pre_info.view(pre_info.size(0), -1)
 
-        fragInfo = self.cnn21(fragInfo)
-        fragInfo = F.selu(fragInfo)
-        fragInfo = self.maxpool21(fragInfo)
-        fragInfo = F.selu(fragInfo)
-        fragInfo = self.cnn22(fragInfo)
-        fragInfo = F.selu(fragInfo)
-        fragInfo = self.maxpool22(fragInfo)
-        fragInfo = F.selu(fragInfo)
-        fragInfo = fragInfo.view(fragInfo.size(0), -1)
+        frag_info = self.cnn21(frag_info)
+        frag_info = func.selu(frag_info)
+        frag_info = self.maxpool21(frag_info)
+        frag_info = func.selu(frag_info)
+        frag_info = self.cnn22(frag_info)
+        frag_info = func.selu(frag_info)
+        frag_info = self.maxpool22(frag_info)
+        frag_info = func.selu(frag_info)
+        frag_info = frag_info.view(frag_info.size(0), -1)
 
-        refSpecInfo = self.cnn11(refSpecInfo)
-        refSpecInfo = F.selu(refSpecInfo)
-        refSpecInfo = self.maxpool11(refSpecInfo)
-        refSpecInfo = F.selu(refSpecInfo)
-        refSpecInfo = refSpecInfo.view(refSpecInfo.size(0), -1)
+        ref_spec_info = self.cnn11(ref_spec_info)
+        ref_spec_info = func.selu(ref_spec_info)
+        ref_spec_info = self.maxpool11(ref_spec_info)
+        ref_spec_info = func.selu(ref_spec_info)
+        ref_spec_info = ref_spec_info.view(ref_spec_info.size(0), -1)
 
-        output = torch.cat((preInfo, fragInfo, refSpecInfo), 1)
+        output = torch.cat((pre_info, frag_info, ref_spec_info), 1)
         output = self.fc2(output)
         return output
 
     def forward(self, spectrum01, spectrum02):
-
         spectrum01 = spectrum01.reshape(spectrum01.shape[0], 1, spectrum01.shape[1])
         spectrum02 = spectrum02.reshape(spectrum02.shape[0], 1, spectrum02.shape[1])
 
@@ -450,6 +459,7 @@ class SiameseNetwork2(nn.Module):
 
         return output01, output02
 
+
 class LoadDataset(data.dataset.Dataset):
     def __init__(self, data):
         self.dataset = data
@@ -460,15 +470,16 @@ class LoadDataset(data.dataset.Dataset):
     def __len__(self):
         return self.dataset.shape[0]
 
-class EmbedDataset():
-    def __init__(self, model, vstack_encoded_spectra, storeEmbedFile, use_gpu):
-        self.out_list = []
-        self.embedding_dataset(model, vstack_encoded_spectra, storeEmbedFile, use_gpu)
 
-    def getData(self):
+class EmbedDataset:
+    def __init__(self, model, vstack_encoded_spectra, store_embed_file, use_gpu):
+        self.out_list = []
+        self.embedding_dataset(model, vstack_encoded_spectra, store_embed_file, use_gpu)
+
+    def get_data(self):
         return self.out_list
 
-    def embedding_dataset(self, model, vstack_encoded_spectra, storeEmbedFile, use_gpu):
+    def embedding_dataset(self, model, vstack_encoded_spectra, store_embed_file, use_gpu):
 
         if use_gpu is True:
             # for gpu
@@ -512,14 +523,14 @@ class EmbedDataset():
             else:
                 self.out_list = np.vstack((self.out_list, out1))
 
-        np.savetxt(storeEmbedFile, self.out_list)
+        np.savetxt(store_embed_file, self.out_list)
 
-def encode_spectra(input,refrence_spectra,miss_record):
+
+def encode_spectra(input, reference_spectra, miss_record):
     """
     :param input: get .mgf file as input
-    :param refrence_spectra: get a .mgf file contained 500 spectra as referece spectra from normalized dot product calculation
+    :param reference_spectra: get a .mgf file contained 500 spectra as reference spectra from normalized dot product calculation
     :param miss_record: record title of some spectra which loss charge attribute
-    :param output: a file for save the final encode information
     :return: None
     """
     if not os.path.exists(input):
@@ -527,17 +538,18 @@ def encode_spectra(input,refrence_spectra,miss_record):
     if str(input).endswith(".mgf"):
         spectra_num = more_itertools.ilen(mgf_read(input, convert_arrays=1))
         mgf_encoder = EncodeDataset(spectra_num)
-        vstack_data = mgf_encoder.transform_mgf(input, refrence_spectra, miss_record)
+        vstack_data = mgf_encoder.transform_mgf(input, reference_spectra, miss_record)
     elif str(input).endswith(".mzML"):
         print(input)
         spectra_num = more_itertools.ilen(mzml_read(input))
         mzml_encoder = EncodeDataset(spectra_num)
-        vstack_data = mzml_encoder.transform_mzml(input, refrence_spectra, miss_record)
+        vstack_data = mzml_encoder.transform_mzml(input, reference_spectra, miss_record)
     # np.savetxt(output, vstack_data)
     print("Finish spectra encoding!")
     return vstack_data
 
-def embed_spectra(model, vstack_encoded_spectra, output_embedd_file, use_gpu:bool):
+
+def embed_spectra(model, vstack_encoded_spectra, output_embedd_file, use_gpu: bool):
     """
 
     :param model: .pkl format embedding model
@@ -546,11 +558,12 @@ def embed_spectra(model, vstack_encoded_spectra, output_embedd_file, use_gpu:boo
     :param use_gpu: bool
     :return: embedded spectra 32d vector
     """
-    embedded_spectra = EmbedDataset(model, vstack_encoded_spectra, output_embedd_file, use_gpu).getData()
+    embedded_spectra = EmbedDataset(model, vstack_encoded_spectra, output_embedd_file, use_gpu).get_data()
     print("Finish spectra embedding!")
     return embedded_spectra
 
-def encode_and_embed_spectra(model,input,refrence_spectra,miss_record,output_embedd_file, use_gpu:bool):
+
+def encode_and_embed_spectra(model, input, refrence_spectra, miss_record, output_embedd_file, use_gpu: bool):
     """
 
     :param model: .pkl format embedding model
@@ -563,9 +576,3 @@ def encode_and_embed_spectra(model,input,refrence_spectra,miss_record,output_emb
     """
     vstack_encoded_spectra = encode_spectra(input, refrence_spectra, miss_record)
     embedded_spectra = embed_spectra(model, vstack_encoded_spectra, output_embedd_file, use_gpu)
-
-
-
-
-
-

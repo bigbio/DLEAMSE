@@ -10,9 +10,10 @@ from dleamse.dleamse_encoder import encode_spectra
 import torch
 
 from torch.utils import data
-import torch.nn.functional as F
+import torch.nn.functional as func
 import torch.nn as nn
 import numpy as np
+
 
 class SiameseNetwork2(nn.Module):
 
@@ -32,35 +33,34 @@ class SiameseNetwork2(nn.Module):
 
         self.fc2 = nn.Linear(25775, 32)
 
-    def forward_once(self, preInfo, fragInfo, refSpecInfo):
-        preInfo = self.fc1_1(preInfo)
-        preInfo = F.selu(preInfo)
-        preInfo = self.fc1_2(preInfo)
-        preInfo = F.selu(preInfo)
-        preInfo = preInfo.view(preInfo.size(0), -1)
+    def forward_once(self, pre_info, frag_info, ref_spec_info):
+        pre_info = self.fc1_1(pre_info)
+        pre_info = func.selu(pre_info)
+        pre_info = self.fc1_2(pre_info)
+        pre_info = func.selu(pre_info)
+        pre_info = pre_info.view(pre_info.size(0), -1)
 
-        fragInfo = self.cnn21(fragInfo)
-        fragInfo = F.selu(fragInfo)
-        fragInfo = self.maxpool21(fragInfo)
-        fragInfo = F.selu(fragInfo)
-        fragInfo = self.cnn22(fragInfo)
-        fragInfo = F.selu(fragInfo)
-        fragInfo = self.maxpool22(fragInfo)
-        fragInfo = F.selu(fragInfo)
-        fragInfo = fragInfo.view(fragInfo.size(0), -1)
+        frag_info = self.cnn21(frag_info)
+        frag_info = func.selu(frag_info)
+        frag_info = self.maxpool21(frag_info)
+        frag_info = func.selu(frag_info)
+        frag_info = self.cnn22(frag_info)
+        frag_info = func.selu(frag_info)
+        frag_info = self.maxpool22(frag_info)
+        frag_info = func.selu(frag_info)
+        frag_info = frag_info.view(frag_info.size(0), -1)
 
-        refSpecInfo = self.cnn11(refSpecInfo)
-        refSpecInfo = F.selu(refSpecInfo)
-        refSpecInfo = self.maxpool11(refSpecInfo)
-        refSpecInfo = F.selu(refSpecInfo)
-        refSpecInfo = refSpecInfo.view(refSpecInfo.size(0), -1)
+        ref_spec_info = self.cnn11(ref_spec_info)
+        ref_spec_info = func.selu(ref_spec_info)
+        ref_spec_info = self.maxpool11(ref_spec_info)
+        ref_spec_info = func.selu(ref_spec_info)
+        ref_spec_info = ref_spec_info.view(ref_spec_info.size(0), -1)
 
-        output = torch.cat((preInfo, fragInfo, refSpecInfo), 1)
+        output = torch.cat((pre_info, frag_info, ref_spec_info), 1)
         output = self.fc2(output)
         return output
 
     def forward(self, spectrum01, spectrum02):
-
         spectrum01 = spectrum01.reshape(spectrum01.shape[0], 1, spectrum01.shape[1])
         spectrum02 = spectrum02.reshape(spectrum02.shape[0], 1, spectrum02.shape[1])
 
@@ -80,6 +80,7 @@ class SiameseNetwork2(nn.Module):
 
         return output01, output02
 
+
 class LoadDataset(data.dataset.Dataset):
     def __init__(self, data):
         self.dataset = data
@@ -90,15 +91,16 @@ class LoadDataset(data.dataset.Dataset):
     def __len__(self):
         return self.dataset.shape[0]
 
-class EmbedDataset():
-    def __init__(self, model, vstack_encoded_spectra, storeEmbedFile, use_gpu):
-        self.out_list = []
-        self.embedding_dataset(model, vstack_encoded_spectra, storeEmbedFile, use_gpu)
 
-    def getData(self):
+class EmbedDataset:
+    def __init__(self, model, vstack_encoded_spectra, store_embed_file, use_gpu):
+        self.out_list = []
+        self.embedding_dataset(model, vstack_encoded_spectra, store_embed_file, use_gpu)
+
+    def get_data(self):
         return self.out_list
 
-    def embedding_dataset(self, model, vstack_encoded_spectra, storeEmbedFile, use_gpu):
+    def embedding_dataset(self, model, vstack_encoded_spectra, store_embed_file, use_gpu):
 
         if use_gpu is True:
             # for gpu
@@ -142,18 +144,18 @@ class EmbedDataset():
             else:
                 self.out_list = np.vstack((self.out_list, out1))
 
-        np.savetxt(storeEmbedFile, self.out_list)
+        np.savetxt(store_embed_file, self.out_list, delimiter=",")
+
 
 def embed_spectra(model, vstack_encoded_spectra, output_embedd_file, use_gpu: bool):
     """
-
     :param model: .pkl format embedding model
     :param vstack_encoded_spectra: encoded spectra file for embedding
     :param output_embedd_file: file to store the embedded data
     :param use_gpu: bool
     :return: embedded spectra 32d vector
     """
-    embedded_spectra = EmbedDataset(model, vstack_encoded_spectra, output_embedd_file, use_gpu).getData()
+    embedded_spectra = EmbedDataset(model, vstack_encoded_spectra, output_embedd_file, use_gpu).get_data()
     print("Finish spectra embedding!")
     return embedded_spectra
 
@@ -166,5 +168,3 @@ def embed_spectra(model, vstack_encoded_spectra, output_embedd_file, use_gpu: bo
 #     embedded = embed_spectra(model, "./test_result.txt", "./test.csv", use_gpu=False)
 #
 #     print(embedded)
-
-
