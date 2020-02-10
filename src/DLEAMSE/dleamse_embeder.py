@@ -1,6 +1,9 @@
 # -*- coding:utf-8 -*-
+# @Author : Chunyuan Qin
+
 """
 Embed spectra.
+
 """
 from dleamse.dleamse_encoder import encode_spectra
 

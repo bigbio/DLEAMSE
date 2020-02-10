@@ -1,4 +1,6 @@
 # -*- coding:utf-8 -*-
+# Chunyuan Qin
+
 """
 Encode and emberder spectra.
 """

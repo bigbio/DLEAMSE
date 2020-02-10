@@ -2,11 +2,19 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="14c80203-ee85-49d7-b17b-597cc6ce1ff6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/src/DLEAMSE/data/130412_08.mgf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DLEAMSE/siamese_modle_reference/0722_500_rf_spectra.mgf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DLEAMSE/siamese_modle_reference/080802_20_1000_NM500R_model.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DLEAMSE/siamese_modle_reference/loss_and_test.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DLEAMSE/siamese_modle_reference/model.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DLEAMSE/dleamse_embeder.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/DLEAMSE/dleamse_embeder.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DLEAMSE/dleamse_encoder.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/DLEAMSE/dleamse_encoder.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DLEAMSE/encode_and_embed.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/DLEAMSE/encode_and_embed.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/UseTime/data/0622_Orbi2_study6a_W080314_6E008_yeast_S48_ft8_pc_SCAN.mgf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/UseTime/data/0622_Orbi2_study6a_W080314_6QC1_sigma48_ft8_pc_SCAN.mgf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/UseTime/data/062401_test_ups_specs_BC_NFTR_NFTR_NF_None_TR_None_PPR_None_CHR_givenCharge_PRECTOL_3.0_binScores.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/UseTime/data/Orbi2_study6a_W080314_6E008_yeast_S48_ft8_pc_SCAN.mgf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/UseTime/data/Orbi2_study6a_W080314_6QC1_sigma48_ft8_pc_SCAN.mgf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/UseTime/torch_dleamse_bigdata_usetime_cpu.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Run-times/torch_dleamse_bigdata_usetime_cpu.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/UseTime/torch_dleamse_bigdata_usetime_gpu.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Run-times/torch_dleamse_bigdata_usetime_gpu.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/UseTime/torch_ndp_bigdata_usetime_cpu.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Run-times/torch_ndp_bigdata_usetime_cpu.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/UseTime/torch_ndp_bigdata_usetime_gpu.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Run-times/torch_ndp_bigdata_usetime_gpu.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -20,8 +28,8 @@
       <file leaf-file-name="README.md" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="171">
-              <caret line="9" column="715" selection-start-line="9" selection-start-column="715" selection-end-line="9" selection-end-column="715" />
+            <state relative-caret-position="247">
+              <caret line="13" column="104" selection-start-line="13" selection-start-column="104" selection-end-line="13" selection-end-column="104" />
             </state>
           </provider>
         </entry>
@@ -29,9 +37,22 @@
       <file leaf-file-name="encode_and_embed.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/DLEAMSE/encode_and_embed.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-4">
+            <state relative-caret-position="38">
+              <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
               <folding>
+                <element signature="e#418#13977#0" />
                 <element signature="e#464#527#0" />
+                <element signature="e#14018#14091#0" />
+                <element signature="e#14145#14358#0" />
+                <element signature="e#14411#14493#0" />
+                <element signature="e#14596#15828#0" />
+                <element signature="e#15924#16225#0" />
+                <element signature="e#16267#18545#0" />
+                <element signature="e#18592#18774#0" />
+                <element signature="e#18802#20679#0" />
+                <element signature="e#20741#21788#0" />
+                <element signature="e#21878#22276#0" />
+                <element signature="e#22387#23029#0" />
               </folding>
             </state>
           </provider>
@@ -40,8 +61,8 @@
       <file leaf-file-name="dleamse_embeder.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/DLEAMSE/dleamse_embeder.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="228">
-              <caret line="143" column="84" selection-start-line="143" selection-start-column="84" selection-end-line="143" selection-end-column="84" />
+            <state relative-caret-position="19">
+              <caret line="1" selection-start-line="1" selection-end-line="1" />
               <folding>
                 <element signature="e#254#2532#0" />
                 <element signature="e#282#689#0" />
@@ -53,15 +74,37 @@
                 <element signature="e#2789#4666#0" />
                 <element signature="e#3011#3031#0" />
                 <element signature="e#3131#4666#0" />
-                <element signature="e#4756#5186#0" />
-                <element signature="e#5188#5216#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="dleamse_encoder.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/DLEAMSE/dleamse_encoder.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="76">
+              <caret line="4" column="3" lean-forward="true" selection-start-line="4" selection-start-column="3" selection-end-line="4" selection-end-column="3" />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="torch_dleamse_bigdata_usetime_cpu.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/UseTime/torch_dleamse_bigdata_usetime_cpu.py">
+        <entry file="file://$PROJECT_DIR$/src/Run-times/torch_dleamse_bigdata_usetime_cpu.py">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file leaf-file-name="torch_dleamse_bigdata_usetime_gpu.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Run-times/torch_dleamse_bigdata_usetime_gpu.py">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file leaf-file-name="torch_ndp_bigdata_usetime_cpu.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Run-times/torch_ndp_bigdata_usetime_cpu.py">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file leaf-file-name="torch_ndp_bigdata_usetime_gpu.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Run-times/torch_ndp_bigdata_usetime_gpu.py">
           <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
@@ -90,21 +133,22 @@
         <option value="$PROJECT_DIR$/src/DLEAMSE/use_dleamse.py" />
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/src/DLEAMSE/dleamse_embeder.py" />
+        <option value="$PROJECT_DIR$/src/DLEAMSE/dleamse_encoder.py" />
+        <option value="$PROJECT_DIR$/src/DLEAMSE/encode_and_embed.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-10" />
-    <option name="y" value="21" />
+    <option name="x" value="757" />
+    <option name="y" value="172" />
     <option name="width" value="995" />
-    <option name="height" value="1049" />
+    <option name="height" value="1050" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -127,6 +171,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -174,17 +219,18 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.32562748" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16050199" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
-      <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" />
+      <window_info anchor="bottom" id="Run" order="2" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32606325" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -203,9 +249,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/UseTime/dleams_usetime_gpu.py" />
-    <entry file="file://$PROJECT_DIR$/src/DLEAMSE/use_dleamse.py" />
-    <entry file="file://$PROJECT_DIR$/src/UseTime/ndp_usetime.py" />
     <entry file="file://$PROJECT_DIR$/src/DLEAMSE/use_dleamse.py" />
     <entry file="file://$PROJECT_DIR$/src/DLEAMSE/encoder.py" />
     <entry file="file://$PROJECT_DIR$/src/UseTime/dleams_usetime_cpu.py" />
@@ -247,39 +290,33 @@
     <entry file="file://$PROJECT_DIR$/src/DLEAMSE/encoder.py" />
     <entry file="file://$PROJECT_DIR$/src/DLEAMSE/embeder.py" />
     <entry file="file://$PROJECT_DIR$/src/DLEAMSE/use_dleamse.py" />
-    <entry file="file://$PROJECT_DIR$/src/DLEAMSE/dleamse_encoder.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#228#5074#0" />
-            <element signature="e#5115#5188#0" />
-            <element signature="e#5242#5455#0" />
-            <element signature="e#5508#5590#0" />
-            <element signature="e#5693#6925#0" />
-            <element signature="e#7021#7322#0" />
-            <element signature="e#7393#7850#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/DLEAMSE/calc_ed_by_dleamse.py" />
     <entry file="file://$PROJECT_DIR$/src/UseTime/dleams_usetime_gpu.py" />
     <entry file="file://$PROJECT_DIR$/src/UseTime/ndp_usetime.py" />
     <entry file="file://$PROJECT_DIR$/src/UseTime/dleams_usetime_cpu.py" />
-    <entry file="file://$PROJECT_DIR$/src/UseTime/torch_dleamse_bigdata_usetime_cpu.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="171">
-          <caret line="9" column="715" selection-start-line="9" selection-start-column="715" selection-end-line="9" selection-end-column="715" />
+        <state relative-caret-position="247">
+          <caret line="13" column="104" selection-start-line="13" selection-start-column="104" selection-end-line="13" selection-end-column="104" />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/Run-times/torch_dleamse_bigdata_usetime_cpu.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Run-times/torch_dleamse_bigdata_usetime_gpu.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Run-times/torch_ndp_bigdata_usetime_cpu.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Run-times/torch_ndp_bigdata_usetime_gpu.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/DLEAMSE/dleamse_embeder.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="228">
-          <caret line="143" column="84" selection-start-line="143" selection-start-column="84" selection-end-line="143" selection-end-column="84" />
+        <state relative-caret-position="19">
+          <caret line="1" selection-start-line="1" selection-end-line="1" />
           <folding>
             <element signature="e#254#2532#0" />
             <element signature="e#282#689#0" />
@@ -291,17 +328,35 @@
             <element signature="e#2789#4666#0" />
             <element signature="e#3011#3031#0" />
             <element signature="e#3131#4666#0" />
-            <element signature="e#4756#5186#0" />
-            <element signature="e#5188#5216#0" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/DLEAMSE/dleamse_encoder.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="76">
+          <caret line="4" column="3" lean-forward="true" selection-start-line="4" selection-start-column="3" selection-end-line="4" selection-end-column="3" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/DLEAMSE/encode_and_embed.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4">
+        <state relative-caret-position="38">
+          <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
           <folding>
+            <element signature="e#418#13977#0" />
             <element signature="e#464#527#0" />
+            <element signature="e#14018#14091#0" />
+            <element signature="e#14145#14358#0" />
+            <element signature="e#14411#14493#0" />
+            <element signature="e#14596#15828#0" />
+            <element signature="e#15924#16225#0" />
+            <element signature="e#16267#18545#0" />
+            <element signature="e#18592#18774#0" />
+            <element signature="e#18802#20679#0" />
+            <element signature="e#20741#21788#0" />
+            <element signature="e#21878#22276#0" />
+            <element signature="e#22387#23029#0" />
           </folding>
         </state>
       </provider>
