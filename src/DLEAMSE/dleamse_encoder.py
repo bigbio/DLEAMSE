@@ -16,18 +16,20 @@ import numpy as np
 from numpy import concatenate
 from numba import njit
 
-class EncodeDataset():
+
+class EncodeDataset:
 
     def __init__(self, input_specta_num):
         self.len = input_specta_num
         self.spectra_dataset = None
-        
-    def transform_mgf(self, input_spctra_file, ref_spectra, miss_saveName):
+
+    def transform_mgf(self, input_spctra_file, ref_spectra, miss_save_name):
         self.spectra_dataset = None
         print('Start spectra encoding ...')
-        #五百个参考的谱图
+        # 五百个参考的谱图
         reference_spectra = mgf_read(ref_spectra, convert_arrays=1)
-        reference_intensity = np.array([bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
+        reference_intensity = np.array(
+            [bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
 
         # 先将500个参考谱图的点积结果计算出来
         ndp_r_spec_list = caculate_r_spec(reference_intensity)
@@ -37,11 +39,11 @@ class EncodeDataset():
         i, j, k = 0, 0, 0
         charge_none_record, charge_none_list = 0, []
         encode_batch = 10000
-        
+
         self.MGF = mgf_read(input_spctra_file, convert_arrays=1)
         if encode_batch > self.len:
             for s1 in self.MGF:
-                
+
                 # missing charge
                 if s1.get('params').get('charge').__str__()[0] == "N":
                     charge_none_record += 1
@@ -50,7 +52,7 @@ class EncodeDataset():
                     continue
                 else:
                     charge1 = int(s1.get('params').get('charge').__str__()[0])
-                
+
                 bin_s1 = bin_spectrum(s1.get('m/z array'), s1.get('intensity array'))
                 # ndp_spec1 = np.math.sqrt(np.dot(bin_s1, bin_s1))
                 ndp_spec1 = caculate_spec(bin_s1)
@@ -85,7 +87,7 @@ class EncodeDataset():
                     continue
                 else:
                     charge1 = int(s1.get('params').get('charge').__str__()[0])
-                    
+
                 bin_s1 = bin_spectrum(s1.get('m/z array'), s1.get('intensity array'))
                 # ndp_spec1 = np.math.sqrt(np.dot(bin_s1, bin_s1))
                 ndp_spec1 = caculate_spec(bin_s1)
@@ -140,19 +142,19 @@ class EncodeDataset():
         if len(charge_none_list) > 0:
             np_mr = np.array(charge_none_list)
             df_mr = pd.DataFrame(np_mr, index=None, columns=None)
-            df_mr.to_csv(miss_saveName)
+            df_mr.to_csv(miss_save_name)
             print("Charge Missing Number:{}".format(charge_none_record))
             del charge_none_list
 
-
         return self.spectra_dataset
 
-    def transform_mzml(self, input_spctra_file, ref_spectra, miss_saveName):
+    def transform_mzml(self, input_spctra_file, ref_spectra, miss_save_name):
         self.spectra_dataset = None
         print('Start spectra encoding ...')
-        #五百个参考的谱图
+        # 五百个参考的谱图
         reference_spectra = mgf_read(ref_spectra, convert_arrays=1)
-        reference_intensity = np.array([bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
+        reference_intensity = np.array(
+            [bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
 
         # 先将500个参考谱图的点积结果计算出来
         ndp_r_spec_list = caculate_r_spec(reference_intensity)
@@ -168,13 +170,16 @@ class EncodeDataset():
             for s1 in self.MZML:
 
                 # missing charge
-                if s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get("charge state").__str__()[0] == "N":
+                if s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get(
+                        "charge state").__str__()[0] == "N":
                     charge_none_record += 1
                     spectrum_id = s1.get("spectrum title")
                     charge_none_list.append(spectrum_id)
                     continue
                 else:
-                    charge1 = int(s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get("charge state").__str__()[0])
+                    charge1 = int(
+                        s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get(
+                            "charge state").__str__()[0])
 
                 bin_s1 = bin_spectrum(s1.get('m/z array'), s1.get('intensity array'))
                 # ndp_spec1 = np.math.sqrt(np.dot(bin_s1, bin_s1))
@@ -272,7 +277,7 @@ class EncodeDataset():
         if len(charge_none_list) > 0:
             np_mr = np.array(charge_none_list)
             df_mr = pd.DataFrame(np_mr, index=None, columns=None)
-            df_mr.to_csv(miss_saveName)
+            df_mr.to_csv(miss_save_name)
             print("Charge Missing Number:{}".format(charge_none_record))
             del charge_none_list
 
@@ -306,10 +311,12 @@ class EncodeDataset():
         charge[c - 1] = c
         return charge
 
+
 @njit
 def caculate_spec(bin_spec):
     ndp_spec1 = np.math.sqrt(np.dot(bin_spec, bin_spec))
     return ndp_spec1
+
 
 @njit
 def caculate_r_spec(reference_intensity):
@@ -319,10 +326,12 @@ def caculate_r_spec(reference_intensity):
         ndp_r_spec_list[x] = ndp_r_spec
     return ndp_r_spec_list
 
+
 @njit
 def get_bin_index(mz, min_mz, bin_size):
     relative_mz = mz - min_mz
     return max(0, int(np.floor(relative_mz / bin_size)))
+
 
 @njit
 def bin_spectrum(mz_array, intensity_array, max_mz=2500, min_mz=50.5, bin_size=1.0005079):
@@ -367,16 +376,18 @@ def bin_spectrum(mz_array, intensity_array, max_mz=2500, min_mz=50.5, bin_size=1
         print('zero intensity found')
     return results
 
+
 @njit
 def caculate_nornalization_dp(reference, ndp_r_spec_list, bin_spectra, ndp_bin_sp):
-    ndp_r_spec_list = ndp_r_spec_list.reshape(ndp_r_spec_list.shape[0],1)
+    ndp_r_spec_list = ndp_r_spec_list.reshape(ndp_r_spec_list.shape[0], 1)
     ndp_bin_sp = ndp_bin_sp.reshape(ndp_bin_sp.shape[0], 1)
     tmp_dp_list = np.dot(bin_spectra, np.transpose(reference))
     dvi = np.dot(ndp_bin_sp, np.transpose(ndp_r_spec_list))
     result = tmp_dp_list / dvi
     return result
 
-def encode_spectra(input,refrence_spectra,miss_record, output):
+
+def encode_spectra(input, refrence_spectra, miss_record, output):
     """
     :param input: get .mgf file as input
     :param refrence_spectra: get a .mgf file contained 500 spectra as referece spectra from normalized dot product calculation
@@ -399,6 +410,7 @@ def encode_spectra(input,refrence_spectra,miss_record, output):
     print("Finish spectra encoding!")
     return vstack_data
 
+
 if __name__ == '__main__':
     print("test mzml")
     mzml_file = "CHPP_LM3_RP10_1.mzML"
@@ -406,8 +418,3 @@ if __name__ == '__main__':
     ref_spectra = "0722_500_rf_spectra.mgf"
 
     encode_spectra(mzml_file, ref_spectra, miss_record="miss_record.txt", output="0209_test_output.txt")
-
-
-
-
-

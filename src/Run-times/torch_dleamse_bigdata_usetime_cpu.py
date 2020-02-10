@@ -4,7 +4,7 @@ This is a search program!
 Create by qincy, April 17,2019
 """
 
-#将数据进行嵌入
+# 将数据进行嵌入
 import os
 import logging
 import time
@@ -20,6 +20,7 @@ import pandas as pd
 import numpy as np
 from numpy import concatenate
 from numba import njit
+
 
 class SiameseNetwork2(nn.Module):
 
@@ -68,7 +69,6 @@ class SiameseNetwork2(nn.Module):
         return output
 
     def forward(self, spectrum01, spectrum02):
-
         spectrum01 = spectrum01.reshape(spectrum01.shape[0], 1, spectrum01.shape[1])
         spectrum02 = spectrum02.reshape(spectrum02.shape[0], 1, spectrum02.shape[1])
 
@@ -88,7 +88,8 @@ class SiameseNetwork2(nn.Module):
 
         return output01, output02
 
-class RawDataSet01():
+
+class RawDataSet01:
 
     def __init__(self, spectra_pairs_num):
 
@@ -121,7 +122,8 @@ class RawDataSet01():
             intensList01 = np.array(peakslist1)
 
             # 归一化点积的计算
-            tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list, np.array(peakslist1), np.array(ndp_spec_list))
+            tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list, np.array(peakslist1),
+                                                     np.array(ndp_spec_list))
             tmp01 = concatenate((tmp_dplist01, intensList01), axis=1)
             spectrum01 = concatenate((tmp01, tmp_precursor_feature_list1), axis=1)
 
@@ -147,7 +149,8 @@ class RawDataSet01():
                     intensList01 = np.array(peakslist1)
 
                     # 归一化点积的计算
-                    tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list, np.array(peakslist1), np.array(ndp_spec_list))
+                    tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list, np.array(peakslist1),
+                                                             np.array(ndp_spec_list))
 
                     tmp01 = concatenate((tmp_dplist01, intensList01), axis=1)
                     spectrum01 = concatenate((tmp01, tmp_precursor_feature_list1), axis=1)
@@ -170,7 +173,8 @@ class RawDataSet01():
                         intensList01 = np.array(peakslist1)
 
                         # 归一化点积的计算
-                        tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list, np.array(peakslist1), np.array(ndp_spec_list))
+                        tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list,
+                                                                 np.array(peakslist1), np.array(ndp_spec_list))
 
                         tmp01 = concatenate((tmp_dplist01, intensList01), axis=1)
                         spectrum01 = concatenate((tmp01, tmp_precursor_feature_list1), axis=1)
@@ -213,6 +217,7 @@ class RawDataSet01():
         charge[c - 1] = c
         return charge
 
+
 class Dataset_RawDataset(data.dataset.Dataset):
     def __init__(self, data):
         self.mgf_dataset = data
@@ -223,25 +228,29 @@ class Dataset_RawDataset(data.dataset.Dataset):
     def __len__(self):
         return self.mgf_dataset.shape[0]
 
+
 @njit
 def caculate_spec(bin_spec):
     ndp_spec1 = np.math.sqrt(np.dot(bin_spec, bin_spec))
     return ndp_spec1
+
 
 @njit
 def caculate_r_spec(reference_intensity):
     ndp_r_spec_list = np.zeros(500)
     # ndp_r_spec_list = np.zeros(100)
     for x in range(500):
-    # for x in range(100):
+        # for x in range(100):
         ndp_r_spec = np.math.sqrt(np.dot(reference_intensity[x], reference_intensity[x]))
         ndp_r_spec_list[x] = ndp_r_spec
     return ndp_r_spec_list
+
 
 @njit
 def get_bin_index(mz, min_mz, bin_size):
     relative_mz = mz - min_mz
     return max(0, int(np.floor(relative_mz / bin_size)))
+
 
 @njit
 def bin_spectrum(mz_array, intensity_array, max_mz=2500, min_mz=50.5, bin_size=1.0005079):
@@ -285,17 +294,18 @@ def bin_spectrum(mz_array, intensity_array, max_mz=2500, min_mz=50.5, bin_size=1
         print('zero intensity found')
     return results
 
+
 @njit
 def caculate_nornalization_dp(reference, ndp_r_spec_list, bin_spectra, ndp_bin_sp):
-    ndp_r_spec_list = ndp_r_spec_list.reshape(ndp_r_spec_list.shape[0],1)
+    ndp_r_spec_list = ndp_r_spec_list.reshape(ndp_r_spec_list.shape[0], 1)
     ndp_bin_sp = ndp_bin_sp.reshape(ndp_bin_sp.shape[0], 1)
     tmp_dp_list = np.dot(bin_spectra, np.transpose(reference))
     dvi = np.dot(ndp_bin_sp, np.transpose(ndp_r_spec_list))
     result = tmp_dp_list / dvi
     return result
 
-def embedding_dataset(net, spectrum_list, reference_intensity, spectra_pairs_num):
 
+def embedding_dataset(net, spectrum_list, reference_intensity, spectra_pairs_num):
     out_list = None
 
     # net = torch.load(model)
@@ -335,8 +345,8 @@ def embedding_dataset(net, spectrum_list, reference_intensity, spectra_pairs_num
     print("embeding use time : {}".format(tmp_time_03_1 - tmp_time_02))
     return out_list
 
-def calculate_dsmapper_time(spectra_mgf_file1, spectra_mgf_file2):
 
+def calculate_dsmapper_time(spectra_mgf_file1, spectra_mgf_file2):
     score_list = []
     # model = "../SpectraPairsData/080802_20_1000_NM500R_model.pkl"
     model = "./data/080802_20_1000_NM500R_model.pkl"
@@ -349,7 +359,8 @@ def calculate_dsmapper_time(spectra_mgf_file1, spectra_mgf_file2):
     # reference_spectra = read("./0715_50_rf_spectra.mgf", convert_arrays=1)
     reference_spectra = read("../SpectraPairsData/0722_500_rf_spectra.mgf", convert_arrays=1)
     # reference_spectra = read("./data/0722_500_rf_spectra.mgf", convert_arrays=1)
-    reference_intensity = np.array([bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
+    reference_intensity = np.array(
+        [bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
 
     spectra_pairs_num = more_itertools.ilen(read(spectra_mgf_file1, convert_arrays=1))
     tmp_time_03 = time.perf_counter()
@@ -371,11 +382,11 @@ def calculate_dsmapper_time(spectra_mgf_file1, spectra_mgf_file2):
     time02 = time.perf_counter()
     print("calc_EU use time: {}".format(time02 - time01))
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     print("test")
     time_01 = time.perf_counter()
-    #首先是定义代码的输入，需要输入谱图对数据，然后需要数据谱图对数据对应的mgf文件
+    # 首先是定义代码的输入，需要输入谱图对数据，然后需要数据谱图对数据对应的mgf文件
     # spectra_pairs_file = "./data/062401_test_ups_specs_BC_NFTR_NFTR_NF_None_TR_None_PPR_None_CHR_givenCharge_PRECTOL_3.0_binScores.txt"
     # spectra_mgf_file1 = "./data/0622_Orbi2_study6a_W080314_6E008_yeast_S48_ft8_pc_SCAN.mgf"
     # spectra_mgf_file2 = "./data/0622_Orbi2_study6a_W080314_6E008_yeast_S48_ft8_pc_SCAN.mgf"
@@ -428,4 +439,3 @@ if __name__ == '__main__':
     time_02 = time.perf_counter()
     print("编码和嵌入和计算相似性的总用时：{}".format(time_02 - tmp_time_00))
     print("Total use time: {}".format(time_02 - time_01))
-
