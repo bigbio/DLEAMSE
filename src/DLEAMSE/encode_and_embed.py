@@ -517,7 +517,7 @@ class EmbedDataset():
 def encode_spectra(input,refrence_spectra,miss_record):
     """
     :param input: get .mgf file as input
-    :param refrence_spectra: get a .mgf file contained 500 spectra as referece spectra from normalized dot product calculation
+    :param reference_spectra: get a .mgf file contained 500 spectra as reference spectra from normalized dot product calculation
     :param miss_record: record title of some spectra which loss charge attribute
     :param output: a file for save the final encode information
     :return: None

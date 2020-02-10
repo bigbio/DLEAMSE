@@ -1,0 +1,7 @@
+numba==0.47.0
+pyteomics==4.1.1
+numpy==1.18.1
+more_itertools==7.1.0
+torch==1.4.0
+pandas==0.25.3
+dleamse==0.1.8
