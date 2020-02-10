@@ -31,8 +31,8 @@ DLEAMSE’s encoder and embedder have been packaged and uploaded to pypi library
 `pip3 install dleamse`
 
 # Usage
-The model file of DLEAMSE: [080802_20_1000_NM500R_model.pkl](https://github.com/qinchunyuan/DLEAMSE/tree/master/src/DLEAMSE/siamese_modle_reference)   
-The 500 reference spectra used in our project: [500_rfs_spectra.mgf](https://github.com/qinchunyuan/DLEAMSE/tree/master/src/DLEAMSE/siamese_modle_reference)
+The model file of DLEAMSE: [080802_20_1000_NM500R_model.pkl](https://github.com/bigbio/DLEAMSE/tree/master/src/DLEAMSE/siamese_modle_reference)
+The 500 reference spectra used in our project: [500_rfs_spectra.mgf](https://github.com/bigbio/DLEAMSE/tree/master/src/DLEAMSE/siamese_modle_reference)
 
 ## 1. Encode spectra
 
