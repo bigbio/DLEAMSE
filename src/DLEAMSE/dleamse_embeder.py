@@ -144,7 +144,7 @@ class EmbedDataset:
             else:
                 self.out_list = np.vstack((self.out_list, out1))
 
-        np.savetxt(store_embed_file, self.out_list)
+        np.savetxt(store_embed_file, self.out_list, delimiter=",")
 
 
 def embed_spectra(model, vstack_encoded_spectra, output_embedd_file, use_gpu: bool):
