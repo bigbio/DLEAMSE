@@ -56,6 +56,8 @@ if __name__ == "__main__":
 # Scripts
   * **dleamse_encoder.py**: DLEAMSE's encoder
   * **dleamse_embedder.py**: DLEAMSE's embedder
+  * **encode_and_embed.py**: The commandline script for encoding and embedding spectra, usi is added for each output 32d vector.
+
 
 
 
