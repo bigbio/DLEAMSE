@@ -22,6 +22,10 @@ from torch.utils import data
 import torch.nn.functional as func
 import torch.nn as nn
 
+import faiss
+
+DEFAULT_IVF_NLIST = 100
+
 def _args():
     """
     Declare all arguments, parse them, and return the args dict.
@@ -37,8 +41,8 @@ def _args():
     parser.add_argument('--ref_spectra', type=argparse.FileType('r'), help='input 500 reference spectra file', default="./dleamse_model_references/0722_500_rf_spectra.mgf")
     parser.add_argument('-o', '--output', type=str, help='output vectors file, its default path is the same as input file.', default="True")
     parser.add_argument('--miss_record', type=str, help='Bool,record charge missed spectra', default="True")
-    # parser.add_argument('--use_gpu', type=str, help='Bool, use gpu or not', default="False")
     parser.add_argument('--use_gpu', type=str, help='Bool, use gpu or not', default="True")
+    parser.add_argument('--make_faiss_index', type=str, help='Bool, use gpu or not', default="False")
     return parser.parse_args()
 
 class EncodeDataset:
@@ -680,6 +684,7 @@ class EmbedDataset:
 
         # np.savetxt(store_embed_file, self.out_list)
 
+
 def encode_spectra(prj, input, reference_spectra, miss_record):
     """
     :param input: get .mgf file as input
@@ -735,9 +740,15 @@ def encode_and_embed_spectra(model, prj, input, refrence_spectra, miss_record, o
         embedded_spectra = embed_spectra(model, vstack_encoded_spectra, use_gpu)
         usi_array = np.array(usi_list)
         embedded_spectra_array = np.array(embedded_spectra)
-        spectra_title_save_file = output_embedd_file.strip("_embedded.txt") + "_spectra_title.txt"
-        pd.DataFrame(np.array(spectra_title)).to_csv(spectra_title_save_file, header=None, index=None)
+
+        usi_save_file = output_embedd_file.strip("_embedded.npy") + "_spectra_usi.txt"
+        pd.DataFrame(usi_array).to_csv(usi_save_file, header=None, index=None)
+
+        spectra_title_save_file = output_embedd_file.strip("_embedded.npy") + "_spectra_title.txt"
+        pd.DataFrame(usi_array).to_csv(spectra_title_save_file, header=None, index=None)
+
         np.save(output_embedd_file, embedded_spectra_array)
+        return embedded_spectra_array
 
 
     elif str(input).endswith(".mzML"):
@@ -746,11 +757,16 @@ def encode_and_embed_spectra(model, prj, input, refrence_spectra, miss_record, o
         embedded_spectra = embed_spectra(model, vstack_encoded_spectra, use_gpu)
         usi_array = np.array(usi_list)
         embedded_spectra_array = np.array(embedded_spectra)
-        usi_df = pd.DataFrame(usi_array)
-        embedded_spectra_df = pd.DataFrame(embedded_spectra_array)
+        # usi_df = pd.DataFrame(usi_array)
+        # embedded_spectra_df = pd.DataFrame(embedded_spectra_array)
 
-        final_embedded_result = pd.concat([usi_df, embedded_spectra_df], axis=1)
-        pd.DataFrame(final_embedded_result).to_csv(output_embedd_file, header=None, index=None)
+        spectra_title_save_file = output_embedd_file.strip("_embedded.npy") + "_spectra_usi.txt"
+        pd.DataFrame(usi_array).to_csv(spectra_title_save_file, header=None, index=None)
+        np.save(output_embedd_file, embedded_spectra_array)
+
+        # final_embedded_result = pd.concat([usi_df, embedded_spectra_df], axis=1)
+        # pd.DataFrame(final_embedded_result).to_csv(output_embedd_file, header=None, index=None)
+        return embedded_spectra_array
 
     elif str(input).endswith(".json"):
         with open(input) as fh:
@@ -761,11 +777,70 @@ def encode_and_embed_spectra(model, prj, input, refrence_spectra, miss_record, o
         usi_array = np.array(usi_list)
         embedded_spectra_array = np.array(embedded_spectra)
 
-        usi_df = pd.DataFrame(usi_array)
-        embedded_spectra_df = pd.DataFrame(embedded_spectra_array)
+        # usi_df = pd.DataFrame(usi_array)
+        # embedded_spectra_df = pd.DataFrame(embedded_spectra_array)
 
-        final_embedded_result = pd.concat([usi_df, embedded_spectra_df], axis=1)
-        pd.DataFrame(final_embedded_result).to_csv(output_embedd_file, header=None, index=None)
+        # final_embedded_result = pd.concat([usi_df, embedded_spectra_df], axis=1)
+        # pd.DataFrame(final_embedded_result).to_csv(output_embedd_file, header=None, index=None)
+
+        spectra_title_save_file = output_embedd_file.strip("_embedded.npy") + "_spectra_usi.txt"
+        pd.DataFrame(usi_array).to_csv(spectra_title_save_file, header=None, index=None)
+        np.save(output_embedd_file, embedded_spectra_array)
+        return embedded_spectra_array
+
+class Faiss_write_index():
+
+    def __init__(self, vectors_data, output_path):
+        self.tmp = None
+        self.spectra_vectors = vectors_data
+        self.create_index(vectors_data, output_path)
+
+    def create_index(self, spectra_vectors, output_path):
+        n_embedded_dim = spectra_vectors.shape[1]
+        index = self.make_faiss_index(n_embedded_dim)
+        index.add(self.spectra_vectors.astype('float32'))
+        self.write_faiss_index(index, output_path)
+
+    def make_faiss_index(self, n_dimensions, index_type='flat'):
+        """
+        Make a fairly general-purpose FAISS index
+        :param n_dimensions:
+        :param index_type: Type of index to build: flat or ivfflat. ivfflat is much faster.
+        :return:
+        """
+        print("Making index of type {}".format(index_type))
+        if faiss.get_num_gpus():
+            gpu_resources = faiss.StandardGpuResources()
+            if index_type == 'flat':
+                config = faiss.GpuIndexFlatConfig()
+                index = faiss.GpuIndexFlatL2(gpu_resources, n_dimensions, config)
+            elif index_type == 'ivfflat':
+                config = faiss.GpuIndexIVFFlatConfig()
+                index = faiss.GpuIndexIVFFlat(gpu_resources, n_dimensions, DEFAULT_IVF_NLIST, faiss.METRIC_L2, config)
+            else:
+                raise ValueError("Unknown index_type %s" % index_type)
+        else:
+            print("Using CPU.")
+            if index_type == 'flat':
+                index = faiss.IndexFlatL2(n_dimensions)
+            elif index_type == 'ivfflat':
+                quantizer = faiss.IndexFlatL2(n_dimensions)
+                index = faiss.IndexIVFFlat(quantizer, n_dimensions, DEFAULT_IVF_NLIST, faiss.METRIC_L2)
+            else:
+                raise ValueError("Unknown index_type %s" % index_type)
+        return index
+
+    def write_faiss_index(self, index, out_filepath):
+        """
+        Save a FAISS index. If we're on GPU, have to convert to CPU index first
+        :param index:
+        :return:
+        """
+        if faiss.get_num_gpus():
+            print("Converting index from GPU to CPU...")
+            index = faiss.index_gpu_to_cpu(index)
+        faiss.write_index(index, out_filepath)
+        print("Wrote FAISS index to {}".format(out_filepath))
 
 if __name__ == '__main__':
     # python encode_and_embed.py --input="./dleamse_model_references/CHPP_LM3_RP10_1.mzML" --output="0211_test_output.txt"
@@ -776,26 +851,57 @@ if __name__ == '__main__':
     input_file = args.input.name
     ref_spectra = args.ref_spectra.name
     miss_record = args.miss_record
-    miss_record_file = None
-    if miss_record:
-        dirname, filename = os.path.split(os.path.abspath(input_file))
-        if filename.endswith(".mgf"):
-            miss_record_file = dirname + "/"+ filename.strip(".mgf")+"_miss_record.txt"
-        elif filename.endswith(".mzML"):
-            miss_record_file = dirname + "/"+ filename.strip(".mzML")+"_miss_record.txt"
-        else:
-            miss_record_file = dirname + "/" + filename.strip(".json")+"_miss_record.txt"
+
+    dirname, filename = os.path.split(os.path.abspath(input_file))
 
     output = args.output
-    output_file = None
+    output_file, miss_record_file, index_file = None,  None, None
     if output:
         dirname, filename = os.path.split(os.path.abspath(input_file))
         if filename.endswith(".mgf"):
-            output_file = dirname + "/"+ filename.strip(".mgf")+"_embedded.txt"
+            output_file = dirname + "/" + filename.strip(".mgf") + "_embedded.npy"
         elif filename.endswith(".mzML"):
-            output_file = dirname + "/"+ filename.strip(".mzML")+"_embedded.txt"
+            output_file = dirname + "/" + filename.strip(".mzML") + "_embedded.npy"
         else:
-            output_file = dirname + "/" + filename.strip(".json")+"_embedded.txt"
+            output_file = dirname + "/" + filename.strip(".json") + "_embedded.npy"
+
+        if miss_record:
+            if filename.endswith(".mgf"):
+                miss_record_file = dirname + "/" + filename.strip(".mgf") + "_miss_record.txt"
+            elif filename.endswith(".mzML"):
+                miss_record_file = dirname + "/" + filename.strip(".mzML") + "_miss_record.txt"
+            else:
+                miss_record_file = dirname + "/" + filename.strip(".json") + "_miss_record.txt"
+
+        if args.make_faiss_index:
+            if filename.endswith(".mgf"):
+                index_file = dirname + "/" + filename.strip(".mgf") + ".index"
+            elif filename.endswith(".mzML"):
+                index_file = dirname + "/" + filename.strip(".mzML") + ".indx"
+            else:
+                index_file = dirname + "/" + filename.strip(".json") + ".index"
+
+    else:
+        output_file = output
+        dirname, filename = os.path.split(os.path.abspath(output))
+        if miss_record:
+            if filename.endswith(".mgf"):
+                miss_record_file = dirname + "/" + filename.strip(".mgf") + "_miss_record.txt"
+            elif filename.endswith(".mzML"):
+                miss_record_file = dirname + "/" + filename.strip(".mzML") + "_miss_record.txt"
+            else:
+                miss_record_file = dirname + "/" + filename.strip(".json") + "_miss_record.txt"
+
+        if args.make_faiss_index:
+            if filename.endswith(".mgf"):
+                index_file = dirname + "/" + filename.strip(".mgf") + ".index"
+            elif filename.endswith(".mzML"):
+                index_file = dirname + "/" + filename.strip(".mzML") + ".indx"
+            else:
+                index_file = dirname + "/" + filename.strip(".json") + ".index"
 
     use_gpu = args.use_gpu
-    encode_and_embed_spectra(model, prj, input_file, ref_spectra, miss_record_file, output_file, use_gpu)
+    embedded_spectra = encode_and_embed_spectra(model, prj, input_file, ref_spectra, miss_record_file, output_file, use_gpu)
+
+    if args.make_faiss_index:
+        index_maker = Faiss_write_index(embedded_spectra, index_file)
