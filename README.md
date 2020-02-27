@@ -64,7 +64,7 @@ Encode and embed the spectra (PXD003552_61576_ArchiveSpectrum.json) to vectors. 
  Encode and embed spectra to 32D vectors, then make the faiss index file for these vectors: if you want to build the index after the encoding embedding, use the setting --make_faiss_index=True. The same as the explanation in 1.a)ii; in addition, the default value of the --make_faiss_index parameter is False. If you want to use the index building function, you need to set it to True.<br>
 `python encode_and_embed.py -i=PXD003552_61576_ArchiveSpectrum.json --make_faiss_index=True`
 
-## **search_vectors_against_index.py**:   
+## **search_vectors_against_index.py**:
 * **Search query 32D spectra vectors against spectra library's index file**:<br>
 Search query 32D spectra vectors (PXD003552_61576_ArchiveSpectrum_embedded.npy) against spectra library's index file (PXD003552_61576_ArchiveSpectrum.index), and generate a result file (test.h5). KNN algorithm is used by default, k = 5; library index file (--index file), vectors file to be searched (-i, --input_embedded_spectra), and search result file (-o, --output) need to be specified.<br>
-`python search_vectors_against_index.py --index_file=PXD003552_61576_ArchiveSpectrum.index -i=PXD003552_61576_ArchiveSpectrum_embedded.npy -o=./test.h5`
+`python search_vectors_against_index.py --index_file=PXD003552_61576_ArchiveSpectrum.index -i=PXD003552_61576_ArchiveSpectrum_embedded.npy -o=test.h5`
