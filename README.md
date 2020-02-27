@@ -53,16 +53,16 @@ if __name__ == "__main__":
 	embedded_spectra_data = embed_spectra(model, encoded_spectra_data,"embedded_result.csv", use_gpu=False)
 ```
 
-# Command line Scripts
+# Command Line Scripts
 
-* **encode_and_embed.py**: The commandline script for encoding and embedding spectra, usi is added for each output 32d vector.< br >
-&nbsp;&nbsp;a)	python encode_and_embed.py -i=PXD003552_61576_ArchiveSpectrum.json< br >
-&nbsp;&nbsp;&nbsp;&nbsp; i.	Encode and embed spectra to 32D vectors. Encode and embed the spectra (PXD003552_61576_ArchiveSpectrum.json) to vectors.< br >
-&nbsp;&nbsp;&nbsp;&nbsp; ii.By default, the generated spectra embedding vectors file (PXD003552_61576_ArchiveSpectrum.npy), the file of the spectra USI data (PXD003552_61576_ArchiveSpectrum_spectrum_usi.txt) and record file of the spectra with missing charge (PXD003552_61576_ArchiveSpectrum_miss_record. txt) are stored in current directory.< br >
-&nbsp;&nbsp;b) python encode_and_embed.py -i=PXD003552_61576_ArchiveSpectrum.json --make_faiss_index=True< br >
-&nbsp;&nbsp;&nbsp;&nbsp; i.	Make index for spectral library. Eencode and embed spectra to 32D vectors, then make the faiss index file for these vectors: if you want to build the index after the encoding embedding, use the setting --make_faiss_index=True.< br >
-&nbsp;&nbsp;&nbsp;&nbsp; ii.The same as the explanation in 1.a)ii; in addition, the default value of the --make_faiss_index parameter is False. If you want to use the index building function, you need to set it to True.< br >
-* **search_vectors_against_index.py**< br >
-&nbsp;&nbsp;a)	a)	python search_vectors_against_index.py --index_file=PXD003552_61576_ArchiveSpectrum.index -i=PXD003552_61576_ArchiveSpectrum_embedded.npy -o=./test.h5.< br >
-&nbsp;&nbsp;&nbsp;&nbsp; i.	Search query 32D spectra vectors (PXD003552_61576_ArchiveSpectrum_embedded.npy) against spectra library's index file (PXD003552_61576_ArchiveSpectrum.index), and generate a result file (test.h5).< br >
-&nbsp;&nbsp;&nbsp;&nbsp; ii.KNN algorithm is used by default, k = 5; library index file (--index file), vectors file to be searched (-i, --input_embedded_spectra), and search result file (-o, --output) need to be specified.< br >
+* **encode_and_embed.py**: The commandline script for encoding and embedding spectra, usi is added for each output 32d vector.
+** &nbsp;&nbsp;a)python encode_and_embed.py -i=PXD003552_61576_ArchiveSpectrum.json
+*** &nbsp;&nbsp;&nbsp;&nbsp; i.	Encode and embed spectra to 32D vectors. Encode and embed the spectra (PXD003552_61576_ArchiveSpectrum.json) to vectors.
+**** &nbsp;&nbsp;&nbsp;&nbsp; ii.By default, the generated spectra embedding vectors file (PXD003552_61576_ArchiveSpectrum.npy), the file of the spectra USI data (PXD003552_61576_ArchiveSpectrum_spectrum_usi.txt) and record file of the spectra with missing charge (PXD003552_61576_ArchiveSpectrum_miss_record. txt) are stored in current directory.
+** &nbsp;&nbsp;b) python encode_and_embed.py -i=PXD003552_61576_ArchiveSpectrum.json --make_faiss_index=True.
+*** &nbsp;&nbsp;&nbsp;&nbsp; i.	Make index for spectral library. Eencode and embed spectra to 32D vectors, then make the faiss index file for these vectors: if you want to build the index after the encoding embedding, use the setting --make_faiss_index=True.
+*** &nbsp;&nbsp;&nbsp;&nbsp; ii.The same as the explanation in 1.a)ii; in addition, the default value of the --make_faiss_index parameter is False. If you want to use the index building function, you need to set it to True.
+* **search_vectors_against_index.py**<
+** &nbsp;&nbsp;a)python search_vectors_against_index.py --index_file=PXD003552_61576_ArchiveSpectrum.index -i=PXD003552_61576_ArchiveSpectrum_embedded.npy -o=./test.h5
+*** &nbsp;&nbsp;&nbsp;&nbsp; i.	Search query 32D spectra vectors (PXD003552_61576_ArchiveSpectrum_embedded.npy) against spectra library's index file (PXD003552_61576_ArchiveSpectrum.index), and generate a result file (test.h5).
+*** &nbsp;&nbsp;&nbsp;&nbsp; ii.KNN algorithm is used by default, k = 5; library index file (--index file), vectors file to be searched (-i, --input_embedded_spectra), and search result file (-o, --output) need to be specified.
