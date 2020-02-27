@@ -75,14 +75,18 @@ class EncodeDataset:
                     charge_none_record += 1
                     spectrum_id = s1.get('params').get('title')
                     charge_none_list.append(spectrum_id)
+                    k += 1
                     continue
                 else:
-                    scan = s1.get('params').get('title').split(";")[-1].split("=")[-1]
+                    # scan = s1.get('params').get('title').split(";")[-1].split("=")[-1]
+                    scan = k
+                    k += 1
                     spectra_file_name = str(input_spctra_file).split("/")[-1]
                     usi = "mzspec:" + str(prj) + ":" + spectra_file_name + ":scan" + str(scan)
                     self.usi_list.append(usi)
                     self.spectra_title.append(s1.get('params').get('title'))
                     charge1 = int(s1.get('params').get('charge').__str__()[0])
+
 
                 bin_s1 = bin_spectrum(s1.get('m/z array'), s1.get('intensity array'))
                 # ndp_spec1 = np.math.sqrt(np.dot(bin_s1, bin_s1))

@@ -57,7 +57,8 @@ if __name__ == "__main__":
 
 ## **encode_and_embed.py**:
 * **Encode and embed spectra to 32D vectors.**:<br>
-Encode and embed the spectra (PXD003552_61576_ArchiveSpectrum.json) to vectors. By default, the generated spectra embedding vectors file (PXD003552_61576_ArchiveSpectrum.npy), the file of the spectra USI data (PXD003552_61576_ArchiveSpectrum_spectrum_usi.txt) and record file of the spectra with missing charge (PXD003552_61576_ArchiveSpectrum_miss_record. txt) are stored in current directory.<br>
+Encode and embed the spectra (PXD003552_61576_ArchiveSpectrum.json) to vectors. By default, the generated spectra embedding vectors file (PXD003552_61576_ArchiveSpectrum.npy), spectra USI file (PXD003552_61576_ArchiveSpectrum_spectrum_usi.txt) and the record file of spectra with missing charge (PXD003552_61576_ArchiveSpectrum_miss_record. txt) are stored in current directory. <br>
+By default, GPU is used; the default directory of DLEASME model and 500 reference spectra file are in dleamse_model_references directory which is under current directory.<br>
 `python encode_and_embed.py -i=PXD003552_61576_ArchiveSpectrum.json`
 
 * **Make index for spectral library.**:<br>
