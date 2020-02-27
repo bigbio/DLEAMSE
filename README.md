@@ -55,21 +55,15 @@ if __name__ == "__main__":
 
 # Command line Scripts
 
-##  * **encode_and_embed.py**: The commandline script for encoding and embedding spectra, usi is added for each output 32d vector.
-### a)	python encode_and_embed.py -i=PXD003552_61576_ArchiveSpectrum.json
-#### i.	Encode and embed spectra to 32D vectors. 下面的命令将谱图文件PXD003552_61576_ArchiveSpectrum.json编码并嵌入成向量，默认在当前目录下存储生成的谱图嵌入向量数据文件(PXD003552_61576_ArchiveSpectrum_embedded.npy)、USI数据的（PXD003552_61576_ArchiveSpectrum_spectra_usi.txt）和缺失电荷的谱图数据的title记录文件（PXD003552_61576_ArchiveSpectrum_miss_record.txt）。
-#### ii.	默认使用gpu； 默认在不指定输出文件的路径的情况下，在当前目录生成同名不同拓展名的存储向量的文件；默认存储确实数据的usi数据；默认DLEAMSE模型和500参考谱图文件的默认存放在当前目录下的dleamse_model_references目录下；
-### b)	python encode_and_embed.py -i=PXD003552_61576_ArchiveSpectrum.json --make_faiss_index=True
-#### i.	Make index for spectral library. You can use python script encode_and_embed.py to encode and embed spectra to 32D vectors, and then make the faiss index file for these spectra: 如果想要在编码嵌入之后完成索引的构建，使用设置---make_faiss_index=True: 除了生成1中的所有文本文件之外，还会生成.index的索引文件（PXD003552_61576_ArchiveSpectrum.index）
-#### ii.	同1.a)ii的解释；另外--make_faiss_index参数的默认值为False,如需使用索引构建功能，则需要将该参数设置为True
-##  * **search_vectors_against_index.py**: The commandline script for encoding and embedding spectra, usi is added for each output 32d vector.
-### a)	python search_vectors_against_index.py --index_file=PXD003552_61576_ArchiveSpectrum.index -i=PXD003552_61576_ArchiveSpectrum_embedded.npy -o=./test.h5
-#### i.	Search query 32D spectra vectors against spectra library’s index file. 首先，将待定搜索的谱图使用1进行编码嵌入；其次，将被搜索的谱图库使用2进行索引构建。
-#### ii.	默认使用knn搜索算法，k=5；需要指定库索引文件（--index_file）；待搜索的向量文件（-i， --input_embedded_spectra）;搜索结果文件（-o, --output）
-
-
-1.	encode_and_embed.py
-
-
-
-
+* **encode_and_embed.py**: The commandline script for encoding and embedding spectra, usi is added for each output 32d vector.
+&nbsp;&nbsp;a)	python encode_and_embed.py -i=PXD003552_61576_ArchiveSpectrum.json
+&nbsp;&nbsp;&nbsp;&nbsp; i.	Encode and embed spectra to 32D vectors. Encode and embed the spectra (PXD003552_61576_ArchiveSpectrum.json) to vectors.
+&nbsp;&nbsp;&nbsp;&nbsp; ii.By default, the generated spectra embedding vectors file (PXD003552_61576_ArchiveSpectrum.npy), the file of the spectra USI data (PXD003552_61576_ArchiveSpectrum_spectrum_usi.txt) and record file of the spectra with missing charge (PXD003552_61576_ArchiveSpectrum_miss_record. txt) are stored in current directory.
+&nbsp;&nbsp;&nbsp;&nbsp; iii.By default, GPU is used; the default directory of DLEASME model and 500 reference spectra files is dleamse_model_references which is under current directory.
+&nbsp;&nbsp;b) python encode_and_embed.py -i=PXD003552_61576_ArchiveSpectrum.json --make_faiss_index=True
+&nbsp;&nbsp;&nbsp;&nbsp; i.	Make index for spectral library. Eencode and embed spectra to 32D vectors, then make the faiss index file for these vectors: if you want to build the index after the encoding embedding, use the setting --make_faiss_index=True.
+&nbsp;&nbsp;&nbsp;&nbsp; ii.The same as the explanation in 1.a)ii; in addition, the default value of the --make_faiss_index parameter is False. If you want to use the index building function, you need to set it to True.
+* **search_vectors_against_index.py**
+&nbsp;&nbsp;a)	a)	python search_vectors_against_index.py --index_file=PXD003552_61576_ArchiveSpectrum.index -i=PXD003552_61576_ArchiveSpectrum_embedded.npy -o=./test.h5
+&nbsp;&nbsp;&nbsp;&nbsp; i.	Search query 32D spectra vectors (PXD003552_61576_ArchiveSpectrum_embedded.npy) against spectra library's index file (PXD003552_61576_ArchiveSpectrum.index), and generate a result file (test.h5).
+&nbsp;&nbsp;&nbsp;&nbsp; ii.KNN algorithm is used by default, k = 5; library index file (--index file), vectors file to be searched (-i, --input_embedded_spectra), and search result file (-o, --output) need to be specified
