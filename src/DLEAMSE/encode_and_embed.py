@@ -843,8 +843,7 @@ class Faiss_write_index():
         print("Wrote FAISS index to {}".format(out_filepath))
 
 if __name__ == '__main__':
-    # python encode_and_embed.py --input="./dleamse_model_references/CHPP_LM3_RP10_1.mzML" --output="0211_test_output.txt"
-
+    
     args = _args()
     model = args.embedder.name
     prj = args.prj_id

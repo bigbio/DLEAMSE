@@ -53,13 +53,22 @@ if __name__ == "__main__":
 	embedded_spectra_data = embed_spectra(model, encoded_spectra_data,"embedded_result.csv", use_gpu=False)
 ```
 
-# Scripts
-  * **dleamse_encoder.py**: DLEAMSE's encoder
-  * **dleamse_embedder.py**: DLEAMSE's embedder
-  * **encode_and_embed.py**: The commandline script for encoding and embedding spectra, usi is added for each output 32d vector.
+# Command line Scripts
+
+##  * **encode_and_embed.py**: The commandline script for encoding and embedding spectra, usi is added for each output 32d vector.
+### a)	python encode_and_embed.py -i=PXD003552_61576_ArchiveSpectrum.json
+#### i.	Encode and embed spectra to 32D vectors. 下面的命令将谱图文件PXD003552_61576_ArchiveSpectrum.json编码并嵌入成向量，默认在当前目录下存储生成的谱图嵌入向量数据文件(PXD003552_61576_ArchiveSpectrum_embedded.npy)、USI数据的（PXD003552_61576_ArchiveSpectrum_spectra_usi.txt）和缺失电荷的谱图数据的title记录文件（PXD003552_61576_ArchiveSpectrum_miss_record.txt）。
+#### ii.	默认使用gpu； 默认在不指定输出文件的路径的情况下，在当前目录生成同名不同拓展名的存储向量的文件；默认存储确实数据的usi数据；默认DLEAMSE模型和500参考谱图文件的默认存放在当前目录下的dleamse_model_references目录下；
+### b)	python encode_and_embed.py -i=PXD003552_61576_ArchiveSpectrum.json --make_faiss_index=True
+#### i.	Make index for spectral library. You can use python script encode_and_embed.py to encode and embed spectra to 32D vectors, and then make the faiss index file for these spectra: 如果想要在编码嵌入之后完成索引的构建，使用设置---make_faiss_index=True: 除了生成1中的所有文本文件之外，还会生成.index的索引文件（PXD003552_61576_ArchiveSpectrum.index）
+#### ii.	同1.a)ii的解释；另外--make_faiss_index参数的默认值为False,如需使用索引构建功能，则需要将该参数设置为True
+##  * **search_vectors_against_index.py**: The commandline script for encoding and embedding spectra, usi is added for each output 32d vector.
+### a)	python search_vectors_against_index.py --index_file=PXD003552_61576_ArchiveSpectrum.index -i=PXD003552_61576_ArchiveSpectrum_embedded.npy -o=./test.h5
+#### i.	Search query 32D spectra vectors against spectra library’s index file. 首先，将待定搜索的谱图使用1进行编码嵌入；其次，将被搜索的谱图库使用2进行索引构建。
+#### ii.	默认使用knn搜索算法，k=5；需要指定库索引文件（--index_file）；待搜索的向量文件（-i， --input_embedded_spectra）;搜索结果文件（-o, --output）
 
 
-
+1.	encode_and_embed.py
 
 
 
