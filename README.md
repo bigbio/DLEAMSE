@@ -56,11 +56,12 @@ if __name__ == "__main__":
 # Command Line Scripts
 
 * **encode_and_embed.py**:
-1. Encode and embed spectra to 32D vectors. Encode and embed the spectra (PXD003552_61576_ArchiveSpectrum.json) to vectors. By default, the generated spectra embedding vectors file (PXD003552_61576_ArchiveSpectrum.npy), the file of the spectra USI data (PXD003552_61576_ArchiveSpectrum_spectrum_usi.txt) and record file of the spectra with missing charge (PXD003552_61576_ArchiveSpectrum_miss_record. txt) are stored in current directory.
+1. Encode and embed spectra to 32D vectors. Encode and embed the spectra (PXD003552_61576_ArchiveSpectrum.json) to vectors. By default, the generated spectra embedding vectors file (PXD003552_61576_ArchiveSpectrum.npy), the file of the spectra USI data (PXD003552_61576_ArchiveSpectrum_spectrum_usi.txt) and record file of the spectra with missing charge (PXD003552_61576_ArchiveSpectrum_miss_record. txt) are stored in current directory.<br>
 `python encode_and_embed.py -i=PXD003552_61576_ArchiveSpectrum.json`
 
-2. Make index for spectral library. Eencode and embed spectra to 32D vectors, then make the faiss index file for these vectors: if you want to build the index after the encoding embedding, use the setting --make_faiss_index=True. The same as the explanation in 1.a)ii; in addition, the default value of the --make_faiss_index parameter is False. If you want to use the index building function, you need to set it to True.
+2. Make index for spectral library. Eencode and embed spectra to 32D vectors, then make the faiss index file for these vectors: if you want to build the index after the encoding embedding, use the setting --make_faiss_index=True. The same as the explanation in 1.a)ii; in addition, the default value of the --make_faiss_index parameter is False. If you want to use the index building function, you need to set it to True.<br>
 `python encode_and_embed.py -i=PXD003552_61576_ArchiveSpectrum.json --make_faiss_index=True`
 
-* **search_vectors_against_index.py**: Search query 32D spectra vectors (PXD003552_61576_ArchiveSpectrum_embedded.npy) against spectra library's index file (PXD003552_61576_ArchiveSpectrum.index), and generate a result file (test.h5). KNN algorithm is used by default, k = 5; library index file (--index file), vectors file to be searched (-i, --input_embedded_spectra), and search result file (-o, --output) need to be specified.
+* **search_vectors_against_index.py**:
+Search query 32D spectra vectors (PXD003552_61576_ArchiveSpectrum_embedded.npy) against spectra library's index file (PXD003552_61576_ArchiveSpectrum.index), and generate a result file (test.h5). KNN algorithm is used by default, k = 5; library index file (--index file), vectors file to be searched (-i, --input_embedded_spectra), and search result file (-o, --output) need to be specified.<br>
 `python search_vectors_against_index.py --index_file=PXD003552_61576_ArchiveSpectrum.index -i=PXD003552_61576_ArchiveSpectrum_embedded.npy -o=./test.h5`
