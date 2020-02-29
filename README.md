@@ -25,6 +25,8 @@ In DLEAMSE, Siamese network (Figure 1a) trains two same embedding models (Figure
 
 * numba>=0.45.0
 
+* faiss-gpu=1.5.3 (if you want to use faiss index making and searching function)
+
 # Installation
 DLEAMSE’s encoder and embedder have been packaged and uploaded to pypi library, the package’s name is [dleamse](https://pypi.org/project/dleamse/).
 
