@@ -11,28 +11,25 @@ In DLEAMSE, Siamese network (Figure 1a) trains two same embedding models (Figure
 ![model](https://github.com/qinchunyuan/DLEAMSE/blob/master/src/DLEAMSE/dleamse_modle_references/model.png)
 
 # Testing
-![loss and test](https://github.com/qinchunyuan/DLEAMSE/blob/master/src/DLEAMSE/dleamse_modle_references/loss_and_test.jpg)
+![loss and test](https://github.com/bigbio/DLEAMSE/blob/master/src/DLEAMSE/dleamse_modle_references/loss_and_test.jpg)
 
 # Requirements
 
-* Python3 (or Anaconda3)
-
-* torch-1.0.0 (cpu or gpu version)
-
-* pyteomics>=3.5.1
-
-* numpy>=1.13.3
-
-* numba>=0.45.0
-
-* faiss-gpu=1.5.3 (if you want to use faiss index making and searching function)
+- Python3 (or Anaconda3)
+- torch-1.0.0 (cpu or gpu version)
+- pyteomics>=3.5.1
+- numpy>=1.13.3
+- numba>=0.45.0
+- faiss-gpu=1.5.3 (if you want to use faiss index making and searching function)
 
 # Installation
+
 DLEAMSE’s encoder and embedder have been packaged and uploaded to pypi library, the package’s name is [dleamse](https://pypi.org/project/dleamse/).
 
 `pip3 install dleamse`
 
 # Usage
+
 The model file of DLEAMSE: [080802_20_1000_NM500R_model.pkl](https://github.com/bigbio/DLEAMSE/tree/master/src/DLEAMSE/siamese_modle_reference)
 The 500 reference spectra used in our project: [500_rfs_spectra.mgf](https://github.com/bigbio/DLEAMSE/tree/master/src/DLEAMSE/siamese_modle_reference)
 
