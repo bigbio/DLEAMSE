@@ -11,7 +11,7 @@ In DLEAMSE, Siamese network (Figure 1a) trains two same embedding models (Figure
 ![model](https://github.com/bigbio/DLEAMSE/blob/master/src/DLEAMSE/dleamse_modle_references/model.png)
 
 # Testing
-![loss and test](https://github.com/bigbio/DLEAMSE/blob/master/src/DLEAMSE/dleamse_modle_references/loss_and_test.jpg)
+![loss and test](https://github.com/bigbio/DLEAMSE/blob/master/src/DLEAMSE/dleamse_modle_references/loss_and_test.png)
 
 # Requirements
 
