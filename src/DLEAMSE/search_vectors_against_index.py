@@ -8,6 +8,7 @@ import os
 import faiss
 import numpy as np
 import h5py
+import pandas as pd
 
 H5_MATRIX_NAME = 'MATRIX'
 DEFAULT_IVF_NLIST = 100
@@ -132,7 +133,7 @@ class Faiss_Index_Search():
         else:
             raise Exception('File "{}" does not exists'.format(filepath))
 
-    def search_index(self, index, embedded, k):
+    def knn_search(self, index, embedded, k):
         """
         Simple search. Making this a method so I always remember to square root the results
         :param index:
@@ -144,6 +145,34 @@ class Faiss_Index_Search():
         # search() returns squared L2 norm, so square root the results
         D = D ** 0.5
         return D, I
+
+    def test_faiss_range_search(self, index_path, embedded, usi_data, threshold=0.32):
+        """
+        Range Search can only use in CPU
+        :param index_path:
+        :param embedded:
+        :param usi_data:
+        :return:
+        """
+
+        index = faiss.read_index(index_path)  #cpu
+        index_usi = pd.read_csv(usi_data, header=None).values.tolist()
+        dist = threshold ** 2   #Threshold
+        query_id, limit_num, result_list = [], [], []
+        print(embedded.shape[0])
+        for i in range(embedded.shape[0]):
+            res_index = index.range_search(embedded[[i], :], dist)  # 用第50个向量查询
+            query_id.append(index_usi[i][0])
+            limit_num.append(res_index[0][1])
+            result_dict = {}
+            for j in range(len(res_index[1])):
+                result_dict[index_usi[int(res_index[2][j])][0]] = res_index[1][j]
+            result_list.append(result_dict)
+        result_df = pd.DataFrame({"query_id": query_id, "limit_num": limit_num, "result": result_list},
+                                 columns=["query_id", "limit_num", "result"])
+        result_df.to_csv("./Human_RangeSearch.txt", index=False)
+        # pd.DataFrame(result_df).to_excel("./Human_RangeSearch.xls", index=False)
+    # print(result_df)
 
     def write_search_results(self, D, I, outpath):
         with h5py.File(outpath, 'w') as h5f:
@@ -162,14 +191,51 @@ class Faiss_Index_Search():
         embedded_arrays.append(run_spectra)
         embedded_spectra = np.vstack(embedded_arrays)
         print("  Read a total of {} spectra".format(embedded_spectra.shape[0]))
-        D, I = self.search_index(index, embedded_spectra.astype('float32'), args.k)
+        # D, I = self.search_index(index, embedded_spectra.astype('float32'), args.k)
+        self.search_index_with_threshold(index, embedded_spectra.astype('float32'))
         print("Writing results to {}...".format(args.output.name))
-        self.write_search_results(D, I, args.output.name)
+        # self.write_search_results(D, I, args.output.name)
         print("Wrote output file.")
         args.output.close()
 
-if __name__ == "__main__":
-    args = commanline_args()
+def test_faiss_range_search(index_path, embedded, usi_data):
+    # d = 32
+    # index = faiss.IndexFlatL2(d)
+    # index.add(data)
+    # index = read_faiss_index(index_path)
+    index = faiss.read_index(index_path)
+    index_usi = pd.read_csv(usi_data, header=None).values.tolist()
+    # dist = float(np.linalg.norm(data[3] - data[0])) * 0.99  # 定义一个半径/阈值
+    dist = 0.32**2  # 定义一个半径/阈值
+    query_id, limit_num, result_list = [], [], []
+    print(embedded.shape[0])
+    for i in range(embedded.shape[0]):
+        print(i)
+        res_index = index.range_search(embedded[[i], :], dist)  # 用第50个向量查询
+        query_id.append(index_usi[i][0])
+        limit_num.append(res_index[0][1])
+        result_dict = {}
+        for j in range(len(res_index[1])):
+            result_dict[index_usi[int(res_index[2][j])][0]] = res_index[1][j]
+        result_list.append(result_dict)
+    result_df = pd.DataFrame({"query_id": query_id, "limit_num":limit_num, "result":result_list}, columns=["query_id", "limit_num", "result"])
+    result_df.to_csv("./Human_RangeSearch.txt", index=False)
+    # pd.DataFrame(result_df).to_excel("./Human_RangeSearch.xls", index=False)
+    # print(result_df)
 
-    index_searcher = Faiss_Index_Search()
-    index_searcher.execute_faiss_index_search(args)
+if __name__ == "__main__":
+    # args = commanline_args()
+
+    # index_searcher = Faiss_Index_Search()
+    # index_searcher.execute_faiss_index_search(args)
+
+    # index = "./PXD003552_61576_ArchiveSpectrum.index"
+    # data = np.load("./PXD003552_61576_ArchiveSpectrum_embedded.npy")
+    # data = data.astype('float32')
+    # usi_data = './PXD003552_61576_ArchiveSpectrum_spectra_usi.txt'
+
+    index = "./Human.index"
+    data = np.load("./Human_embedded.npy")
+    data = data.astype('float32')
+    usi_data = './Human_spectra_title.txt'
+    test_faiss_range_search(index, data, usi_data)

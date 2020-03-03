@@ -82,7 +82,7 @@ class EncodeDataset:
                     scan = k
                     k += 1
                     spectra_file_name = str(input_spctra_file).split("/")[-1]
-                    usi = "mzspec:" + str(prj) + ":" + spectra_file_name + ":scan" + str(scan)
+                    usi = "mzspec:" + str(prj) + ":" + spectra_file_name + ":index:" + str(scan)
                     self.usi_list.append(usi)
                     self.spectra_title.append(s1.get('params').get('title'))
                     charge1 = int(s1.get('params').get('charge').__str__()[0])
@@ -118,11 +118,14 @@ class EncodeDataset:
                     charge_none_record += 1
                     spectrum_id = s1.get('params').get('title')
                     charge_none_list.append(spectrum_id)
+                    k += 1
                     continue
                 else:
-                    scan = s1.get('params').get('title').split(";")[-1].split("=")[-1]
+                    # scan = s1.get('params').get('title').split(";")[-1].split("=")[-1]
                     spectra_file_name = str(input_spctra_file).split("/")[-1]
-                    usi = "mzspec:"+ str(prj) + ":" + spectra_file_name + ":scan" + str(scan)
+                    scan = k
+                    k += 1
+                    usi = "mzspec:"+ str(prj) + ":" + spectra_file_name + ":index:" + str(scan)
                     self.usi_list.append(usi)
                     self.spectra_title.append(s1.get('params').get('title'))
                     charge1 = int(s1.get('params').get('charge').__str__()[0])
@@ -216,7 +219,7 @@ class EncodeDataset:
                 else:
                     scan = s1.get("spectrum title").split(",")[-1].split(":")[-1].strip("\"").split("=")[-1]
                     spectra_file_name = str(input_spctra_file).split("/")[-1]
-                    usi = "mzspec:" + str(prj) + ":" + spectra_file_name + ":scan" + str(scan)
+                    usi = "mzspec:" + str(prj) + ":" + spectra_file_name + ":scan:" + str(scan)
                     # usi = str(prj) + ":" + str(input_spctra_file) + ":" + str(scan)
 
                     self.usi_list.append(usi)
@@ -745,10 +748,10 @@ def encode_and_embed_spectra(model, prj, input, refrence_spectra, miss_record, o
         usi_array = np.array(usi_list)
         embedded_spectra_array = np.array(embedded_spectra)
 
-        usi_save_file = output_embedd_file.strip("_embedded.npy") + "_spectra_usi.txt"
+        usi_save_file = output_embedd_file.strip("embedded.npy") + "spectra_usi.txt"
         pd.DataFrame(usi_array).to_csv(usi_save_file, header=None, index=None)
 
-        spectra_title_save_file = output_embedd_file.strip("_embedded.npy") + "_spectra_title.txt"
+        spectra_title_save_file = output_embedd_file.strip("embedded.npy") + "spectra_title.txt"
         pd.DataFrame(usi_array).to_csv(spectra_title_save_file, header=None, index=None)
 
         np.save(output_embedd_file, embedded_spectra_array)
@@ -764,7 +767,7 @@ def encode_and_embed_spectra(model, prj, input, refrence_spectra, miss_record, o
         # usi_df = pd.DataFrame(usi_array)
         # embedded_spectra_df = pd.DataFrame(embedded_spectra_array)
 
-        spectra_title_save_file = output_embedd_file.strip("_embedded.npy") + "_spectra_usi.txt"
+        spectra_title_save_file = output_embedd_file.strip("embedded.npy") + "spectra_usi.txt"
         pd.DataFrame(usi_array).to_csv(spectra_title_save_file, header=None, index=None)
         np.save(output_embedd_file, embedded_spectra_array)
 
@@ -787,7 +790,7 @@ def encode_and_embed_spectra(model, prj, input, refrence_spectra, miss_record, o
         # final_embedded_result = pd.concat([usi_df, embedded_spectra_df], axis=1)
         # pd.DataFrame(final_embedded_result).to_csv(output_embedd_file, header=None, index=None)
 
-        spectra_title_save_file = output_embedd_file.strip("_embedded.npy") + "_spectra_usi.txt"
+        spectra_title_save_file = output_embedd_file.strip("embedded.npy") + "spectra_usi.txt"
         pd.DataFrame(usi_array).to_csv(spectra_title_save_file, header=None, index=None)
         np.save(output_embedd_file, embedded_spectra_array)
         return embedded_spectra_array
