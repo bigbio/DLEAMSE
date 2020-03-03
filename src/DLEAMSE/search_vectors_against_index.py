@@ -25,6 +25,7 @@ def commanline_args():
     parser.add_argument('--index_file', type=argparse.FileType('r'), required=True, help='input index file')
     parser.add_argument('-i', '--input_embedded_spectra', type=argparse.FileType('r'), required=True, help='input embedded spectra file(s)')
     parser.add_argument('--k', type=int, help='k for kNN', default=5)
+    parser.add_argument('-t','--threshold', type=float, help='Threshold for similarity searching', default=0.32)
     parser.add_argument('-o', '--output', type=argparse.FileType('w'), required=True,  help='output file (should have extension .h5)')
     return parser.parse_args()
 
@@ -146,7 +147,7 @@ class Faiss_Index_Search():
         D = D ** 0.5
         return D, I
 
-    def test_faiss_range_search(self, index_path, embedded, usi_data, threshold=0.32):
+    def range_search(self, index_path, embedded, usi_data, threshold=0.32):
         """
         Range Search can only use in CPU
         :param index_path:
