@@ -73,3 +73,7 @@ In this example, the input spectra file is *PXD003552_61576_ArchiveSpectrum.json
 * **Search query 32D spectra vectors against spectra library's index file**:<br>
 Search query 32D spectra vectors (*PXD003552_61576_ArchiveSpectrum_embedded.npy*) against spectra library's index file (*PXD003552_61576_ArchiveSpectrum.index*), and generate a result file (*test.h5*). KNN algorithm is used by default, k = 5; library index file (--index file), vectors file to be searched (-i, --input_embedded_spectra), and search result file (-o, --output) need to be specified.<br>
 `python search_vectors_against_index.py --index_file=PXD003552_61576_ArchiveSpectrum.index -i=PXD003552_61576_ArchiveSpectrum_embedded.npy -o=test.h5`
+
+* **Range Search query 32D spectra vectors against spectra library's index file, Default threshold is 0.1.**:<br>
+Range Search query 32D spectra vectors (*PXD003552_61576_ArchiveSpectrum_embedded.npy*) against spectra library's index file (*PXD003552_61576_ArchiveSpectrum.index*), and generate a result file (*test.csv*). Library index file (--index_file), USI file of spectral library(--index_usi_file),vectors file to be searched (-i, --input_embedded_spectra), and search result file (-o, --output) need to be specified.<br>
+`python search_vectors_against_index.py --index_file=PXD003552_61576_ArchiveSpectrum.index --index_usi_file=PXD003552_61576_ArchiveSpectrum_spectra_usi.txt -i=PXD003552_61576_ArchiveSpectrum_embedded.npy -o=test.csv`
