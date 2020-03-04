@@ -167,7 +167,8 @@ class Faiss_Index_Search():
         print(embedded.shape[0])
         for i in range(embedded.shape[0]):
             res_index = index.range_search(embedded[[i], :], dist)  # 用第50个向量查询
-            query_id.append(index_usi[i][0])
+            # query_id.append(index_usi[i][0])
+            query_id.append(i)
             limit_num.append(res_index[0][1])
             result_dict = {}
             for j in range(len(res_index[1])):
