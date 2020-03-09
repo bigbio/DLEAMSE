@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 """
-Encode and emberder spectra.
+Encode and embeder spectra.
 """
 
 import argparse
@@ -11,6 +11,7 @@ import numpy as np
 import faiss
 
 DEFAULT_IVF_NLIST = 100
+
 
 def _args():
     """
@@ -22,11 +23,13 @@ def _args():
     # declare args
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-i', '--input', type=argparse.FileType('r'), required=True, help='input spectra vectors file')
-    parser.add_argument('-o', '--output', type=str, help='output vectors file, its default path is the same as input file.', default="True")
+    parser.add_argument('-o', '--output', type=str,
+                        help='output vectors file, its default path is the same as input file.', default="True")
 
     return parser.parse_args()
 
-class Faiss_write_index():
+
+class FaissWriteIndex:
 
     def __init__(self, vectors_data, output_path):
         self.tmp = None
@@ -76,7 +79,8 @@ class Faiss_write_index():
     def write_faiss_index(self, index, out_filepath):
         """
         Save a FAISS index. If we're on GPU, have to convert to CPU index first
-        :param index:
+        :param out_filepath: output file
+        :param index: index file
         :return:
         """
         if faiss.get_num_gpus():
@@ -84,6 +88,7 @@ class Faiss_write_index():
             index = faiss.index_gpu_to_cpu(index)
         faiss.write_index(index, out_filepath)
         print("Wrote FAISS index to {}".format(out_filepath))
+
 
 if __name__ == '__main__':
     args = _args()
@@ -94,6 +99,5 @@ if __name__ == '__main__':
         dirname, filename = os.path.split(os.path.abspath(input_file))
         output_file = dirname + "/" + filename.strip(".npy") + ".index"
 
-    index_maker = Faiss_write_index(input_file, output_file)
+    index_maker = FaissWriteIndex(input_file, output_file)
     index_maker.create_index()
-

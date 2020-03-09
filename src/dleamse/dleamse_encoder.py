@@ -26,12 +26,12 @@ class EncodeDataset:
     def transform_mgf(self, input_spctra_file, ref_spectra, miss_save_name):
         self.spectra_dataset = None
         print('Start spectra encoding ...')
-        # 五百个参考的谱图
+        # 500 reference spectra
         reference_spectra = mgf_read(ref_spectra, convert_arrays=1)
         reference_intensity = np.array(
             [bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
 
-        # 先将500个参考谱图的点积结果计算出来
+        # First calculate the dot product results of 500 reference spectra
         ndp_r_spec_list = caculate_r_spec(reference_intensity)
 
         peakslist1, precursor_feature_list1 = [], []
@@ -66,7 +66,7 @@ class EncodeDataset:
             tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
             intensList01 = np.array(peakslist1)
 
-            # 归一化点积的计算
+            # Calculation of normalized dot product
             tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list, np.array(peakslist1),
                                                      np.array(ndp_spec_list))
             tmp01 = concatenate((tmp_dplist01, intensList01), axis=1)
@@ -103,7 +103,7 @@ class EncodeDataset:
                     tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
                     intensList01 = np.array(peakslist1)
 
-                    # 归一化点积的计算
+                    # Calculation of normalized dot product
                     tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list, np.array(peakslist1),
                                                              np.array(ndp_spec_list))
 
@@ -124,7 +124,7 @@ class EncodeDataset:
                         tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
                         intensList01 = np.array(peakslist1)
 
-                        # 归一化点积的计算
+                        # Calculation of normalized dot product
                         tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list,
                                                                  np.array(peakslist1), np.array(ndp_spec_list))
 
@@ -151,12 +151,12 @@ class EncodeDataset:
     def transform_mzml(self, input_spctra_file, ref_spectra, miss_save_name):
         self.spectra_dataset = None
         print('Start spectra encoding ...')
-        # 五百个参考的谱图
+        # 500 reference spectra
         reference_spectra = mgf_read(ref_spectra, convert_arrays=1)
         reference_intensity = np.array(
             [bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
 
-        # 先将500个参考谱图的点积结果计算出来
+        # First calculate the dot product results of 500 reference spectra
         ndp_r_spec_list = caculate_r_spec(reference_intensity)
 
         peakslist1, precursor_feature_list1 = [], []
@@ -196,7 +196,7 @@ class EncodeDataset:
             tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
             intensList01 = np.array(peakslist1)
 
-            # 归一化点积的计算
+            # Calculation of normalized dot product
             tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list, np.array(peakslist1),
                                                      np.array(ndp_spec_list))
             tmp01 = concatenate((tmp_dplist01, intensList01), axis=1)
@@ -238,8 +238,9 @@ class EncodeDataset:
                     tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
                     intensList01 = np.array(peakslist1)
 
-                    # 归一化点积的计算
-                    tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list, np.array(peakslist1),
+                    # Calculation of normalized dot product
+                    tmp_dplist01 = caculate_nornalization_dp(reference_intensity,
+                                                             ndp_r_spec_list, np.array(peakslist1),
                                                              np.array(ndp_spec_list))
 
                     tmp01 = concatenate((tmp_dplist01, intensList01), axis=1)
@@ -259,7 +260,7 @@ class EncodeDataset:
                         tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
                         intensList01 = np.array(peakslist1)
 
-                        # 归一化点积的计算
+                        # Calculation of normalized dot product
                         tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list,
                                                                  np.array(peakslist1), np.array(ndp_spec_list))
 
@@ -307,7 +308,8 @@ class EncodeDataset:
         """
         maximum_charge = 7
         charge = np.zeros(maximum_charge, dtype=float)
-        if c > maximum_charge: c = maximum_charge
+        if c > maximum_charge:
+            c = maximum_charge
         charge[c - 1] = c
         return charge
 

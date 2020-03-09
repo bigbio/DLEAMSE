@@ -13,6 +13,7 @@ import pandas as pd
 H5_MATRIX_NAME = 'MATRIX'
 DEFAULT_IVF_NLIST = 100
 
+
 def commanline_args():
     """
     Declare all arguments, parse them, and return the args dict.
@@ -23,14 +24,17 @@ def commanline_args():
     # declare args
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--index_file', type=argparse.FileType('r'), required=True, help='input index file')
-    parser.add_argument('--index_usi_file', type=argparse.FileType('r'), required=True, help='input index usi file without header')
-    parser.add_argument('-i', '--input_embedded_spectra', type=argparse.FileType('r'), required=True, help='input embedded spectra file(s)')
+    parser.add_argument('--index_usi_file', type=argparse.FileType('r'), required=True,
+                        help='input index usi file without header')
+    parser.add_argument('-i', '--input_embedded_spectra', type=argparse.FileType('r'), required=True,
+                        help='input embedded spectra file(s)')
     # parser.add_argument('--k', type=int, help='k for kNN', default=5)
     parser.add_argument('-t', '--threshold', type=float, help='Threshold for similarity searching.', default=0.1)
-    parser.add_argument('-o', '--output', type=argparse.FileType('w'), required=True,  help='output file, .csv)')
+    parser.add_argument('-o', '--output', type=argparse.FileType('w'), required=True, help='output file, .csv)')
     return parser.parse_args()
 
-class Faiss_write_index():
+
+class FaissWriteIndex:
 
     def __init__(self, vectors_data, output_path):
         self.tmp = None
@@ -84,6 +88,7 @@ class Faiss_write_index():
         faiss.write_index(index, out_filepath)
         print("Wrote FAISS index to {}".format(out_filepath))
 
+
 class Faiss_Index_Search():
     def __init__(self):
         print("Start Faiss Index Simialrity Searching ...")
@@ -104,6 +109,7 @@ class Faiss_Index_Search():
     def load_embedded_spectra_vector(self, filepath: str) -> np.array:
         """
         load embedded vectors from input file
+        :param filepath: file path to write the file
         :param path: the input file type is .txt or the h5 with vectors in it
         :return:
         """
@@ -151,17 +157,18 @@ class Faiss_Index_Search():
     def range_search(self, index_path, embedded, usi_data, threshold=0.1, outpath="faiss_range_search_result.csv"):
         """
         Range Search can only use in CPU
-        :param output_path:
-        :param index_path:
-        :param embedded:
-        :param usi_data:
+        :param threshold: similarity thershold
+        :param output_path: output file
+        :param index_path: index path
+        :param embedded: embeded file
+        :param usi_data: usi file
         :return:
         """
         print("loading index file...")
-        index = faiss.read_index(index_path)  #cpu
+        index = faiss.read_index(index_path)  # cpu
         print("loading index usi file...")
         index_usi = pd.read_csv(usi_data, header=None).values.tolist()
-        dist = threshold   #Threshold
+        dist = threshold  # Threshold
         # dist = 0.32 ** 2   #Threshold
         query_id, limit_num, result_list = [], [], []
         print(embedded.shape[0])
@@ -186,7 +193,6 @@ class Faiss_Index_Search():
 
     def execute_knn_search(self, args):
 
-
         index = self.read_faiss_index(args.index_file.name)
 
         print("loading embedded spectra vector...")
@@ -210,10 +216,12 @@ class Faiss_Index_Search():
         embedded_spectra = np.vstack(embedded_arrays)
         print("  Read a total of {} spectra".format(embedded_spectra.shape[0]))
 
-        self.range_search(args.index_file.name, embedded_spectra.astype('float32'), args.index_usi_file.name, args.threshold, args.output.name)
+        self.range_search(args.index_file.name, embedded_spectra.astype('float32'), args.index_usi_file.name,
+                          args.threshold, args.output.name)
         print("Writing results to {}...".format(args.output.name))
         print("Wrote output file.")
         args.output.close()
+
 
 if __name__ == "__main__":
     args = commanline_args()
