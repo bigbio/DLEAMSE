@@ -26,25 +26,6 @@ import faiss
 
 DEFAULT_IVF_NLIST = 100
 
-def _args():
-    """
-    Declare all arguments, parse them, and return the args dict.
-    Does no validation beyond the implicit validation done by argparse.
-    return: a dict mapping arg names to values
-    """
-
-    # declare args
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--embedder', type=argparse.FileType('r'), help='Input embedder model file', default="./dleamse_model_references/080802_20_1000_NM500R_model.pkl")
-    parser.add_argument('--prj_id', type=str, help='Project ID', default='Project_ID')
-    parser.add_argument('-i', '--input', type=argparse.FileType('r'), required=True, help='input mgf file')
-    parser.add_argument('--ref_spectra', type=argparse.FileType('r'), help='input 500 reference spectra file', default="./dleamse_model_references/0722_500_rf_spectra.mgf")
-    parser.add_argument('-o', '--output', type=str, help='output vectors file, its default path is the same as input file.', default="True")
-    parser.add_argument('--miss_record', type=str, help='Bool,record charge missed spectra', default="True")
-    parser.add_argument('--use_gpu', type=str, help='Bool, use gpu or not', default="True")
-    parser.add_argument('--make_faiss_index', type=str, help='Bool, use gpu or not', default="False")
-    return parser.parse_args()
-
 class EncodeDataset:
 
     def __init__(self, input_specta_num):
@@ -87,7 +68,6 @@ class EncodeDataset:
                     self.spectra_title.append(s1.get('params').get('title'))
                     charge1 = int(s1.get('params').get('charge').__str__()[0])
 
-
                 bin_s1 = bin_spectrum(s1.get('m/z array'), s1.get('intensity array'))
                 # ndp_spec1 = np.math.sqrt(np.dot(bin_s1, bin_s1))
                 ndp_spec1 = caculate_spec(bin_s1)
@@ -125,7 +105,7 @@ class EncodeDataset:
                     spectra_file_name = str(input_spctra_file).split("/")[-1]
                     scan = k
                     k += 1
-                    usi = "mzspec:"+ str(prj) + ":" + spectra_file_name + ":index:" + str(scan)
+                    usi = "mzspec:" + str(prj) + ":" + spectra_file_name + ":index:" + str(scan)
                     self.usi_list.append(usi)
                     self.spectra_title.append(s1.get('params').get('title'))
                     charge1 = int(s1.get('params').get('charge').__str__()[0])
@@ -438,7 +418,7 @@ class EncodeDataset:
                         tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
                         intensList01 = np.array(peakslist1)
 
-                        # 归一化点积的计算
+                        # Calculation of normalized dot product
                         tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list,
                                                                  np.array(peakslist1), np.array(ndp_spec_list))
 
@@ -487,14 +467,17 @@ class EncodeDataset:
         """
         maximum_charge = 7
         charge = np.zeros(maximum_charge, dtype=float)
-        if c > maximum_charge: c = maximum_charge
+        if c > maximum_charge:
+            c = maximum_charge
         charge[c - 1] = c
         return charge
+
 
 @njit
 def caculate_spec(bin_spec):
     ndp_spec1 = np.math.sqrt(np.dot(bin_spec, bin_spec))
     return ndp_spec1
+
 
 @njit
 def caculate_r_spec(reference_intensity):
@@ -504,10 +487,12 @@ def caculate_r_spec(reference_intensity):
         ndp_r_spec_list[x] = ndp_r_spec
     return ndp_r_spec_list
 
+
 @njit
 def get_bin_index(mz, min_mz, bin_size):
     relative_mz = mz - min_mz
     return max(0, int(np.floor(relative_mz / bin_size)))
+
 
 @njit
 def bin_spectrum(mz_array, intensity_array, max_mz=2500, min_mz=50.5, bin_size=1.0005079):
@@ -551,6 +536,7 @@ def bin_spectrum(mz_array, intensity_array, max_mz=2500, min_mz=50.5, bin_size=1
     else:
         print('zero intensity found')
     return results
+
 
 @njit
 def caculate_nornalization_dp(reference, ndp_r_spec_list, bin_spectra, ndp_bin_sp):
@@ -627,6 +613,7 @@ class SiameseNetwork2(nn.Module):
 
         return output01, output02
 
+
 class LoadDataset(data.dataset.Dataset):
     def __init__(self, data):
         self.dataset = data
@@ -636,6 +623,7 @@ class LoadDataset(data.dataset.Dataset):
 
     def __len__(self):
         return self.dataset.shape[0]
+
 
 class EmbedDataset:
     def __init__(self, model, vstack_encoded_spectra, use_gpu):
@@ -694,6 +682,7 @@ class EmbedDataset:
 
 def encode_spectra(prj, input, reference_spectra, miss_record):
     """
+    :param prj: ProteomeXchange project/dataset accession
     :param input: get .mgf file as input
     :param reference_spectra: get a .mgf file contained 500 spectra as reference spectra from normalized dot product calculation
     :param miss_record: record title of some spectra which loss charge attribute
@@ -710,13 +699,14 @@ def encode_spectra(prj, input, reference_spectra, miss_record):
         spectra_num = more_itertools.ilen(mzml_read(input))
         mzml_encoder = EncodeDataset(spectra_num)
         usi_list, vstack_data = mzml_encoder.transform_mzml(prj, input, reference_spectra, miss_record)
-    # np.savetxt(output, vstack_data)
+        # np.savetxt(output, vstack_data)
         return usi_list, vstack_data
     else:
         spectra_num = len(input)
         json_encoder = EncodeDataset(spectra_num)
         usi_list, vstack_data = json_encoder.transform_json(input, reference_spectra, miss_record)
         return usi_list, vstack_data
+
 
 def embed_spectra(model, vstack_encoded_spectra, use_gpu: bool):
     """
@@ -730,6 +720,7 @@ def embed_spectra(model, vstack_encoded_spectra, use_gpu: bool):
     embedded_spectra = EmbedDataset(model, vstack_encoded_spectra, use_gpu).get_data()
     print("Finish spectra embedding!")
     return embedded_spectra
+
 
 def encode_and_embed_spectra(model, prj, input, refrence_spectra, miss_record, output_embedd_file, use_gpu: bool):
     """
@@ -756,7 +747,6 @@ def encode_and_embed_spectra(model, prj, input, refrence_spectra, miss_record, o
 
         np.save(output_embedd_file, embedded_spectra_array)
         return embedded_spectra_array
-
 
     elif str(input).endswith(".mzML"):
         usi_list, vstack_encoded_spectra = encode_spectra(prj, input, refrence_spectra, miss_record)
@@ -795,7 +785,8 @@ def encode_and_embed_spectra(model, prj, input, refrence_spectra, miss_record, o
         np.save(output_embedd_file, embedded_spectra_array)
         return embedded_spectra_array
 
-class Faiss_write_index():
+
+class FaissWriteIndex:
 
     def __init__(self, vectors_data, output_path):
         self.tmp = None
@@ -848,66 +839,3 @@ class Faiss_write_index():
             index = faiss.index_gpu_to_cpu(index)
         faiss.write_index(index, out_filepath)
         print("Wrote FAISS index to {}".format(out_filepath))
-
-if __name__ == '__main__':
-    
-    args = _args()
-    model = args.embedder.name
-    prj = args.prj_id
-    input_file = args.input.name
-    ref_spectra = args.ref_spectra.name
-    miss_record = args.miss_record
-
-    dirname, filename = os.path.split(os.path.abspath(input_file))
-
-    output = args.output
-    output_file, miss_record_file, index_file = None,  None, None
-    if output:
-        dirname, filename = os.path.split(os.path.abspath(input_file))
-        if filename.endswith(".mgf"):
-            output_file = dirname + "/" + filename.strip(".mgf") + "_embedded.npy"
-        elif filename.endswith(".mzML"):
-            output_file = dirname + "/" + filename.strip(".mzML") + "_embedded.npy"
-        else:
-            output_file = dirname + "/" + filename.strip(".json") + "_embedded.npy"
-
-        if miss_record:
-            if filename.endswith(".mgf"):
-                miss_record_file = dirname + "/" + filename.strip(".mgf") + "_miss_record.txt"
-            elif filename.endswith(".mzML"):
-                miss_record_file = dirname + "/" + filename.strip(".mzML") + "_miss_record.txt"
-            else:
-                miss_record_file = dirname + "/" + filename.strip(".json") + "_miss_record.txt"
-
-        if args.make_faiss_index:
-            if filename.endswith(".mgf"):
-                index_file = dirname + "/" + filename.strip(".mgf") + ".index"
-            elif filename.endswith(".mzML"):
-                index_file = dirname + "/" + filename.strip(".mzML") + ".indx"
-            else:
-                index_file = dirname + "/" + filename.strip(".json") + ".index"
-
-    else:
-        output_file = output
-        dirname, filename = os.path.split(os.path.abspath(output))
-        if miss_record:
-            if filename.endswith(".mgf"):
-                miss_record_file = dirname + "/" + filename.strip(".mgf") + "_miss_record.txt"
-            elif filename.endswith(".mzML"):
-                miss_record_file = dirname + "/" + filename.strip(".mzML") + "_miss_record.txt"
-            else:
-                miss_record_file = dirname + "/" + filename.strip(".json") + "_miss_record.txt"
-
-        if args.make_faiss_index:
-            if filename.endswith(".mgf"):
-                index_file = dirname + "/" + filename.strip(".mgf") + ".index"
-            elif filename.endswith(".mzML"):
-                index_file = dirname + "/" + filename.strip(".mzML") + ".indx"
-            else:
-                index_file = dirname + "/" + filename.strip(".json") + ".index"
-
-    use_gpu = args.use_gpu
-    embedded_spectra = encode_and_embed_spectra(model, prj, input_file, ref_spectra, miss_record_file, output_file, use_gpu)
-
-    if args.make_faiss_index:
-        index_maker = Faiss_write_index(embedded_spectra, index_file)
