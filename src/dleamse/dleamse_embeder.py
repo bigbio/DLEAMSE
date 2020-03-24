@@ -12,6 +12,7 @@ from torch.utils import data
 import torch.nn.functional as func
 import torch.nn as nn
 import numpy as np
+import pandas as pd
 
 
 class SiameseNetwork2(nn.Module):
@@ -92,14 +93,15 @@ class LoadDataset(data.dataset.Dataset):
 
 
 class EmbedDataset:
-    def __init__(self, model, vstack_encoded_spectra, use_gpu):
+    def __init__(self, model, ids_data, vstack_encoded_spectra, store_embed_file, use_gpu):
+        self.ids_vstack_df = None
         self.out_list = []
-        self.embedding_dataset(model, vstack_encoded_spectra, use_gpu)
+        self.embedding_dataset(model, ids_data, vstack_encoded_spectra, store_embed_file, use_gpu)
 
     def get_data(self):
-        return self.out_list
+        return self.ids_vstack_df
 
-    def embedding_dataset(self, model, vstack_encoded_spectra, use_gpu):
+    def embedding_dataset(self, model, ids_data, encoded_spectra_data, store_embed_file, use_gpu):
 
         if use_gpu is True:
             # for gpu
@@ -110,12 +112,8 @@ class EmbedDataset:
             batch = 1
             net = torch.load(model, map_location='cpu')
 
-        if type(vstack_encoded_spectra) == np.ndarray:
-            vstack_data = vstack_encoded_spectra
-        else:
-            vstack_data = np.loadtxt(vstack_encoded_spectra)
 
-        dataset = LoadDataset(vstack_data)
+        dataset = LoadDataset(encoded_spectra_data)
 
         dataloader = data.DataLoader(dataset=dataset, batch_size=batch, shuffle=False, num_workers=1)
 
@@ -143,27 +141,29 @@ class EmbedDataset:
             else:
                 self.out_list = np.vstack((self.out_list, out1))
 
-        # np.savetxt(store_embed_file, self.out_list)
+        vstack_data_df = pd.DataFrame({"embedded_spectra": self.out_list.tolist()})
+        self.ids_vstack_df = pd.concat([ids_data, vstack_data_df], axis=1)
+        self.ids_vstack_df.to_csv(store_embed_file, header=True, index=None, columns=["ids", "embedded_spectra"])
 
 
-def embed_spectra(model, vstack_encoded_spectra, output_embedd_file, use_gpu=False):
+def embed_spectra(model, ids_usi_data, vstack_encoded_spectra, output_embedd_file, **kwargs):
     """
-    :param model: .pkl format embedding model
+    Embed spectra
+    :param model:  .pkl format embedding model
+    :param ids_usi_data: ids-usi dataframe data
     :param vstack_encoded_spectra: encoded spectra file for embedding
-    :param output_embedd_file: file to store the embedded data
-    :param use_gpu: bool
-    :return: embedded spectra 32d vector
+    :param kwargs: bool, default=False;
+    :return: ids-embedded_spectra data
     """
-    embedded_spectra = EmbedDataset(model, vstack_encoded_spectra, output_embedd_file, use_gpu).get_data()
-    print("Finish spectra embedding!")
-    return embedded_spectra
 
-# if __name__ == "__main__":
-#     model = "D:/Learn_Python/Spectra_Similarity_Prediction_Model/src/SpectraPairsData/080802_20_1000_NM500R_model.pkl"
-#
-#     # encode_data = encode_spectra("D:/Learn_Python/Spectra_Similarity_Prediction_Model/src/SpectraPairsData/0722_500_rf_spectra.mgf", "D:/Learn_Python/Spectra_Similarity_Prediction_Model/src/SpectraPairsData/0722_500_rf_spectra.mgf","./test_crecord.txt", "./test_result.txt")
-#     print("!!!!!")
-#     # embedded = embed_spectra(model, data, "./test.csv", use_gpu=False)
-#     embedded = embed_spectra(model, "./test_result.txt", "./test.csv", use_gpu=False)
-#
-#     print(embedded)
+    if kwargs.keys().__contains__("use_gpu"):
+        use_gpu = kwargs["use_gpu"]
+    else:
+        use_gpu = False
+
+    ids_data = ids_usi_data["ids"]
+
+    ids_embedded_spectra = EmbedDataset(model, ids_data, vstack_encoded_spectra, output_embedd_file, use_gpu).get_data()
+
+    print("Finish spectra embedding, save embedded spectra to " + output_embedd_file + "!")
+    return ids_embedded_spectra

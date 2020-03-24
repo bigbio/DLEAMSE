@@ -4,7 +4,6 @@
 Encode and emberder spectra.
 """
 
-import argparse
 import os
 
 import more_itertools
@@ -26,7 +25,6 @@ import torch.nn as nn
 import faiss
 import zlib
 import ast
-import sys
 
 DEFAULT_IVF_NLIST = 100
 
