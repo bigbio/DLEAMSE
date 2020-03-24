@@ -34,61 +34,6 @@ def commanline_args():
     return parser.parse_args()
 
 
-class FaissWriteIndex:
-
-    def __init__(self, vectors_data, output_path):
-        self.tmp = None
-        self.spectra_vectors = vectors_data
-        self.create_index(vectors_data, output_path)
-
-    def create_index(self, spectra_vectors, output_path):
-        n_embedded_dim = spectra_vectors.shape[1]
-        index = self.make_faiss_index(n_embedded_dim)
-        index.add(self.spectra_vectors.astype('float32'))
-        self.write_faiss_index(index, output_path)
-
-    def make_faiss_index(self, n_dimensions, index_type='flat'):
-        """
-        Make a fairly general-purpose FAISS index
-        :param n_dimensions:
-        :param index_type: Type of index to build: flat or ivfflat. ivfflat is much faster.
-        :return:
-        """
-        print("Making index of type {}".format(index_type))
-        if faiss.get_num_gpus():
-            gpu_resources = faiss.StandardGpuResources()
-            if index_type == 'flat':
-                config = faiss.GpuIndexFlatConfig()
-                index = faiss.GpuIndexFlatL2(gpu_resources, n_dimensions, config)
-            elif index_type == 'ivfflat':
-                config = faiss.GpuIndexIVFFlatConfig()
-                index = faiss.GpuIndexIVFFlat(gpu_resources, n_dimensions, DEFAULT_IVF_NLIST, faiss.METRIC_L2, config)
-            else:
-                raise ValueError("Unknown index_type %s" % index_type)
-        else:
-            print("Using CPU.")
-            if index_type == 'flat':
-                index = faiss.IndexFlatL2(n_dimensions)
-            elif index_type == 'ivfflat':
-                quantizer = faiss.IndexFlatL2(n_dimensions)
-                index = faiss.IndexIVFFlat(quantizer, n_dimensions, DEFAULT_IVF_NLIST, faiss.METRIC_L2)
-            else:
-                raise ValueError("Unknown index_type %s" % index_type)
-        return index
-
-    def write_faiss_index(self, index, out_filepath):
-        """
-        Save a FAISS index. If we're on GPU, have to convert to CPU index first
-        :param index:
-        :return:
-        """
-        if faiss.get_num_gpus():
-            print("Converting index from GPU to CPU...")
-            index = faiss.index_gpu_to_cpu(index)
-        faiss.write_index(index, out_filepath)
-        print("Wrote FAISS index to {}".format(out_filepath))
-
-
 class Faiss_Index_Search():
     def __init__(self):
         print("Start Faiss Index Simialrity Searching ...")

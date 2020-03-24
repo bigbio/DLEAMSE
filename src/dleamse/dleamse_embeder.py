@@ -1,5 +1,4 @@
 # -*- coding:utf-8 -*-
-# @Author : Chunyuan Qin
 
 """
 Embed spectra.

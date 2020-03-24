@@ -24,6 +24,8 @@ import torch.nn as nn
 
 import faiss
 
+import zlib
+
 DEFAULT_IVF_NLIST = 100
 
 class EncodeDataset:
@@ -64,6 +66,7 @@ class EncodeDataset:
                     k += 1
                     spectra_file_name = str(input_spctra_file).split("/")[-1]
                     usi = "mzspec:" + str(prj) + ":" + spectra_file_name + ":index:" + str(scan)
+                    usi = zlib.crc32(usi.encode('utf8'))
                     self.usi_list.append(usi)
                     self.spectra_title.append(s1.get('params').get('title'))
                     charge1 = int(s1.get('params').get('charge').__str__()[0])
@@ -106,6 +109,7 @@ class EncodeDataset:
                     scan = k
                     k += 1
                     usi = "mzspec:" + str(prj) + ":" + spectra_file_name + ":index:" + str(scan)
+                    usi = zlib.crc32(usi.encode('utf8'))
                     self.usi_list.append(usi)
                     self.spectra_title.append(s1.get('params').get('title'))
                     charge1 = int(s1.get('params').get('charge').__str__()[0])
@@ -145,7 +149,6 @@ class EncodeDataset:
                         tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
                         intensList01 = np.array(peakslist1)
 
-                        # 归一化点积的计算
                         tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list,
                                                                  np.array(peakslist1), np.array(ndp_spec_list))
 
@@ -200,6 +203,7 @@ class EncodeDataset:
                     scan = s1.get("spectrum title").split(",")[-1].split(":")[-1].strip("\"").split("=")[-1]
                     spectra_file_name = str(input_spctra_file).split("/")[-1]
                     usi = "mzspec:" + str(prj) + ":" + spectra_file_name + ":scan:" + str(scan)
+                    usi = zlib.crc32(usi.encode('utf8'))
                     # usi = str(prj) + ":" + str(input_spctra_file) + ":" + str(scan)
 
                     self.usi_list.append(usi)
@@ -246,6 +250,7 @@ class EncodeDataset:
                     scan = s1.get("spectrum title").split(",")[-1].split(":")[-1].strip("\"").split("=")[-1]
                     spectra_file_name = str(input_spctra_file).split("/")[-1]
                     usi = "mzspec:" + str(prj) + ":" + spectra_file_name + ":scan:" + str(scan)
+                    usi = zlib.crc32(usi.encode('utf8'))
                     self.usi_list.append(usi)
                     charge1 = int(
                         s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get(
@@ -289,7 +294,6 @@ class EncodeDataset:
                         tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
                         intensList01 = np.array(peakslist1)
 
-                        # 归一化点积的计算
                         tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list,
                                                                  np.array(peakslist1), np.array(ndp_spec_list))
 
@@ -340,6 +344,7 @@ class EncodeDataset:
                     continue
                 else:
                     usi = s1.get("usi")
+                    usi = zlib.crc32(usi.encode('utf8'))
                     self.usi_list.append(usi)
                     charge1 = int(s1.get("precursorCharge"))
 
@@ -378,6 +383,7 @@ class EncodeDataset:
                     continue
                 else:
                     usi = s1.get("usi")
+                    usi = zlib.crc32(usi.encode('utf8'))
                     self.usi_list.append(usi)
                     charge1 = int(s1.get("precursorCharge"))
 
@@ -683,7 +689,7 @@ class EmbedDataset:
 def encode_spectra(prj, input, reference_spectra, miss_record):
     """
     :param prj: ProteomeXchange project/dataset accession
-    :param input: get .mgf file as input
+    :param input: get .mgf/.mzML/.json file as input
     :param reference_spectra: get a .mgf file contained 500 spectra as reference spectra from normalized dot product calculation
     :param miss_record: record title of some spectra which loss charge attribute
     :return: None
@@ -788,18 +794,43 @@ def encode_and_embed_spectra(model, prj, input, refrence_spectra, miss_record, o
 
 class FaissWriteIndex:
 
-    def __init__(self, vectors_data, output_path):
+    def __init__(self):
         self.tmp = None
-        self.spectra_vectors = vectors_data
-        self.create_index(vectors_data, output_path)
+        print("Initializing an faiss index class.")
 
-    def create_index(self, spectra_vectors, output_path):
+    def create_index(self, spectra_vectors, usi_data, output_path):
+        """
+        Create faiss indexIDMap index
+        :param spectra_vectors: spectra embedded data
+        :param usi_data: coresponding usi data
+        :param output_path: output file path
+        :return:
+        """
         n_embedded_dim = spectra_vectors.shape[1]
-        index = self.make_faiss_index(n_embedded_dim)
-        index.add(self.spectra_vectors.astype('float32'))
+        index = self.make_faiss_index_IDMap(n_embedded_dim)
+        index.add_with_ids(self.spectra_vectors.astype('float32'), usi_data)
+        # index.add(self.spectra_vectors.astype('float32'))
         self.write_faiss_index(index, output_path)
 
-    def make_faiss_index(self, n_dimensions, index_type='flat'):
+    def add_index(self, raw_index, new_index, new_usi_data, output_path):
+        """
+        Add new_index data to raw_index
+        :param raw_index: Raw index file
+        :param new_index: New index file
+        :param new_usi_data: New index's corresponding usi data
+        :param output_path: Output file path
+        :return:
+        """
+
+        #Determine whether the new index is the same as the original index
+
+        # n_embedded_dim = spectra_vectors.shape[1]
+        # index = self.make_faiss_index_IDMap(n_embedded_dim)
+        # index.add_with_ids(self.spectra_vectors.astype('float32'), usi_data)
+        # # index.add(self.spectra_vectors.astype('float32'))
+        # self.write_faiss_index(index, output_path)
+
+    def make_faiss_indexFlat(self, n_dimensions, index_type='flat'):
         """
         Make a fairly general-purpose FAISS index
         :param n_dimensions:
@@ -826,6 +857,17 @@ class FaissWriteIndex:
                 index = faiss.IndexIVFFlat(quantizer, n_dimensions, DEFAULT_IVF_NLIST, faiss.METRIC_L2)
             else:
                 raise ValueError("Unknown index_type %s" % index_type)
+        return index
+
+    def make_faiss_index_IDMap(self, n_dimensions):
+        """
+        Make a fairly general-purpose FAISS index
+        :param n_dimensions:
+        :return:
+        """
+        print("Making index ： IDMap...")
+        tmp_index = faiss.IndexFlatL2(n_dimensions)
+        index = faiss.IndexIDMap(tmp_index)
         return index
 
     def write_faiss_index(self, index, out_filepath):
