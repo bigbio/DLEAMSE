@@ -6,6 +6,7 @@ Encode spectra.
 
 import argparse
 import os
+import zlib
 
 import more_itertools
 from pyteomics.mgf import read as mgf_read
@@ -23,18 +24,16 @@ class EncodeDataset:
         self.len = input_specta_num
         self.spectra_dataset = None
 
-    def transform_mgf(self, input_spctra_file, ref_spectra, miss_save_name):
+    def transform_mgf(self, prj, input_spctra_file, ref_spectra, miss_save_name):
         self.spectra_dataset = None
         print('Start spectra encoding ...')
         # 500 reference spectra
         reference_spectra = mgf_read(ref_spectra, convert_arrays=1)
         reference_intensity = np.array(
             [bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
-
-        # First calculate the dot product results of 500 reference spectra
         ndp_r_spec_list = caculate_r_spec(reference_intensity)
 
-        peakslist1, precursor_feature_list1 = [], []
+        self.spectra_title, self.usi_list, peakslist1, precursor_feature_list1 = [], [], [], []
         ndp_spec_list = []
         i, j, k = 0, 0, 0
         charge_none_record, charge_none_list = 0, []
@@ -49,8 +48,17 @@ class EncodeDataset:
                     charge_none_record += 1
                     spectrum_id = s1.get('params').get('title')
                     charge_none_list.append(spectrum_id)
+                    k += 1
                     continue
                 else:
+                    # scan = s1.get('params').get('title').split(";")[-1].split("=")[-1]
+                    scan = k
+                    k += 1
+                    spectra_file_name = str(input_spctra_file).split("/")[-1]
+                    usi = "mzspec:" + str(prj) + ":" + spectra_file_name + ":index:" + str(scan)
+                    usi = zlib.crc32(usi.encode('utf8'))
+                    self.usi_list.append(usi)
+                    self.spectra_title.append(s1.get('params').get('title'))
                     charge1 = int(s1.get('params').get('charge').__str__()[0])
 
                 bin_s1 = bin_spectrum(s1.get('m/z array'), s1.get('intensity array'))
@@ -66,7 +74,6 @@ class EncodeDataset:
             tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
             intensList01 = np.array(peakslist1)
 
-            # Calculation of normalized dot product
             tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list, np.array(peakslist1),
                                                      np.array(ndp_spec_list))
             tmp01 = concatenate((tmp_dplist01, intensList01), axis=1)
@@ -84,8 +91,17 @@ class EncodeDataset:
                     charge_none_record += 1
                     spectrum_id = s1.get('params').get('title')
                     charge_none_list.append(spectrum_id)
+                    k += 1
                     continue
                 else:
+                    # scan = s1.get('params').get('title').split(";")[-1].split("=")[-1]
+                    spectra_file_name = str(input_spctra_file).split("/")[-1]
+                    scan = k
+                    k += 1
+                    usi = "mzspec:" + str(prj) + ":" + spectra_file_name + ":index:" + str(scan)
+                    usi = zlib.crc32(usi.encode('utf8'))
+                    self.usi_list.append(usi)
+                    self.spectra_title.append(s1.get('params').get('title'))
                     charge1 = int(s1.get('params').get('charge').__str__()[0])
 
                 bin_s1 = bin_spectrum(s1.get('m/z array'), s1.get('intensity array'))
@@ -103,7 +119,281 @@ class EncodeDataset:
                     tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
                     intensList01 = np.array(peakslist1)
 
-                    # Calculation of normalized dot product
+                    tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list, np.array(peakslist1),
+                                                             np.array(ndp_spec_list))
+
+                    tmp01 = concatenate((tmp_dplist01, intensList01), axis=1)
+                    spectrum01 = concatenate((tmp01, tmp_precursor_feature_list1), axis=1)
+
+                    if i == 1:
+                        self.spectra_dataset = spectrum01
+                    else:
+                        self.spectra_dataset = np.vstack((self.spectra_dataset, spectrum01))
+                    peakslist1.clear()
+                    precursor_feature_list1.clear()
+                    ndp_spec_list.clear()
+                    j = i * encode_batch
+
+                elif (j + encode_batch + charge_none_record) > self.len:
+                    if len(peakslist1) == self.len - j - charge_none_record:
+                        tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
+                        intensList01 = np.array(peakslist1)
+
+                        tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list,
+                                                                 np.array(peakslist1), np.array(ndp_spec_list))
+
+                        tmp01 = concatenate((tmp_dplist01, intensList01), axis=1)
+                        spectrum01 = concatenate((tmp01, tmp_precursor_feature_list1), axis=1)
+
+                        self.spectra_dataset = np.vstack((self.spectra_dataset, spectrum01))
+
+                        peakslist1.clear()
+                        precursor_feature_list1.clear()
+                        ndp_spec_list.clear()
+                    else:
+                        continue
+
+        if len(charge_none_list) > 0:
+            np_mr = np.array(charge_none_list)
+            df_mr = pd.DataFrame(np_mr, index=None, columns=None)
+            df_mr.to_csv(miss_save_name, mode="a+", header=None, index=None)
+            print("Charge Missing Number:{}".format(charge_none_record))
+            del charge_none_list
+
+        return self.spectra_title, self.usi_list, self.spectra_dataset
+
+    def transform_mzml(self, prj, input_spctra_file, ref_spectra, miss_save_name):
+        from pyteomics.mzml import read as mzml_read
+        self.spectra_dataset = None
+        print('Start spectra encoding ...')
+        # 500 reference spectra
+        reference_spectra = mgf_read(ref_spectra, convert_arrays=1)
+        reference_intensity = np.array(
+            [bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
+        ndp_r_spec_list = caculate_r_spec(reference_intensity)
+
+        self.usi_list, peakslist1, precursor_feature_list1 = [], [], []
+        ndp_spec_list = []
+        i, j, k = 0, 0, 0
+        charge_none_record, charge_none_list = 0, []
+        encode_batch = 10000
+
+        self.MZML = mzml_read(input_spctra_file)
+        if encode_batch > self.len:
+            for s1 in self.MZML:
+
+                # missing charge
+                if s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get(
+                        "charge state").__str__()[0] == "N":
+                    charge_none_record += 1
+                    spectrum_id = s1.get("spectrum title")
+                    charge_none_list.append(spectrum_id)
+                    continue
+                else:
+                    scan = s1.get("spectrum title").split(",")[-1].split(":")[-1].strip("\"").split("=")[-1]
+                    spectra_file_name = str(input_spctra_file).split("/")[-1]
+                    usi = "mzspec:" + str(prj) + ":" + spectra_file_name + ":scan:" + str(scan)
+                    usi = zlib.crc32(usi.encode('utf8'))
+                    # usi = str(prj) + ":" + str(input_spctra_file) + ":" + str(scan)
+
+                    self.usi_list.append(usi)
+                    charge1 = int(
+                        s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get(
+                            "charge state").__str__()[0])
+
+                bin_s1 = bin_spectrum(s1.get('m/z array'), s1.get('intensity array'))
+                # ndp_spec1 = np.math.sqrt(np.dot(bin_s1, bin_s1))
+                ndp_spec1 = caculate_spec(bin_s1)
+                peakslist1.append(bin_s1)
+                ndp_spec_list.append(ndp_spec1)
+                mass1 = s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get(
+                    "selected ion m/z")
+                # mass1 = float(s1.get('params').get('pepmass')[0])
+                # charge1 = int(s1.get('params').get('charge').__str__()[0])
+                precursor_feature1 = np.concatenate((self.gray_code(mass1), self.charge_to_one_hot(charge1)))
+                precursor_feature_list1.append(precursor_feature1)
+
+            tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
+            intensList01 = np.array(peakslist1)
+
+            # calculate normalized dot product
+            tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list, np.array(peakslist1),
+                                                     np.array(ndp_spec_list))
+            tmp01 = concatenate((tmp_dplist01, intensList01), axis=1)
+            spectrum01 = concatenate((tmp01, tmp_precursor_feature_list1), axis=1)
+
+            self.spectra_dataset = spectrum01
+            peakslist1.clear()
+            precursor_feature_list1.clear()
+            ndp_spec_list.clear()
+        else:
+            for s1 in self.MZML:
+
+                # missing charge
+                if s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get(
+                        "charge state").__str__()[0] == "N":
+                    charge_none_record += 1
+                    spectrum_id = s1.get("spectrum title")
+                    charge_none_list.append(spectrum_id)
+                    continue
+                else:
+                    scan = s1.get("spectrum title").split(",")[-1].split(":")[-1].strip("\"").split("=")[-1]
+                    spectra_file_name = str(input_spctra_file).split("/")[-1]
+                    usi = "mzspec:" + str(prj) + ":" + spectra_file_name + ":scan:" + str(scan)
+                    usi = zlib.crc32(usi.encode('utf8'))
+                    self.usi_list.append(usi)
+                    charge1 = int(
+                        s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get(
+                            "charge state").__str__()[0])
+
+                bin_s1 = bin_spectrum(s1.get('m/z array'), s1.get('intensity array'))
+                # ndp_spec1 = np.math.sqrt(np.dot(bin_s1, bin_s1))
+                ndp_spec1 = caculate_spec(bin_s1)
+                peakslist1.append(bin_s1)
+                ndp_spec_list.append(ndp_spec1)
+                mass1 = s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get(
+                    "selected ion m/z")
+                # mass1 = float(s1.get('params').get('pepmass')[0])
+                # charge1 = int(s1.get('params').get('charge').__str__()[0])
+                precursor_feature1 = np.concatenate((self.gray_code(mass1), self.charge_to_one_hot(charge1)))
+                precursor_feature_list1.append(precursor_feature1)
+
+                if len(peakslist1) == encode_batch:
+                    i += 1
+                    tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
+                    intensList01 = np.array(peakslist1)
+
+                    # calculate normorlized dot product
+                    tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list, np.array(peakslist1),
+                                                             np.array(ndp_spec_list))
+
+                    tmp01 = concatenate((tmp_dplist01, intensList01), axis=1)
+                    spectrum01 = concatenate((tmp01, tmp_precursor_feature_list1), axis=1)
+
+                    if i == 1:
+                        self.spectra_dataset = spectrum01
+                    else:
+                        self.spectra_dataset = np.vstack((self.spectra_dataset, spectrum01))
+                    peakslist1.clear()
+                    precursor_feature_list1.clear()
+                    ndp_spec_list.clear()
+                    j = i * encode_batch
+
+                elif (j + encode_batch + charge_none_record) > self.len:
+                    if len(peakslist1) == self.len - j - charge_none_record:
+                        tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
+                        intensList01 = np.array(peakslist1)
+
+                        tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list,
+                                                                 np.array(peakslist1), np.array(ndp_spec_list))
+
+                        tmp01 = concatenate((tmp_dplist01, intensList01), axis=1)
+                        spectrum01 = concatenate((tmp01, tmp_precursor_feature_list1), axis=1)
+
+                        self.spectra_dataset = np.vstack((self.spectra_dataset, spectrum01))
+
+                        peakslist1.clear()
+                        precursor_feature_list1.clear()
+                        ndp_spec_list.clear()
+                    else:
+                        continue
+
+        if len(charge_none_list) > 0:
+            np_mr = np.array(charge_none_list)
+            df_mr = pd.DataFrame(np_mr, index=None, columns=None)
+            # df_mr.to_csv(miss_save_name)
+            df_mr.to_csv(miss_save_name, mode="a+", header=None, index=None)
+            print("Charge Missing Number:{}".format(charge_none_record))
+            del charge_none_list
+
+        return self.usi_list, self.spectra_dataset
+
+    def transform_json(self, input_spctra_file, ref_spectra, miss_save_name):
+        self.spectra_dataset = None
+        print('Start spectra encoding ...')
+        # 500 reference spectra
+        reference_spectra = mgf_read(ref_spectra, convert_arrays=1)
+        reference_intensity = np.array(
+            [bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
+        ndp_r_spec_list = caculate_r_spec(reference_intensity)
+
+        self.usi_list, peakslist1, precursor_feature_list1 = [], [], []
+        ndp_spec_list = []
+        i, j, k = 0, 0, 0
+        charge_none_record, charge_none_list = 0, []
+        encode_batch = 10000
+
+        if encode_batch > self.len:
+            for s1 in input_spctra_file:
+
+                # missing charge
+                if s1.get("precursorCharge") == " ":
+                    charge_none_record += 1
+                    spectrum_id = s1.get("usi")
+                    charge_none_list.append(spectrum_id)
+                    continue
+                else:
+                    usi = s1.get("usi")
+                    usi = zlib.crc32(usi.encode('utf8'))
+                    self.usi_list.append(usi)
+                    charge1 = int(s1.get("precursorCharge"))
+
+                bin_s1 = bin_spectrum(s1.get('masses'), s1.get('intensities'))
+                # ndp_spec1 = np.math.sqrt(np.dot(bin_s1, bin_s1))
+                ndp_spec1 = caculate_spec(bin_s1)
+                peakslist1.append(bin_s1)
+                ndp_spec_list.append(ndp_spec1)
+                mass1 = s1.get("precursorMz")
+                # mass1 = float(s1.get('params').get('pepmass')[0])
+                # charge1 = int(s1.get('params').get('charge').__str__()[0])
+                precursor_feature1 = np.concatenate((self.gray_code(mass1), self.charge_to_one_hot(charge1)))
+                precursor_feature_list1.append(precursor_feature1)
+
+            tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
+            intensList01 = np.array(peakslist1)
+
+            # calculate normalized dot product
+            tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list, np.array(peakslist1),
+                                                     np.array(ndp_spec_list))
+            tmp01 = concatenate((tmp_dplist01, intensList01), axis=1)
+            spectrum01 = concatenate((tmp01, tmp_precursor_feature_list1), axis=1)
+
+            self.spectra_dataset = spectrum01
+            peakslist1.clear()
+            precursor_feature_list1.clear()
+            ndp_spec_list.clear()
+        else:
+            for s1 in input_spctra_file:
+
+                # missing charge
+                if s1.get("precursorCharge") == " ":
+                    charge_none_record += 1
+                    spectrum_id = s1.get("usi")
+                    charge_none_list.append(spectrum_id)
+                    continue
+                else:
+                    usi = s1.get("usi")
+                    usi = zlib.crc32(usi.encode('utf8'))
+                    self.usi_list.append(usi)
+                    charge1 = int(s1.get("precursorCharge"))
+
+                bin_s1 = bin_spectrum(s1.get('masses'), s1.get('intensities'))
+                # ndp_spec1 = np.math.sqrt(np.dot(bin_s1, bin_s1))
+                ndp_spec1 = caculate_spec(bin_s1)
+                peakslist1.append(bin_s1)
+                ndp_spec_list.append(ndp_spec1)
+                mass1 = s1.get("precursorMz")
+                # mass1 = float(s1.get('params').get('pepmass')[0])
+                # charge1 = int(s1.get('params').get('charge').__str__()[0])
+                precursor_feature1 = np.concatenate((self.gray_code(mass1), self.charge_to_one_hot(charge1)))
+                precursor_feature_list1.append(precursor_feature1)
+
+                if len(peakslist1) == encode_batch:
+                    i += 1
+                    tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
+                    intensList01 = np.array(peakslist1)
+
+                    # calculate normorlized dot product
                     tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list, np.array(peakslist1),
                                                              np.array(ndp_spec_list))
 
@@ -142,147 +432,12 @@ class EncodeDataset:
         if len(charge_none_list) > 0:
             np_mr = np.array(charge_none_list)
             df_mr = pd.DataFrame(np_mr, index=None, columns=None)
-            df_mr.to_csv(miss_save_name)
+            # df_mr.to_csv(miss_save_name)
+            df_mr.to_csv(miss_save_name, mode="a+", header=None, index=None)
             print("Charge Missing Number:{}".format(charge_none_record))
             del charge_none_list
 
-        return self.spectra_dataset
-
-    def transform_mzml(self, input_spctra_file, ref_spectra, miss_save_name):
-        self.spectra_dataset = None
-        print('Start spectra encoding ...')
-        # 500 reference spectra
-        reference_spectra = mgf_read(ref_spectra, convert_arrays=1)
-        reference_intensity = np.array(
-            [bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
-
-        # First calculate the dot product results of 500 reference spectra
-        ndp_r_spec_list = caculate_r_spec(reference_intensity)
-
-        peakslist1, precursor_feature_list1 = [], []
-        ndp_spec_list = []
-        i, j, k = 0, 0, 0
-        charge_none_record, charge_none_list = 0, []
-        encode_batch = 10000
-
-        self.MZML = mzml_read(input_spctra_file)
-        if encode_batch > self.len:
-            for s1 in self.MZML:
-
-                # missing charge
-                if s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get(
-                        "charge state").__str__()[0] == "N":
-                    charge_none_record += 1
-                    spectrum_id = s1.get("spectrum title")
-                    charge_none_list.append(spectrum_id)
-                    continue
-                else:
-                    charge1 = int(
-                        s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get(
-                            "charge state").__str__()[0])
-
-                bin_s1 = bin_spectrum(s1.get('m/z array'), s1.get('intensity array'))
-                # ndp_spec1 = np.math.sqrt(np.dot(bin_s1, bin_s1))
-                ndp_spec1 = caculate_spec(bin_s1)
-                peakslist1.append(bin_s1)
-                ndp_spec_list.append(ndp_spec1)
-                mass1 = s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get(
-                    "selected ion m/z")
-                # mass1 = float(s1.get('params').get('pepmass')[0])
-                # charge1 = int(s1.get('params').get('charge').__str__()[0])
-                precursor_feature1 = np.concatenate((self.gray_code(mass1), self.charge_to_one_hot(charge1)))
-                precursor_feature_list1.append(precursor_feature1)
-
-            tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
-            intensList01 = np.array(peakslist1)
-
-            # Calculation of normalized dot product
-            tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list, np.array(peakslist1),
-                                                     np.array(ndp_spec_list))
-            tmp01 = concatenate((tmp_dplist01, intensList01), axis=1)
-            spectrum01 = concatenate((tmp01, tmp_precursor_feature_list1), axis=1)
-
-            self.spectra_dataset = spectrum01
-            peakslist1.clear()
-            precursor_feature_list1.clear()
-            ndp_spec_list.clear()
-        else:
-            for s1 in self.MZML:
-
-                # missing charge
-                if s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get(
-                        "charge state").__str__()[0] == "N":
-                    charge_none_record += 1
-                    spectrum_id = s1.get("spectrum title")
-                    charge_none_list.append(spectrum_id)
-                    continue
-                else:
-                    charge1 = int(
-                        s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get(
-                            "charge state").__str__()[0])
-
-                bin_s1 = bin_spectrum(s1.get('m/z array'), s1.get('intensity array'))
-                # ndp_spec1 = np.math.sqrt(np.dot(bin_s1, bin_s1))
-                ndp_spec1 = caculate_spec(bin_s1)
-                peakslist1.append(bin_s1)
-                ndp_spec_list.append(ndp_spec1)
-                mass1 = s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get(
-                    "selected ion m/z")
-                # mass1 = float(s1.get('params').get('pepmass')[0])
-                # charge1 = int(s1.get('params').get('charge').__str__()[0])
-                precursor_feature1 = np.concatenate((self.gray_code(mass1), self.charge_to_one_hot(charge1)))
-                precursor_feature_list1.append(precursor_feature1)
-
-                if len(peakslist1) == encode_batch:
-                    i += 1
-                    tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
-                    intensList01 = np.array(peakslist1)
-
-                    # Calculation of normalized dot product
-                    tmp_dplist01 = caculate_nornalization_dp(reference_intensity,
-                                                             ndp_r_spec_list, np.array(peakslist1),
-                                                             np.array(ndp_spec_list))
-
-                    tmp01 = concatenate((tmp_dplist01, intensList01), axis=1)
-                    spectrum01 = concatenate((tmp01, tmp_precursor_feature_list1), axis=1)
-
-                    if i == 1:
-                        self.spectra_dataset = spectrum01
-                    else:
-                        self.spectra_dataset = np.vstack((self.spectra_dataset, spectrum01))
-                    peakslist1.clear()
-                    precursor_feature_list1.clear()
-                    ndp_spec_list.clear()
-                    j = i * encode_batch
-
-                elif (j + encode_batch + charge_none_record) > self.len:
-                    if len(peakslist1) == self.len - j - charge_none_record:
-                        tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
-                        intensList01 = np.array(peakslist1)
-
-                        # Calculation of normalized dot product
-                        tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list,
-                                                                 np.array(peakslist1), np.array(ndp_spec_list))
-
-                        tmp01 = concatenate((tmp_dplist01, intensList01), axis=1)
-                        spectrum01 = concatenate((tmp01, tmp_precursor_feature_list1), axis=1)
-
-                        self.spectra_dataset = np.vstack((self.spectra_dataset, spectrum01))
-
-                        peakslist1.clear()
-                        precursor_feature_list1.clear()
-                        ndp_spec_list.clear()
-                    else:
-                        continue
-
-        if len(charge_none_list) > 0:
-            np_mr = np.array(charge_none_list)
-            df_mr = pd.DataFrame(np_mr, index=None, columns=None)
-            df_mr.to_csv(miss_save_name)
-            print("Charge Missing Number:{}".format(charge_none_record))
-            del charge_none_list
-
-        return self.spectra_dataset
+        return self.usi_list, self.spectra_dataset
 
     def gray_code(self, number):
         """
@@ -312,7 +467,6 @@ class EncodeDataset:
             c = maximum_charge
         charge[c - 1] = c
         return charge
-
 
 @njit
 def caculate_spec(bin_spec):
@@ -388,29 +542,61 @@ def caculate_nornalization_dp(reference, ndp_r_spec_list, bin_spectra, ndp_bin_s
     result = tmp_dp_list / dvi
     return result
 
-
-def encode_spectra(input, refrence_spectra, miss_record, output):
+def encode_spectra(prj, input, reference_spectra, **kw):
     """
-    :param input: get .mgf file as input
-    :param refrence_spectra: get a .mgf file contained 500 spectra as referece spectra from normalized dot product calculation
+    :param prj: ProteomeXchange project/dataset accession
+    :param input: get .mgf/.mzML/.json file as input
+    :param reference_spectra: get a .mgf file contained 500 spectra as reference spectra from normalized dot product calculation
     :param miss_record: record title of some spectra which loss charge attribute
-    :param output: a file for save the final encode information
-    :return: None
+    :return: Spectra usi list, encoded-spectra data
     """
-    if not os.path.exists(input):
-        raise RuntimeError("Can not find mgf file: '%s'" % input)
+
+    if kw.keys().__contains__("miss_record"):
+        miss_record = kw["miss_record"]
+    else:
+        miss_record = input.strip(".mgf") + "_missing_c_record.txt"
+
+    if kw.keys().__contains__("save_file"):
+        save_file = kw["save_file"]
+    else:
+        save_file = input.strip(".mgf") + "_usi_encoded.txt"
+
     if str(input).endswith(".mgf"):
         spectra_num = more_itertools.ilen(mgf_read(input, convert_arrays=1))
+
         mgf_encoder = EncodeDataset(spectra_num)
-        vstack_data = mgf_encoder.transform_mgf(input, refrence_spectra, miss_record)
+        spectra_title, usi_list, vstack_data = mgf_encoder.transform_mgf(prj, input, reference_spectra, miss_record)
+
+        usi_df = pd.DataFrame(np.array(usi_list),columns=["usi"])
+        vstack_data_df = pd.DataFrame(np.array(vstack_data), columns=["encoded_spectra"])
+        usi_vstack_df = pd.concat([usi_df, vstack_data_df], axis=1)
+        usi_vstack_df.to_csv(save_file, header=True, index=None)
+
+        return usi_list, vstack_data
+
     elif str(input).endswith(".mzML"):
-        print(input)
+
         spectra_num = more_itertools.ilen(mzml_read(input))
         mzml_encoder = EncodeDataset(spectra_num)
-        vstack_data = mzml_encoder.transform_mzml(input, refrence_spectra, miss_record)
-    np.savetxt(output, vstack_data)
-    print("Finish spectra encoding!")
-    return vstack_data
+        usi_list, vstack_data = mzml_encoder.transform_mzml(prj, input, reference_spectra, miss_record)
+
+        usi_df = pd.DataFrame(np.array(usi_list), columns=["usi"])
+        vstack_data_df = pd.DataFrame(np.array(vstack_data), columns=["encoded_spectra"])
+        usi_vstack_df = pd.concat([usi_df, vstack_data_df], axis=1)
+        usi_vstack_df.to_csv(save_file, header=True, index=None)
+
+        return usi_list, vstack_data
+    else:
+        spectra_num = len(input)
+        json_encoder = EncodeDataset(spectra_num)
+        usi_list, vstack_data = json_encoder.transform_json(input, reference_spectra, miss_record)
+
+        usi_df = pd.DataFrame(np.array(usi_list), columns=["usi"])
+        vstack_data_df = pd.DataFrame(np.array(vstack_data), columns=["encoded_spectra"])
+        usi_vstack_df = pd.concat([usi_df, vstack_data_df], axis=1)
+        usi_vstack_df.to_csv(save_file, header=True, index=None)
+
+        return usi_list, vstack_data
 
 
 if __name__ == '__main__':
@@ -419,4 +605,4 @@ if __name__ == '__main__':
     model = "080802_20_1000_NM500R_model.pkl"
     ref_spectra = "0722_500_rf_spectra.mgf"
 
-    encode_spectra(mzml_file, ref_spectra, miss_record="miss_record.txt", output="0209_test_output.txt")
+    encode_spectra("prj", mzml_file, ref_spectra)

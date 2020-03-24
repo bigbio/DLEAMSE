@@ -92,14 +92,14 @@ class LoadDataset(data.dataset.Dataset):
 
 
 class EmbedDataset:
-    def __init__(self, model, vstack_encoded_spectra, store_embed_file, use_gpu):
+    def __init__(self, model, vstack_encoded_spectra, use_gpu):
         self.out_list = []
-        self.embedding_dataset(model, vstack_encoded_spectra, store_embed_file, use_gpu)
+        self.embedding_dataset(model, vstack_encoded_spectra, use_gpu)
 
     def get_data(self):
         return self.out_list
 
-    def embedding_dataset(self, model, vstack_encoded_spectra, store_embed_file, use_gpu):
+    def embedding_dataset(self, model, vstack_encoded_spectra, use_gpu):
 
         if use_gpu is True:
             # for gpu
@@ -143,10 +143,10 @@ class EmbedDataset:
             else:
                 self.out_list = np.vstack((self.out_list, out1))
 
-        np.savetxt(store_embed_file, self.out_list, delimiter=",")
+        # np.savetxt(store_embed_file, self.out_list)
 
 
-def embed_spectra(model, vstack_encoded_spectra, output_embedd_file, use_gpu: bool):
+def embed_spectra(model, vstack_encoded_spectra, output_embedd_file, use_gpu=False):
     """
     :param model: .pkl format embedding model
     :param vstack_encoded_spectra: encoded spectra file for embedding

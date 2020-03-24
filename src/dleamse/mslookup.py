@@ -86,7 +86,7 @@ def encode_ms_file(ctx, model: str, project_accession: str, input: str, ref_spec
             if filename.endswith(".mgf"):
                 index_file = dirname + os.path.sep + filename.strip(".mgf") + ".index"
             elif filename.endswith(".mzML"):
-                index_file = dirname + os.path.sep + filename.strip(".mzML") + ".indx"
+                index_file = dirname + os.path.sep + filename.strip(".mzML") + ".index"
             else:
                 index_file = dirname + os.path.sep + filename.strip(".json") + ".index"
 
