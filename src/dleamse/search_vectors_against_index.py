@@ -215,8 +215,8 @@ class FaissIndexSearch():
         args.output.close()
 
 
-if __name__ == "__main__":
-    args = commanline_args()
-
-    index_searcher = FaissIndexSearch()
-    index_searcher.execute_range_search(args)
+# if __name__ == "__main__":
+#     args = commanline_args()
+#
+#     index_searcher = FaissIndexSearch()
+#     index_searcher.execute_range_search(args)
