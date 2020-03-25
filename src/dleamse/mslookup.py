@@ -2,9 +2,10 @@ import logging
 import os
 
 import click
-from dleamse.encode_and_embed import SiameseNetwork2
 
-from dleamse.encode_and_embed import encode_and_embed_spectra, FaissWriteIndex
+from dleamse.dleamse_encode_and_embed import encode_and_embed_spectra
+from dleamse.dleamse_encode_and_embed import SiameseNetwork2
+from dleamse.dleamse_faiss_index_writer import FaissWriteIndex
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
@@ -44,7 +45,7 @@ def encode_ms_file(ctx, model: str, project_accession: str, input: str, ref_spec
 
     dirname, filename = os.path.split(os.path.abspath(input_file))
     output = output
-    output_file, miss_record_file, index_file = None, None, None
+    output_file, miss_record_file, index_ids_file, index_file = None, None, None, None
 
     if output:
         dirname, filename = os.path.split(os.path.abspath(input_file))
@@ -84,18 +85,19 @@ def encode_ms_file(ctx, model: str, project_accession: str, input: str, ref_spec
 
         if make_faiss_index:
             if filename.endswith(".mgf"):
+                index_ids_file = dirname + os.path.sep + filename.strip(".mgf") + "_ids.txt"
                 index_file = dirname + os.path.sep + filename.strip(".mgf") + ".index"
             elif filename.endswith(".mzML"):
+                index_ids_file = dirname + os.path.sep + filename.strip(".mzML") + "_ids.txt"
                 index_file = dirname + os.path.sep + filename.strip(".mzML") + ".index"
             else:
+                index_ids_file = dirname + os.path.sep + filename.strip(".json") + "_ids.txt"
                 index_file = dirname + os.path.sep + filename.strip(".json") + ".index"
 
-    use_gpu = use_gpu
-    embedded_spectra = encode_and_embed_spectra(model, prj, input_file, ref_spectra, miss_record_file, output_file,
-                                                use_gpu)
+    embedded_spectra_data = encode_and_embed_spectra(model, prj, input_file, ref_spectra, output_file)
 
     if make_faiss_index:
-        index_maker = FaissWriteIndex(embedded_spectra, index_file)
+        index_maker = FaissWriteIndex(embedded_spectra_data, index_ids_file, index_file)
 
 
 cli.add_command(encode_ms_file)
