@@ -4,6 +4,7 @@ Search a file full of embedded spectra against a faiss index, and save the resul
 """
 
 import argparse
+import ast
 import os
 import faiss
 import numpy as np
@@ -24,8 +25,6 @@ def commanline_args():
     # declare args
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--index_file', type=argparse.FileType('r'), required=True, help='input index file')
-    parser.add_argument('--index_usi_file', type=argparse.FileType('r'), required=True,
-                        help='input index usi file without header')
     parser.add_argument('-i', '--input_embedded_spectra', type=argparse.FileType('r'), required=True,
                         help='input embedded spectra file(s)')
     # parser.add_argument('--k', type=int, help='k for kNN', default=5)
@@ -34,7 +33,7 @@ def commanline_args():
     return parser.parse_args()
 
 
-class Faiss_Index_Search():
+class FaissIndexSearch():
     def __init__(self):
         print("Start Faiss Index Simialrity Searching ...")
 
@@ -62,22 +61,32 @@ class Faiss_Index_Search():
         if os.path.exists(filepath):
 
             extension_lower = filepath[filepath.rfind("."):].lower()
-            if extension_lower == '.h5':
-                h5f = None
-                try:
-                    h5f = h5py.File(filepath, 'r')
-                    result = h5f[H5_MATRIX_NAME][:]
-                    return result
-                except Exception as e:
-                    print("Failed to read array named {} from file {}".format(H5_MATRIX_NAME, filepath))
-                    raise e
-                finally:
-                    if h5f:
-                        h5f.close()
-            elif extension_lower == '.npy':
-                return np.load(filepath)
-            elif extension_lower == ".txt":
-                vectors = np.loadtxt(filepath)
+            # if extension_lower == '.h5':
+            #     h5f = None
+            #     try:
+            #         h5f = h5py.File(filepath, 'r')
+            #         result = h5f[H5_MATRIX_NAME][:]
+            #         return result
+            #     except Exception as e:
+            #         print("Failed to read array named {} from file {}".format(H5_MATRIX_NAME, filepath))
+            #         raise e
+            #     finally:
+            #         if h5f:
+            #             h5f.close()
+            # elif extension_lower == '.npy':
+            #     return np.load(filepath)
+            if extension_lower == ".txt":
+                ids_embedded_spectra = pd.read_csv(filepath, index_col=None)
+                # ids_data = ids_embedded_spectra["ids"].values
+                spectra_vectors = ids_embedded_spectra["embedded_spectra"].values
+                tmp_spectra_vectors = None
+                if type(spectra_vectors[0]) == type("test"):
+                    tmp_data = []
+                    for vec in spectra_vectors:
+                        tmp_data.append(ast.literal_eval(vec))
+                    tmp_spectra_vectors = np.vstack(tmp_data)
+                    tmp_data.clear()
+                vectors = tmp_spectra_vectors
                 vectors = np.ascontiguousarray(vectors, dtype=np.float32)
                 return vectors
             else:
@@ -99,7 +108,7 @@ class Faiss_Index_Search():
         D = D ** 0.5
         return D, I
 
-    def range_search(self, index_path, embedded, usi_data, threshold=0.1, outpath="faiss_range_search_result.csv"):
+    def range_search(self, index_path, embedded, threshold, outpath="faiss_range_search_result.csv"):
         """
         Range Search can only use in CPU
         :param threshold: similarity thershold
@@ -111,24 +120,63 @@ class Faiss_Index_Search():
         """
         print("loading index file...")
         index = faiss.read_index(index_path)  # cpu
-        print("loading index usi file...")
-        index_usi = pd.read_csv(usi_data, header=None).values.tolist()
         dist = threshold  # Threshold
         # dist = 0.32 ** 2   #Threshold
         query_id, limit_num, result_list = [], [], []
         print(embedded.shape[0])
         for i in range(embedded.shape[0]):
-            res_index = index.range_search(embedded[[i], :], dist)  # 用第50个向量查询
+            res_index = index.range_search(embedded[[i], :], dist)
+            print(res_index)
             # query_id.append(index_usi[i][0])
             query_id.append(i)
             limit_num.append(res_index[0][1])
             result_dict = {}
             for j in range(len(res_index[1])):
-                result_dict[index_usi[int(res_index[2][j])][0]] = res_index[1][j]
+                print(int(res_index[2][j]))
+                result_dict[int(res_index[2][j])] = res_index[1][j]
             result_list.append(result_dict)
         result_df = pd.DataFrame({"query_id": query_id, "limit_num": limit_num, "result": result_list},
                                  columns=["query_id", "limit_num", "result"])
         result_df.to_csv(outpath, index=False)
+
+    def new_range_search(self, index_path, embedded, threshold, outpath="faiss_range_search_result.csv"):
+        """
+        Range Search can only use in CPU
+        :param threshold: similarity thershold
+        :param output_path: output file
+        :param index_path: index path
+        :param embedded: embeded file
+        :param usi_data: usi file
+        :return:
+        """
+        print("loading index file...")
+        index = faiss.read_index(index_path)  # cpu
+        dist = threshold  # Threshold
+        query_id, limit_num, result_list = [], [], []
+        print(embedded.shape[0])
+        result = index.range_search(embedded, dist)
+        print(result[0].shape)
+        print(len(result[1]))
+        print(len(result[2]))
+        i = 0
+        for j in range(len(result[0])-1):
+            print(result[0][j])
+            print(result[1][result[0][j]:result[0][j+1]])
+            print(result[2][result[0][j]:result[0][j+1]])
+        # for i in range(embedded.shape[0]):
+        #     res_index = index.range_search(embedded[[i], :], dist)
+        #     print(res_index)
+        #     # query_id.append(index_usi[i][0])
+        #     query_id.append(i)
+        #     limit_num.append(res_index[0][1])
+        #     result_dict = {}
+        #     for j in range(len(res_index[1])):
+        #         print(int(res_index[2][j]))
+        #         result_dict[int(res_index[2][j])] = res_index[1][j]
+        #     result_list.append(result_dict)
+        # result_df = pd.DataFrame({"query_id": query_id, "limit_num": limit_num, "result": result_list},
+        #                          columns=["query_id", "limit_num", "result"])
+        # result_df.to_csv(outpath, index=False)
 
     def write_search_results(self, D, I, outpath):
         with h5py.File(outpath, 'w') as h5f:
@@ -155,14 +203,13 @@ class Faiss_Index_Search():
     def execute_range_search(self, args):
 
         print("loading embedded spectra vector...")
-        embedded_arrays = []
+        # embedded_arrays = []
         run_spectra = self.load_embedded_spectra_vector(args.input_embedded_spectra.name)
-        embedded_arrays.append(run_spectra)
-        embedded_spectra = np.vstack(embedded_arrays)
-        print("  Read a total of {} spectra".format(embedded_spectra.shape[0]))
+        # embedded_arrays.append(run_spectra)
+        # embedded_spectra = np.vstack(embedded_arrays)
+        print("  Read a total of {} spectra".format(run_spectra.shape[0]))
 
-        self.range_search(args.index_file.name, embedded_spectra.astype('float32'), args.index_usi_file.name,
-                          args.threshold, args.output.name)
+        self.new_range_search(args.index_file.name, run_spectra.astype('float32'), args.threshold, args.output.name)
         print("Writing results to {}...".format(args.output.name))
         print("Wrote output file.")
         args.output.close()
@@ -171,5 +218,5 @@ class Faiss_Index_Search():
 if __name__ == "__main__":
     args = commanline_args()
 
-    index_searcher = Faiss_Index_Search()
+    index_searcher = FaissIndexSearch()
     index_searcher.execute_range_search(args)

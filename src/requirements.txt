@@ -4,8 +4,8 @@ numpy==1.18.1
 more_itertools==7.1.0
 torch==1.0.0
 pandas==0.25.3
-dleamse==0.1.8
-faiss-cpu
+dleamse==0.1.9
+faiss-gpu
 click
 scipy
 h5py

@@ -724,7 +724,7 @@ class EmbedDataset:
         self.ids_vstack_df.to_csv(store_embed_file, header=True, index=None, columns=["ids", "embedded_spectra"])
 
 
-def encode_spectra(prj, input, reference_spectra,  **kw):
+def encode_spectra(prj, input_file, reference_spectra,  **kw):
     """
     Encode spectra
     :param prj: ProteomeXchange project/dataset accession
@@ -733,7 +733,7 @@ def encode_spectra(prj, input, reference_spectra,  **kw):
     :param kw: miss_record, ids_usi_save_file, encoded_spectra_save_file
     :return: ids_usi data, encoded_spectra data
     """
-    dirname, filename = os.path.split(os.path.abspath(input))
+    dirname, filename = os.path.split(os.path.abspath(input_file))
     if kw.keys().__contains__("miss_record"):
         miss_record = kw["miss_record"]
     else:
@@ -749,29 +749,29 @@ def encode_spectra(prj, input, reference_spectra,  **kw):
     else:
         encoded_spectra_save_file = dirname + "/" + filename.strip((filename.split(".")[-1])).strip(".") + "_encoded.npy"
 
-    if str(input).endswith(".mgf"):
+    if str(input_file).endswith(".mgf"):
         spectra_num = more_itertools.ilen(mgf_read(input, convert_arrays=1))
 
         mgf_encoder = EncodeDataset(spectra_num)
-        ids_usi_df, vstack_data = mgf_encoder.transform_mgf(prj, input, reference_spectra, miss_record)
+        ids_usi_df, vstack_data = mgf_encoder.transform_mgf(prj, input_file, reference_spectra, miss_record)
 
         pd.DataFrame(ids_usi_df).to_csv(ids_usi_save_file, header=True, index=None)
         np.save(encoded_spectra_save_file, vstack_data)
 
         return ids_usi_df, vstack_data
 
-    elif str(input).endswith(".mzML"):
+    elif str(input_file).endswith(".mzML"):
 
-        spectra_num = more_itertools.ilen(mzml_read(input))
+        spectra_num = more_itertools.ilen(mzml_read(input_file))
         mzml_encoder = EncodeDataset(spectra_num)
-        ids_usi_df, vstack_data = mzml_encoder.transform_mzml(prj, input, reference_spectra, miss_record)
+        ids_usi_df, vstack_data = mzml_encoder.transform_mzml(prj, input_file, reference_spectra, miss_record)
 
         pd.DataFrame(ids_usi_df).to_csv(ids_usi_save_file, header=True, index=None)
         np.save(encoded_spectra_save_file, vstack_data)
 
         return ids_usi_df, vstack_data
     else:
-        with open(input) as fh:
+        with open(input_file) as fh:
             spectra_json_file = [json.loads(line) for line in fh if line]
         spectra_num = len(spectra_json_file)
         json_encoder = EncodeDataset(spectra_num)
@@ -806,7 +806,7 @@ def embed_spectra(model, ids_usi_data, vstack_encoded_spectra, output_embedd_fil
     return ids_embedded_spectra
 
 
-def encode_and_embed_spectra(model, prj, input, refrence_spectra, output_embedded_file):
+def encode_and_embed_spectra(model, prj, input_file, refrence_spectra, output_embedded_file):
     """
 
     :param model: .pkl format embedding model
@@ -818,7 +818,7 @@ def encode_and_embed_spectra(model, prj, input, refrence_spectra, output_embedde
     :return: embedded spectra 32d vector
     """
 
-    ids_usi_df, vstack_encoded_spectra = encode_spectra(prj, input, refrence_spectra)
+    ids_usi_df, vstack_encoded_spectra = encode_spectra(prj, input_file, refrence_spectra)
     ids_embedded_spectra = embed_spectra(model, ids_usi_df, vstack_encoded_spectra, output_embedded_file)
 
     return ids_embedded_spectra
