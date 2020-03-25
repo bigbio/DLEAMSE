@@ -3,8 +3,8 @@ pyteomics==4.1.1
 numpy==1.18.1
 more_itertools==7.1.0
 pandas==0.25.3
-dleamse==0.2.3
 faiss-gpu==1.5.3
+dleamse==0.2.3
 click
 scipy
 h5py
