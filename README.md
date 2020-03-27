@@ -22,8 +22,8 @@ In DLEAMSE, Siamese network (Figure 1a) trains two same embedding models (Figure
 - pyteomics>=3.5.1
 - numpy>=1.13.3
 - numba>=0.45.0
-- faiss-gpu==1.5.3 (if you want to use faiss index making and searching function)
--more_itertools==7.1.0
+- faiss-gpu==1.5.3 (if you want to use faiss index making and searching function)    
+- more_itertools==7.1.0
 
 # Installation
 
