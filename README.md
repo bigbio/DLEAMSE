@@ -46,7 +46,7 @@ from dleamse.dleamse_faiss_index_writer import FaissWriteIndex
 
 if __name__ == '__main__':
     # encode and embedded spectra
-     model = "./dleamse_model_references/080802_20_1000_NM500R_model.pkl"
+    model = "./dleamse_model_references/080802_20_1000_NM500R_model.pkl"
     prj = "test"
     input_file = "PXD003552_61576_ArchiveSpectrum.json"
     reference_spectra = "./dleamse_model_references/0722_500_rf_spectra.mgf"
