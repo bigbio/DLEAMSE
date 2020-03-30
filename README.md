@@ -22,7 +22,7 @@ In DLEAMSE, Siamese network (Figure 1a) trains two same embedding models (Figure
 - pyteomics>=3.5.1
 - numpy>=1.13.3
 - numba>=0.45.0
-- faiss-gpu==1.5.3 (if you want to use faiss index making and searching function)    
+- faiss-gpu==1.5.3 (if you want to use faiss index making and searching function)
 - more_itertools==7.1.0
 
 # Installation
@@ -50,58 +50,34 @@ if __name__ == '__main__':
     prj = "test"
     input_file = "PXD003552_61576_ArchiveSpectrum.json"
     reference_spectra = "./dleamse_model_references/0722_500_rf_spectra.mgf"
-    output_embedd_file = "PXD003552_61576_ArchiveSpectrum_embedded.npy"
 
-    embedded_spectra_data = encode_and_embed_spectra(model, prj, input_file, reference_spectra, output_embedded_file)
+    encode_and_embed_spectra(model, prj, input_file, reference_spectra) # generate ids_usi, encoded_spectra and embedded_spectra data file
 
     # faiss index writer
-    index_ids_save_file = "index_ids_save,txt"
-    index_save_file = "test_0325.index"
-
     index_writer = FaissWriteIndex()
-    index_writer.create_index(embedded_spectra_data, index_ids_save_file, index_save_file)
+
+    # create index from one or more embedded_spectra file
+    embedded_spectra_files_path = "./IDMap_Index"  # Path of embedded_spectra files, which is end with "_embedded.txt"
+    index_save_file = "test_01_create_index.index"
+    index_ids_save_file = "test_01_create_ids_save.npy"
+    index_writer.create_index_for_embedded_spectra(embedded_spectra_files_path, index_ids_save_file, index_save_file)
+
+    # add new embedded_spectra data to a raw index
+    raw_index = "test_01_create_index.index"
+    raw_ids_file = "test_01_create_ids_save.npy"
+    new_embedded_spectra_path = "./IDMap_Index_2"
+    output_index_ids_file = "test_02_add_ids_save.npy"
+    output_index_file = "test_02_add_index.npy"
+    index_writer.add_embedded_spectra_to_index(raw_index, raw_ids_file, new_embedded_spectra_path, output_index_ids_file, output_index_file)
 ```
 
 
 # DLEAMSE's Scripts
 
-## **dleamse_encoder.py**:
-
-Encode spectra to a long vectors. Return ids_usi data and encoded_spectra data. Support the spectra file with .mgf, .mzML and .json as input. By default, two or three files would be generated from this script, the spectra encoding vectors file , spectra ids_usi file and the record file of spectra with missing charge. The default directory 500 reference spectra is in dleamse_model_references directory which is under current directory.<br>
-In this example, the input spectra file is *PXD003552_61576_ArchiveSpectrum.json*, and the three generated files are: *PXD003552_61576_ArchiveSpectrum_encoded.npy*; *PXD003552_61576_ArchiveSpectrum_spectrum_ids_usi.txt*; *PXD003552_61576_ArchiveSpectrum_missing_c_record.txt* (if exist the charge missing spectra) <br>
-```python
-from dleamse.dleamse_encoder import encode_spectra
-
-def test_encoder():
-    #encode spectra
-    prj = "test"
-    input_file = "PXD003552_61576_ArchiveSpectrum.json"
-    reference_spectra = "./dleamse_model_references/0722_500_rf_spectra.mgf"
-    ids_usi_data, encoded_vstack_data = encode_spectra(prj, input_file, reference_spectra)
-```
-
-## **dleamse_embeder.py**:
-
-Embed encoded_spectra data to 32D vectors. the default directory of DLEASME isin dleamse_model_references directory which is under current directory.<br>
-In this example, the input encoded_spectra file is *PXD003552_61576_ArchiveSpectrum_encoded.npy, its ids_usi data is in PXD003552_61576_ArchiveSpectrum_spectrum_ids_usi.txt; and the generated  32D vectors files is : *PXD003552_61576_ArchiveSpectrum_embedded.npy <br>
-```python
-from dleamse.dleamse_encode_and_embed import SiameseNetwork2
-from dleamse.dleamse_embeder import embed_spectra
-
-def test_embeder():
-    # embed encoded_spectra data
-    model = "./dleamse_model_references/080802_20_1000_NM500R_model.pkl"
-    ids_usi_data = "PXD003552_61576_ArchiveSpectrum_spectrum_ids_usi.txt"
-    vstack_encoded_spectra = "PXD003552_61576_ArchiveSpectrum_encoded.npy"
-    output_embedd_file = "PXD003552_61576_ArchiveSpectrum_embedded.npy"
-
-    embedded_vstack_data = embed_spectra(model, ids_usi_data, vstack_encoded_spectra, output_embedd_file)
-```
-
 ## **dleamse_encode_and_embed.py**:
 
 Encode and embed the spectra to vectors. This script support the spectra file with .mgf, .mzML and .json. By default, two or three files would be generated from this script, the spectra embedding vectors file , spectra usi file and the record file of spectra with missing charge. By default, GPU is used; the default directory of DLEASME model and 500 reference spectra file are in dleamse_model_references directory which is under current directory.<br>
-In this example, the input spectra file is *PXD003552_61576_ArchiveSpectrum.json*, and the three generated files are: *PXD003552_61576_ArchiveSpectrum_embedded.npy*; *PXD003552_61576_ArchiveSpectrum_spectrum_usi.txt*; *PXD003552_61576_ArchiveSpectrum_miss_record.txt* (if exist the charge missing spectra) <br>
+In this example, the input spectra file is *PXD003552_61576_ArchiveSpectrum.json*, and the three generated files are: *PXD003552_61576_ArchiveSpectrum_embedded.txt*; *PXD003552_61576_ArchiveSpectrum_spectrum_usi.txt*; *PXD003552_61576_ArchiveSpectrum_miss_record.txt* (if exist the charge missing spectra) <br>
 ```python
 from dleamse.dleamse_encode_and_embed import encode_and_embed_spectra
 from dleamse.dleamse_encode_and_embed import SiameseNetwork2
@@ -111,28 +87,34 @@ def test_encode_and_embeder():
     prj = "test"
     input_file = "PXD003552_61576_ArchiveSpectrum.json"
     reference_spectra = "./dleamse_model_references/0722_500_rf_spectra.mgf"
-    output_embedd_file = "PXD003552_61576_ArchiveSpectrum_embedded.npy"
-    embedded_vstack_data = encode_and_embed_spectra(model, prj, input_file, reference_spectra, output_embedded_file)
+    embedded_vstack_data = encode_and_embed_spectra(model, prj, input_file, reference_spectra)
 
 ```
 
 ## **dleamse_index_writer.py**:
+
 ```python
 from dleamse.dleamse_faiss_index_writer import FaissWriteIndex
 
 def test_index_write():
     # faiss index writer
-
-    embedded_vstack_data = "PXD003552_61576_ArchiveSpectrum_embedded.npy"
-    index_ids_save_file = "index_ids_save,txt"
-    index_save_file = "test_0325.index"
-
     index_writer = FaissWriteIndex()
-    index_writer.create_index(embedded_vstack_data, index_ids_save_file, index_save_file)
+
+    # create index from one or more embedded_spectra file
+    embedded_spectra_files_path = "./IDMap_Index"  # Path of embedded_spectra files, which is end with "_embedded.txt"
+    index_save_file = "test_01_create_index.index"
+    index_ids_save_file = "test_01_create_ids_save.npy"
+    index_writer.create_index_for_embedded_spectra(embedded_spectra_files_path, index_ids_save_file, index_save_file)
+
+    # add new embedded_spectra data to a raw index
+    raw_index = "test_01_create_index.index"
+    raw_ids_file = "test_01_create_ids_save.npy"
+    new_embedded_spectra_path = "./IDMap_Index_2"
+    output_index_ids_file = "test_02_add_ids_save.npy"
+    output_index_file = "test_02_add_index.npy"
+    index_writer.add_embedded_spectra_to_index(raw_index, raw_ids_file, new_embedded_spectra_path, output_index_ids_file, output_index_file)
 
 ```
 
 ## **search_vectors_against_index.py**:
 * **Range Search query 32D spectra vectors against spectra library's index file, Default threshold is 0.1.**:<br>
-Range Search query 32D spectra vectors (*PXD003552_61576_ArchiveSpectrum_embedded.npy*) against spectra library's index file (*PXD003552_61576_ArchiveSpectrum.index*), and generate a result file (*test.csv*). Library index file (--index_file), USI file of spectral library(--index_usi_file),vectors file to be searched (-i, --input_embedded_spectra), and search result file (-o, --output) need to be specified.<br>
-`python search_vectors_against_index.py --index_file=PXD003552_61576_ArchiveSpectrum.index --index_usi_file=PXD003552_61576_ArchiveSpectrum_spectra_usi.txt -i=PXD003552_61576_ArchiveSpectrum_embedded.npy -o=test.csv`
