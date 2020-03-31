@@ -93,10 +93,13 @@ def test_encode_and_embeder():
 
 ## **dleamse_index_writer.py**:
 
+* **If you want to write multiple embedded_spectra files to an index, do the following:** <br>
+Write multiple embedded_spectra files to an index file(.index) and a file to store index's ids (.npy).<br>
+The ids of all embedded_spectra will be duplicate checked. If there is a file with duplicate ids, its ids will be updated and a new embedded_spectra file (_new_ids_embedded.txt) will be generated.<br>
 ```python
 from dleamse.dleamse_faiss_index_writer import FaissWriteIndex
 
-def test_index_write():
+def test_create_index():
     # faiss index writer
     index_writer = FaissWriteIndex()
 
@@ -105,6 +108,17 @@ def test_index_write():
     index_save_file = "test_01_create_index.index"
     index_ids_save_file = "test_01_create_ids_save.npy"
     index_writer.create_index_for_embedded_spectra(embedded_spectra_files_path, index_ids_save_file, index_save_file)
+```
+
+* **If you are adding new embedded_spectra files to the raw index, do the following:** <br>
+Add multiple new embedded_spectra files to the existing raw index file (.index), and generate a new .index file and its corresponding index's ids file.
+The ids of all new embedded_spectra file and the ids of raw index file will be duplicate checked. If there is a file with duplicate ID, its ID will be updated and a new file will be generated.<br>
+```python
+from dleamse.dleamse_faiss_index_writer import FaissWriteIndex
+
+def test_index_write():
+    # faiss index writer
+    index_writer = FaissWriteIndex()
 
     # add new embedded_spectra data to a raw index
     raw_index = "test_01_create_index.index"
@@ -113,7 +127,6 @@ def test_index_write():
     output_index_ids_file = "test_02_add_ids_save.npy"
     output_index_file = "test_02_add_index.npy"
     index_writer.add_embedded_spectra_to_index(raw_index, raw_ids_file, new_embedded_spectra_path, output_index_ids_file, output_index_file)
-
 ```
 
 ## **search_vectors_against_index.py**:
