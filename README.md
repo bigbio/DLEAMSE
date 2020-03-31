@@ -74,9 +74,9 @@ if __name__ == '__main__':
 
 # DLEAMSE's Scripts
 
-## **dleamse_encode_and_embed.py**:
+## **Encode and embed spectra : dleamse_encode_and_embed.py**:
 
-Encode and embed the spectra to vectors. This script support the spectra file with .mgf, .mzML and .json. By default, two or three files would be generated from this script, the spectra embedding vectors file , spectra usi file and the record file of spectra with missing charge. By default, GPU is used; the default directory of DLEASME model and 500 reference spectra file are in dleamse_model_references directory which is under current directory.<br>
+This script support the spectra file with .mgf, .mzML and .json. By default, two or three files would be generated from this script, the spectra embedding vectors file , spectra usi file and the record file of spectra with missing charge. By default, GPU is used; the default directory of DLEASME model and 500 reference spectra file are in dleamse_model_references directory which is under current directory.<br>
 In this example, the input spectra file is *PXD003552_61576_ArchiveSpectrum.json*, and the three generated files are: *PXD003552_61576_ArchiveSpectrum_embedded.txt*; *PXD003552_61576_ArchiveSpectrum_spectrum_usi.txt*; *PXD003552_61576_ArchiveSpectrum_miss_record.txt* (if exist the charge missing spectra) <br>
 ```python
 from dleamse.dleamse_encode_and_embed import encode_and_embed_spectra
@@ -87,11 +87,11 @@ def test_encode_and_embeder():
     prj = "test"
     input_file = "PXD003552_61576_ArchiveSpectrum.json"
     reference_spectra = "./dleamse_model_references/0722_500_rf_spectra.mgf"
-    embedded_vstack_data = encode_and_embed_spectra(model, prj, input_file, reference_spectra)
+    encode_and_embed_spectra(model, prj, input_file, reference_spectra)
 
 ```
 
-## **dleamse_index_writer.py**:
+## **About index : dleamse_faiss_index_writer.py**:
 
 * **If you want to write multiple embedded_spectra files to an index, do the following:** <br>
 Write multiple embedded_spectra files to an index file(.index) and a file to store index's ids (.npy).<br>
@@ -129,5 +129,5 @@ def test_index_write():
     index_writer.add_embedded_spectra_to_index(raw_index, raw_ids_file, new_embedded_spectra_path, output_index_ids_file, output_index_file)
 ```
 
-## **search_vectors_against_index.py**:
+## **About index search : search_vectors_against_index.py**:
 * **Range Search query 32D spectra vectors against spectra library's index file, Default threshold is 0.1.**:<br>
