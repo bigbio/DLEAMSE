@@ -4,11 +4,12 @@
 Encode and emberder spectra.
 """
 
-import argparse
 import os
+import sys
 
 import more_itertools
 from pyteomics.mgf import read as mgf_read
+from pyteomics.mzml import read as mzml_read
 import json
 
 import pandas as pd
@@ -22,7 +23,8 @@ from torch.utils import data
 import torch.nn.functional as func
 import torch.nn as nn
 
-import faiss
+import zlib
+import ast
 
 DEFAULT_IVF_NLIST = 100
 
@@ -44,7 +46,7 @@ class EncodeDataset:
             [bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
         ndp_r_spec_list = caculate_r_spec(reference_intensity)
 
-        self.spectra_title, self.usi_list, peakslist1, precursor_feature_list1 = [], [], [], []
+        self.ids_usi_dict, self.ids_list, self.usi_list, peakslist1, precursor_feature_list1 = {}, [], [], [], []
         ndp_spec_list = []
         i, j, k = 0, 0, 0
         charge_none_record, charge_none_list = 0, []
@@ -67,8 +69,12 @@ class EncodeDataset:
                     k += 1
                     spectra_file_name = str(input_spectra_file).split("/")[-1]
                     usi = "mzspec:" + str(prj) + ":" + spectra_file_name + ":index:" + str(scan)
+                    ids = zlib.crc32(usi.encode('utf8'))
+                    while self.ids_usi_dict.keys().__contains__(ids):
+                        ids += 1
+                    self.ids_usi_dict[ids] = usi
                     self.usi_list.append(usi)
-                    self.spectra_title.append(s1.get('params').get('title'))
+                    self.ids_list.append(ids)
                     charge1 = int(s1.get('params').get('charge').__str__()[0])
 
                 bin_s1 = bin_spectrum(s1.get('m/z array'), s1.get('intensity array'))
@@ -109,8 +115,12 @@ class EncodeDataset:
                     scan = k
                     k += 1
                     usi = "mzspec:" + str(prj) + ":" + spectra_file_name + ":index:" + str(scan)
+                    ids = zlib.crc32(usi.encode('utf8'))
+                    while self.ids_usi_dict.keys().__contains__(ids):
+                        ids += 1
+                    self.ids_usi_dict[ids] = usi
                     self.usi_list.append(usi)
-                    self.spectra_title.append(s1.get('params').get('title'))
+                    self.ids_list.append(ids)
                     charge1 = int(s1.get('params').get('charge').__str__()[0])
 
                 bin_s1 = bin_spectrum(s1.get('m/z array'), s1.get('intensity array'))
@@ -148,7 +158,6 @@ class EncodeDataset:
                         tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
                         intensList01 = np.array(peakslist1)
 
-                        # 归一化点积的计算
                         tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list,
                                                                  np.array(peakslist1), np.array(ndp_spec_list))
 
@@ -169,8 +178,13 @@ class EncodeDataset:
             df_mr.to_csv(miss_save_name, mode="a+", header=None, index=None)
             print("Charge Missing Number:{}".format(charge_none_record))
             del charge_none_list
+        self.ids_usi_df = pd.DataFrame({"ids":self.ids_list, "usi":self.usi_list}, columns=["ids", "usi"])
 
-        return self.spectra_title, self.usi_list, self.spectra_dataset
+        self.usi_list.clear()
+        self.ids_list.clear()
+        self.ids_usi_dict.clear()
+
+        return self.ids_usi_df, self.spectra_dataset
 
     def transform_mzml(self, prj, input_spctra_file, ref_spectra, miss_save_name):
         from pyteomics.mzml import read as mzml_read
@@ -182,7 +196,7 @@ class EncodeDataset:
             [bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
         ndp_r_spec_list = caculate_r_spec(reference_intensity)
 
-        self.usi_list, peakslist1, precursor_feature_list1 = [], [], []
+        self.ids_usi_dict, self.ids_list, self.usi_list, peakslist1, precursor_feature_list1 = {}, [], [], [], []
         ndp_spec_list = []
         i, j, k = 0, 0, 0
         charge_none_record, charge_none_list = 0, []
@@ -205,7 +219,12 @@ class EncodeDataset:
                     usi = "mzspec:" + str(prj) + ":" + spectra_file_name + ":scan:" + str(scan)
                     # usi = str(prj) + ":" + str(input_spctra_file) + ":" + str(scan)
 
+                    ids = zlib.crc32(usi.encode('utf8'))
+                    while self.ids_usi_dict.keys().__contains__(ids):
+                        ids += 1
+                    self.ids_usi_dict[ids] = usi
                     self.usi_list.append(usi)
+                    self.ids_list.append(ids)
                     charge1 = int(
                         s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get(
                             "charge state").__str__()[0])
@@ -249,7 +268,12 @@ class EncodeDataset:
                     scan = s1.get("spectrum title").split(",")[-1].split(":")[-1].strip("\"").split("=")[-1]
                     spectra_file_name = str(input_spctra_file).split("/")[-1]
                     usi = "mzspec:" + str(prj) + ":" + spectra_file_name + ":scan:" + str(scan)
+                    ids = zlib.crc32(usi.encode('utf8'))
+                    while self.ids_usi_dict.keys().__contains__(ids):
+                        ids += 1
+                    self.ids_usi_dict[ids] = usi
                     self.usi_list.append(usi)
+                    self.ids_list.append(ids)
                     charge1 = int(
                         s1.get("precursorList").get("precursor")[0].get("selectedIonList").get("selectedIon")[0].get(
                             "charge state").__str__()[0])
@@ -292,7 +316,6 @@ class EncodeDataset:
                         tmp_precursor_feature_list1 = np.array(precursor_feature_list1)
                         intensList01 = np.array(peakslist1)
 
-                        # 归一化点积的计算
                         tmp_dplist01 = caculate_nornalization_dp(reference_intensity, ndp_r_spec_list,
                                                                  np.array(peakslist1), np.array(ndp_spec_list))
 
@@ -315,7 +338,13 @@ class EncodeDataset:
             print("Charge Missing Number:{}".format(charge_none_record))
             del charge_none_list
 
-        return self.usi_list, self.spectra_dataset
+        self.ids_usi_df = pd.DataFrame({"ids": self.ids_list, "usi": self.usi_list}, columns=["ids", "usi"])
+
+        self.usi_list.clear()
+        self.ids_list.clear()
+        self.ids_usi_dict.clear()
+
+        return self.ids_usi_df, self.spectra_dataset
 
     def transform_json(self, input_spctra_file, ref_spectra, miss_save_name):
         self.spectra_dataset = None
@@ -326,7 +355,7 @@ class EncodeDataset:
             [bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
         ndp_r_spec_list = caculate_r_spec(reference_intensity)
 
-        self.usi_list, peakslist1, precursor_feature_list1 = [], [], []
+        self.ids_usi_dict, self.ids_list, self.usi_list, peakslist1, precursor_feature_list1 = {}, [], [], [], []
         ndp_spec_list = []
         i, j, k = 0, 0, 0
         charge_none_record, charge_none_list = 0, []
@@ -343,7 +372,12 @@ class EncodeDataset:
                     continue
                 else:
                     usi = s1.get("usi")
+                    ids = zlib.crc32(usi.encode('utf8'))
+                    while self.ids_usi_dict.keys().__contains__(ids):
+                        ids += 1
+                    self.ids_usi_dict[ids] = usi
                     self.usi_list.append(usi)
+                    self.ids_list.append(ids)
                     charge1 = int(s1.get("precursorCharge"))
 
                 bin_s1 = bin_spectrum(s1.get('masses'), s1.get('intensities'))
@@ -381,7 +415,12 @@ class EncodeDataset:
                     continue
                 else:
                     usi = s1.get("usi")
+                    ids = zlib.crc32(usi.encode('utf8'))
+                    while self.ids_usi_dict.keys().__contains__(ids):
+                        ids += 1
+                    self.ids_usi_dict[ids] = usi
                     self.usi_list.append(usi)
+                    self.ids_list.append(ids)
                     charge1 = int(s1.get("precursorCharge"))
 
                 bin_s1 = bin_spectrum(s1.get('masses'), s1.get('intensities'))
@@ -444,7 +483,13 @@ class EncodeDataset:
             print("Charge Missing Number:{}".format(charge_none_record))
             del charge_none_list
 
-        return self.usi_list, self.spectra_dataset
+        self.ids_usi_df = pd.DataFrame({"ids": self.ids_list, "usi": self.usi_list}, columns=["ids", "usi"])
+
+        self.usi_list.clear()
+        self.ids_list.clear()
+        self.ids_usi_dict.clear()
+
+        return self.ids_usi_df, self.spectra_dataset
 
     def gray_code(self, number):
         """
@@ -629,14 +674,15 @@ class LoadDataset(data.dataset.Dataset):
 
 
 class EmbedDataset:
-    def __init__(self, model, vstack_encoded_spectra, use_gpu):
+    def __init__(self, model, ids_data, vstack_encoded_spectra, store_embed_file, use_gpu):
+        self.ids_vstack_df = None
         self.out_list = []
-        self.embedding_dataset(model, vstack_encoded_spectra, use_gpu)
+        self.embedding_dataset(model, ids_data, vstack_encoded_spectra, store_embed_file, use_gpu)
 
     def get_data(self):
-        return self.out_list
+        return self.ids_vstack_df
 
-    def embedding_dataset(self, model, vstack_encoded_spectra, use_gpu):
+    def embedding_dataset(self, model, ids_data, encoded_spectra_data, store_embed_file, use_gpu):
 
         if use_gpu is True:
             # for gpu
@@ -647,12 +693,8 @@ class EmbedDataset:
             batch = 1
             net = torch.load(model, map_location='cpu')
 
-        if type(vstack_encoded_spectra) == np.ndarray:
-            vstack_data = vstack_encoded_spectra
-        else:
-            vstack_data = np.loadtxt(vstack_encoded_spectra)
 
-        dataset = LoadDataset(vstack_data)
+        dataset = LoadDataset(encoded_spectra_data)
 
         dataloader = data.DataLoader(dataset=dataset, batch_size=batch, shuffle=False, num_workers=1)
 
@@ -680,165 +722,113 @@ class EmbedDataset:
             else:
                 self.out_list = np.vstack((self.out_list, out1))
 
-        # np.savetxt(store_embed_file, self.out_list)
+        vstack_data_df = pd.DataFrame({"embedded_spectra": self.out_list.tolist()})
+        self.ids_vstack_df = pd.concat([ids_data, vstack_data_df], axis=1)
+        self.ids_vstack_df.to_csv(store_embed_file, sep="\t", header=True, index=None, columns=["ids", "embedded_spectra"])
 
 
-def encode_spectra(prj, input, reference_spectra, miss_record):
+def encode_spectra(prj, input_file, reference_spectra,  **kw):
     """
+    Encode spectra
     :param prj: ProteomeXchange project/dataset accession
-    :param input: get .mgf file as input
+    :param input: get .mgf/.mzML/.json file as input
     :param reference_spectra: get a .mgf file contained 500 spectra as reference spectra from normalized dot product calculation
-    :param miss_record: record title of some spectra which loss charge attribute
-    :return: None
+    :param kw: miss_record, ids_usi_save_file, encoded_spectra_save_file
+    :return: ids_usi data, encoded_spectra data
     """
-    usi_list, vstack_data = [], []
-    if str(input).endswith(".mgf"):
-        spectra_num = more_itertools.ilen(mgf_read(input, convert_arrays=1))
-        mgf_encoder = EncodeDataset(spectra_num)
-        spectra_title, usi_list, vstack_data = mgf_encoder.transform_mgf(prj, input, reference_spectra, miss_record)
-        return spectra_title, usi_list, vstack_data
-    elif str(input).endswith(".mzML"):
-        from pyteomics.mzml import read as mzml_read
-        spectra_num = more_itertools.ilen(mzml_read(input))
-        mzml_encoder = EncodeDataset(spectra_num)
-        usi_list, vstack_data = mzml_encoder.transform_mzml(prj, input, reference_spectra, miss_record)
-        # np.savetxt(output, vstack_data)
-        return usi_list, vstack_data
+    dirname, filename = os.path.split(os.path.abspath(input_file))
+    if kw.keys().__contains__("miss_record"):
+        miss_record = kw["miss_record"]
     else:
-        spectra_num = len(input)
+        miss_record = dirname + "/" + filename.strip((filename.split(".")[-1])).strip(".") + "_missing_c_record.txt"
+
+    if kw.keys().__contains__("ids_usi_save_file"):
+        ids_usi_save_file = kw["ids_usi_save_file"]
+    else:
+        ids_usi_save_file = dirname + "/" + filename.strip((filename.split(".")[-1])).strip(".") + "_ids_usi.txt"
+
+    if kw.keys().__contains__("encoded_spectra_save_file"):
+        encoded_spectra_save_file = kw["encoded_spectra_save_file"]
+    else:
+        encoded_spectra_save_file = dirname + "/" + filename.strip((filename.split(".")[-1])).strip(".") + "_encoded.npy"
+
+    if str(input_file).endswith(".mgf"):
+        spectra_num = more_itertools.ilen(mgf_read(input, convert_arrays=1))
+
+        mgf_encoder = EncodeDataset(spectra_num)
+        ids_usi_df, vstack_data = mgf_encoder.transform_mgf(prj, input_file, reference_spectra, miss_record)
+
+        pd.DataFrame(ids_usi_df).to_csv(ids_usi_save_file, header=True, index=None)
+        np.save(encoded_spectra_save_file, vstack_data)
+
+        return ids_usi_df, vstack_data
+
+    elif str(input_file).endswith(".mzML"):
+
+        spectra_num = more_itertools.ilen(mzml_read(input_file))
+        mzml_encoder = EncodeDataset(spectra_num)
+        ids_usi_df, vstack_data = mzml_encoder.transform_mzml(prj, input_file, reference_spectra, miss_record)
+
+        pd.DataFrame(ids_usi_df).to_csv(ids_usi_save_file, header=True, index=None)
+        np.save(encoded_spectra_save_file, vstack_data)
+
+        return ids_usi_df, vstack_data
+    else:
+        with open(input_file) as fh:
+            spectra_json_file = [json.loads(line) for line in fh if line]
+        spectra_num = len(spectra_json_file)
         json_encoder = EncodeDataset(spectra_num)
-        usi_list, vstack_data = json_encoder.transform_json(input, reference_spectra, miss_record)
-        return usi_list, vstack_data
+        ids_usi_df, vstack_data = json_encoder.transform_json(spectra_json_file, reference_spectra, miss_record)
+
+        pd.DataFrame(ids_usi_df).to_csv(ids_usi_save_file, header=True, index=None)
+        np.save(encoded_spectra_save_file, vstack_data)
+
+        return ids_usi_df, vstack_data
 
 
-def embed_spectra(model, vstack_encoded_spectra, use_gpu: bool):
+def embed_spectra(model, ids_usi_data, vstack_encoded_spectra, output_embedd_file, **kwargs):
     """
-
-    :param model: .pkl format embedding model
+    Embed spectra
+    :param model:  .pkl format embedding model
+    :param ids_usi_data: ids-usi dataframe data
     :param vstack_encoded_spectra: encoded spectra file for embedding
-    :param output_embedd_file:
-    :param use_gpu: bool
-    :return: embedded spectra 32d vector
+    :param kwargs: bool, default=False;
+    :return: ids-embedded_spectra data
     """
-    embedded_spectra = EmbedDataset(model, vstack_encoded_spectra, use_gpu).get_data()
-    print("Finish spectra embedding!")
-    return embedded_spectra
+
+    if kwargs.keys().__contains__("use_gpu"):
+        use_gpu = kwargs["use_gpu"]
+    else:
+        use_gpu = False
+
+    ids_data = ids_usi_data["ids"]
+
+    EmbedDataset(model, ids_data, vstack_encoded_spectra, output_embedd_file, use_gpu)
+
+    print("Finish spectra embedding, save embedded spectra to " + output_embedd_file + "!")
 
 
-def encode_and_embed_spectra(model, prj, input, refrence_spectra, miss_record, output_embedd_file, use_gpu: bool):
+def encode_and_embed_spectra(model, prj, input_file, refrence_spectra):
     """
 
     :param model: .pkl format embedding model
     :param input: get .mgf or .mzML file as input
     :param refrence_spectra: refrence_spectra: get a .mgf file contained 500 spectra as referece spectra from normalized dot product calculation
     :param miss_record: record title of some spectra which loss charge attribute
-    :param output_embedd_file: file to store the embedded data
+    :param output_embedded_file: file to store the embedded data
     :param use_gpu: bool
     :return: embedded spectra 32d vector
     """
-    if str(input).endswith(".mgf"):
-        spectra_title, usi_list, vstack_encoded_spectra = encode_spectra(prj, input, refrence_spectra, miss_record)
-        embedded_spectra = embed_spectra(model, vstack_encoded_spectra, use_gpu)
-        usi_array = np.array(usi_list)
-        embedded_spectra_array = np.array(embedded_spectra)
 
-        usi_save_file = output_embedd_file.strip("embedded.npy") + "spectra_usi.txt"
-        pd.DataFrame(usi_array).to_csv(usi_save_file, header=None, index=None)
+    dirname, filename = os.path.split(os.path.abspath(input_file))
+    if input_file.endswith(".mgf"):
+        output_embedded_file = dirname + "/" + str(filename.strip(".mgf")) + "_embedded.txt"
+    elif input_file.endswith(".mzML"):
+        output_embedded_file = dirname + "/" + str(filename.strip(".mzML")) + "_embedded.txt"
+    else:
+        output_embedded_file = dirname + "/" + str(filename.strip(".json")) + "_embedded.txt"
 
-        spectra_title_save_file = output_embedd_file.strip("embedded.npy") + "spectra_title.txt"
-        pd.DataFrame(usi_array).to_csv(spectra_title_save_file, header=None, index=None)
-
-        np.save(output_embedd_file, embedded_spectra_array)
-        return embedded_spectra_array
-
-    elif str(input).endswith(".mzML"):
-        usi_list, vstack_encoded_spectra = encode_spectra(prj, input, refrence_spectra, miss_record)
-
-        embedded_spectra = embed_spectra(model, vstack_encoded_spectra, use_gpu)
-        usi_array = np.array(usi_list)
-        embedded_spectra_array = np.array(embedded_spectra)
-        # usi_df = pd.DataFrame(usi_array)
-        # embedded_spectra_df = pd.DataFrame(embedded_spectra_array)
-
-        spectra_title_save_file = output_embedd_file.strip("embedded.npy") + "spectra_usi.txt"
-        pd.DataFrame(usi_array).to_csv(spectra_title_save_file, header=None, index=None)
-        np.save(output_embedd_file, embedded_spectra_array)
-
-        # final_embedded_result = pd.concat([usi_df, embedded_spectra_df], axis=1)
-        # pd.DataFrame(final_embedded_result).to_csv(output_embedd_file, header=None, index=None)
-        return embedded_spectra_array
-
-    elif str(input).endswith(".json"):
-        with open(input) as fh:
-            spectra_json_file = [json.loads(line) for line in fh if line]
-
-        usi_list, vstack_encoded_spectra = encode_spectra(prj, spectra_json_file, refrence_spectra, miss_record)
-        embedded_spectra = embed_spectra(model, vstack_encoded_spectra, use_gpu)
-        usi_array = np.array(usi_list)
-        embedded_spectra_array = np.array(embedded_spectra)
-
-        # usi_df = pd.DataFrame(usi_array)
-        # embedded_spectra_df = pd.DataFrame(embedded_spectra_array)
-
-        # final_embedded_result = pd.concat([usi_df, embedded_spectra_df], axis=1)
-        # pd.DataFrame(final_embedded_result).to_csv(output_embedd_file, header=None, index=None)
-
-        spectra_title_save_file = output_embedd_file.strip("embedded.npy") + "spectra_usi.txt"
-        pd.DataFrame(usi_array).to_csv(spectra_title_save_file, header=None, index=None)
-        np.save(output_embedd_file, embedded_spectra_array)
-        return embedded_spectra_array
+    ids_usi_df, vstack_encoded_spectra = encode_spectra(prj, input_file, refrence_spectra)
+    embed_spectra(model, ids_usi_df, vstack_encoded_spectra, output_embedded_file)
 
 
-class FaissWriteIndex:
-
-    def __init__(self, vectors_data, output_path):
-        self.tmp = None
-        self.spectra_vectors = vectors_data
-        self.create_index(vectors_data, output_path)
-
-    def create_index(self, spectra_vectors, output_path):
-        n_embedded_dim = spectra_vectors.shape[1]
-        index = self.make_faiss_index(n_embedded_dim)
-        index.add(self.spectra_vectors.astype('float32'))
-        self.write_faiss_index(index, output_path)
-
-    def make_faiss_index(self, n_dimensions, index_type='flat'):
-        """
-        Make a fairly general-purpose FAISS index
-        :param n_dimensions:
-        :param index_type: Type of index to build: flat or ivfflat. ivfflat is much faster.
-        :return:
-        """
-        print("Making index of type {}".format(index_type))
-        if faiss.get_num_gpus():
-            gpu_resources = faiss.StandardGpuResources()
-            if index_type == 'flat':
-                config = faiss.GpuIndexFlatConfig()
-                index = faiss.GpuIndexFlatL2(gpu_resources, n_dimensions, config)
-            elif index_type == 'ivfflat':
-                config = faiss.GpuIndexIVFFlatConfig()
-                index = faiss.GpuIndexIVFFlat(gpu_resources, n_dimensions, DEFAULT_IVF_NLIST, faiss.METRIC_L2, config)
-            else:
-                raise ValueError("Unknown index_type %s" % index_type)
-        else:
-            print("Using CPU.")
-            if index_type == 'flat':
-                index = faiss.IndexFlatL2(n_dimensions)
-            elif index_type == 'ivfflat':
-                quantizer = faiss.IndexFlatL2(n_dimensions)
-                index = faiss.IndexIVFFlat(quantizer, n_dimensions, DEFAULT_IVF_NLIST, faiss.METRIC_L2)
-            else:
-                raise ValueError("Unknown index_type %s" % index_type)
-        return index
-
-    def write_faiss_index(self, index, out_filepath):
-        """
-        Save a FAISS index. If we're on GPU, have to convert to CPU index first
-        :param index:
-        :return:
-        """
-        if faiss.get_num_gpus():
-            print("Converting index from GPU to CPU...")
-            index = faiss.index_gpu_to_cpu(index)
-        faiss.write_index(index, out_filepath)
-        print("Wrote FAISS index to {}".format(out_filepath))
