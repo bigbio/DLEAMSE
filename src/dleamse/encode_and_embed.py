@@ -26,13 +26,16 @@ import faiss
 
 DEFAULT_IVF_NLIST = 100
 
+
 class EncodeDataset:
 
     def __init__(self, input_specta_num):
         self.len = input_specta_num
         self.spectra_dataset = None
+        self.MGF = None
+        self.spectra_title = None
 
-    def transform_mgf(self, prj, input_spctra_file, ref_spectra, miss_save_name):
+    def transform_mgf(self, prj, input_spectra_file, ref_spectra, miss_save_name):
         self.spectra_dataset = None
         print('Start spectra encoding ...')
         # 500 reference spectra
@@ -47,7 +50,7 @@ class EncodeDataset:
         charge_none_record, charge_none_list = 0, []
         encode_batch = 10000
 
-        self.MGF = mgf_read(input_spctra_file, convert_arrays=1)
+        self.MGF = mgf_read(input_spectra_file, convert_arrays=1)
         if encode_batch > self.len:
             for s1 in self.MGF:
 
@@ -62,7 +65,7 @@ class EncodeDataset:
                     # scan = s1.get('params').get('title').split(";")[-1].split("=")[-1]
                     scan = k
                     k += 1
-                    spectra_file_name = str(input_spctra_file).split("/")[-1]
+                    spectra_file_name = str(input_spectra_file).split("/")[-1]
                     usi = "mzspec:" + str(prj) + ":" + spectra_file_name + ":index:" + str(scan)
                     self.usi_list.append(usi)
                     self.spectra_title.append(s1.get('params').get('title'))
@@ -102,7 +105,7 @@ class EncodeDataset:
                     continue
                 else:
                     # scan = s1.get('params').get('title').split(";")[-1].split("=")[-1]
-                    spectra_file_name = str(input_spctra_file).split("/")[-1]
+                    spectra_file_name = str(input_spectra_file).split("/")[-1]
                     scan = k
                     k += 1
                     usi = "mzspec:" + str(prj) + ":" + spectra_file_name + ":index:" + str(scan)

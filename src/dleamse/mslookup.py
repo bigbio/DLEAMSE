@@ -31,7 +31,6 @@ class AppConfigException(object):
 @click.option('--miss_record',        '-s', help='Bool, record charge missed spectra', default="True")
 @click.option('--use_gpu',            '-g', help='Bool, use gpu or not', default="False")
 @click.option('--make_faiss_index',   '-f', help='Make faiss index', default="False")
-@click.option('--index_file',         '')
 @click.pass_context
 def encode_ms_file(ctx, model: str, project_accession: str, input: str, ref_spectra: str,
                    output: str, miss_record: str,
