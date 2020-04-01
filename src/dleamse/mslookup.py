@@ -26,8 +26,7 @@ class AppConfigException(object):
                                       default="./dleamse_model_references/080802_20_1000_NM500R_model.pkl")
 @click.option('--project_accession',  '-p', help='ProteomeXchange dataset accession', default="Project_ID")
 @click.option('--input',              '-i', help='Input MS File (supported: mzML, MGF, JSON)', required=True)
-@click.option('--ref_spectra',        '-r', help='Input 500 reference spectra file',
-              default="./dleamse_model_references/0722_500_rf_spectra.mgf")
+@click.option('--ref_spectra',        '-r', help='Input 500 reference spectra file', default="./dleamse_model_references/0722_500_rf_spectra.mgf")
 @click.option('--output',             '-o', help='Output vectors file, its default path is the same as input file', default="outputfile.csv")
 @click.option('--miss_record',        '-s', help='Bool, record charge missed spectra', default="True")
 @click.option('--use_gpu',            '-g', help='Bool, use gpu or not', default="False")
@@ -93,7 +92,7 @@ def encode_ms_file(ctx, model: str, project_accession: str, input: str, ref_spec
                 index_ids_file = dirname + os.path.sep + filename.strip(".json") + "_ids.txt"
                 index_file = dirname + os.path.sep + filename.strip(".json") + ".index"
 
-    embedded_spectra_data = encode_and_embed_spectra(model, prj, input_file, ref_spectra, output_file)
+    embedded_spectra_data = encode_and_embed_spectra(model, prj, input_file, ref_spectra)
 
     if make_faiss_index:
         index_maker = FaissWriteIndex(embedded_spectra_data, index_ids_file, index_file)

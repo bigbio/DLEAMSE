@@ -808,27 +808,27 @@ def embed_spectra(model, ids_usi_data, vstack_encoded_spectra, output_embedd_fil
     print("Finish spectra embedding, save embedded spectra to " + output_embedd_file + "!")
 
 
-def encode_and_embed_spectra(model, prj, input_file, refrence_spectra):
-    """
+def encode_and_embed_spectra(model, prj, input_file, reference_spectra):
 
-    :param model: .pkl format embedding model
-    :param input: get .mgf or .mzML file as input
-    :param refrence_spectra: refrence_spectra: get a .mgf file contained 500 spectra as referece spectra from normalized dot product calculation
-    :param miss_record: record title of some spectra which loss charge attribute
-    :param output_embedded_file: file to store the embedded data
-    :param use_gpu: bool
-    :return: embedded spectra 32d vector
-    """
+  """
+  :param model: .pkl format embedding model
+  :param input: get .mgf or .mzML file as input
+  :param reference_spectra: reference_spectra: get a .mgf file contained 500 spectra as referece spectra from normalized dot product calculation
+  :param miss_record: record title of some spectra which loss charge attribute
+  :param output_embedded_file: file to store the embedded data
+  :param use_gpu: bool
+  :return: embedded spectra 32d vector
+  """
 
-    dirname, filename = os.path.split(os.path.abspath(input_file))
-    if input_file.endswith(".mgf"):
-        output_embedded_file = dirname + "/" + str(filename.strip(".mgf")) + "_embedded.txt"
-    elif input_file.endswith(".mzML"):
-        output_embedded_file = dirname + "/" + str(filename.strip(".mzML")) + "_embedded.txt"
-    else:
-        output_embedded_file = dirname + "/" + str(filename.strip(".json")) + "_embedded.txt"
+  dirname, filename = os.path.split(os.path.abspath(input_file))
+  if input_file.endswith(".mgf"):
+      output_embedded_file = dirname + "/" + str(filename.strip(".mgf")) + "_embedded.txt"
+  elif input_file.endswith(".mzML"):
+      output_embedded_file = dirname + "/" + str(filename.strip(".mzML")) + "_embedded.txt"
+  else:
+      output_embedded_file = dirname + "/" + str(filename.strip(".json")) + "_embedded.txt"
 
-    ids_usi_df, vstack_encoded_spectra = encode_spectra(prj, input_file, refrence_spectra)
-    embed_spectra(model, ids_usi_df, vstack_encoded_spectra, output_embedded_file)
+  ids_usi_df, vstack_encoded_spectra = encode_spectra(prj, input_file, reference_spectra)
+  embed_spectra(model, ids_usi_df, vstack_encoded_spectra, output_embedded_file)
 
 
