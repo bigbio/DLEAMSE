@@ -98,8 +98,8 @@ class FaissWriteIndex:
     def merge_indexes(self, *input_indexes, output):
         """
 
-        :param input_indexes:
-        :param output:
+        :param input_indexes: input index files list
+        :param output: a merged indexes file
         :return:
         """
 
