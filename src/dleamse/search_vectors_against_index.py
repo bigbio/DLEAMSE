@@ -28,7 +28,7 @@ def commanline_args():
     parser.add_argument('-i', '--input_embedded_spectra', type=argparse.FileType('r'), required=True,
                         help='input embedded spectra file(s)')
     # parser.add_argument('--k', type=int, help='k for kNN', default=5)
-    parser.add_argument('-t', '--threshold', type=float, help='Threshold for similarity searching.', default=0.1)
+    parser.add_argument('-t', '--threshold', type=float, help='Threshold for similarity searching.', default=0.07)
     parser.add_argument('-o', '--output', type=argparse.FileType('w'), required=True, help='output file, .csv)')
     return parser.parse_args()
 
@@ -76,7 +76,7 @@ class FaissIndexSearch():
             # elif extension_lower == '.npy':
             #     return np.load(filepath)
             if extension_lower == ".txt":
-                ids_embedded_spectra = pd.read_csv(filepath, index_col=None)
+                ids_embedded_spectra = pd.read_csv(filepath, sep="\t", index_col=None)
                 # ids_data = ids_embedded_spectra["ids"].values
                 spectra_vectors = ids_embedded_spectra["embedded_spectra"].values
                 tmp_spectra_vectors = None
@@ -155,28 +155,22 @@ class FaissIndexSearch():
         query_id, limit_num, result_list = [], [], []
         print(embedded.shape[0])
         result = index.range_search(embedded, dist)
-        print(result[0].shape)
-        print(len(result[1]))
-        print(len(result[2]))
-        i = 0
-        for j in range(len(result[0])-1):
-            print(result[0][j])
-            print(result[1][result[0][j]:result[0][j+1]])
-            print(result[2][result[0][j]:result[0][j+1]])
-        # for i in range(embedded.shape[0]):
-        #     res_index = index.range_search(embedded[[i], :], dist)
-        #     print(res_index)
-        #     # query_id.append(index_usi[i][0])
-        #     query_id.append(i)
-        #     limit_num.append(res_index[0][1])
-        #     result_dict = {}
-        #     for j in range(len(res_index[1])):
-        #         print(int(res_index[2][j]))
-        #         result_dict[int(res_index[2][j])] = res_index[1][j]
-        #     result_list.append(result_dict)
-        # result_df = pd.DataFrame({"query_id": query_id, "limit_num": limit_num, "result": result_list},
-        #                          columns=["query_id", "limit_num", "result"])
-        # result_df.to_csv(outpath, index=False)
+        limit, I, D = result[0], result[1], result[2]
+
+        for i in range(embedded.shape[0]):
+            print(limit[i+1] - limit[i])
+            query_id.append(i)
+            limit_num.append(limit[i+1] - limit[i])
+            tmp_I = I[limit[i]:limit[i+1]]
+            tmp_D = D[limit[i]:limit[i+1]]
+            tmp_result = {}
+            for i in range(limit[i+1] - limit[i]):
+                tmp_result[tmp_I[i]] = tmp_D[i]
+            result_list.append(tmp_result)
+
+        result_df = pd.DataFrame({"query_id": query_id, "limit_num": limit_num, "result": result_list},
+                                 columns=["query_id", "limit_num", "result"])
+        result_df.to_csv(outpath, index=False)
 
     def write_search_results(self, D, I, outpath):
         with h5py.File(outpath, 'w') as h5f:
@@ -215,8 +209,8 @@ class FaissIndexSearch():
         args.output.close()
 
 
-# if __name__ == "__main__":
-#     args = commanline_args()
-#
-#     index_searcher = FaissIndexSearch()
-#     index_searcher.execute_range_search(args)
+if __name__ == "__main__":
+    args = commanline_args()
+
+    index_searcher = FaissIndexSearch()
+    index_searcher.execute_range_search(args)
