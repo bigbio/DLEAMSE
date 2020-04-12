@@ -28,16 +28,13 @@ import ast
 
 DEFAULT_IVF_NLIST = 100
 
-
 class EncodeDataset:
 
     def __init__(self, input_specta_num):
         self.len = input_specta_num
         self.spectra_dataset = None
-        self.MGF = None
-        self.spectra_title = None
 
-    def transform_mgf(self, prj, input_spectra_file, ref_spectra, miss_save_name):
+    def transform_mgf(self, prj, input_spctra_file, ref_spectra, miss_save_name):
         self.spectra_dataset = None
         print('Start spectra encoding ...')
         # 500 reference spectra
@@ -52,7 +49,7 @@ class EncodeDataset:
         charge_none_record, charge_none_list = 0, []
         encode_batch = 10000
 
-        self.MGF = mgf_read(input_spectra_file, convert_arrays=1)
+        self.MGF = mgf_read(input_spctra_file, convert_arrays=1)
         if encode_batch > self.len:
             for s1 in self.MGF:
 
@@ -67,7 +64,7 @@ class EncodeDataset:
                     # scan = s1.get('params').get('title').split(";")[-1].split("=")[-1]
                     scan = k
                     k += 1
-                    spectra_file_name = str(input_spectra_file).split("/")[-1]
+                    spectra_file_name = str(input_spctra_file).split("/")[-1]
                     usi = "mzspec:" + str(prj) + ":" + spectra_file_name + ":index:" + str(scan)
                     ids = zlib.crc32(usi.encode('utf8'))
                     while self.ids_usi_dict.keys().__contains__(ids):
@@ -111,7 +108,7 @@ class EncodeDataset:
                     continue
                 else:
                     # scan = s1.get('params').get('title').split(";")[-1].split("=")[-1]
-                    spectra_file_name = str(input_spectra_file).split("/")[-1]
+                    spectra_file_name = str(input_spctra_file).split("/")[-1]
                     scan = k
                     k += 1
                     usi = "mzspec:" + str(prj) + ":" + spectra_file_name + ":index:" + str(scan)
@@ -674,15 +671,15 @@ class LoadDataset(data.dataset.Dataset):
 
 
 class EmbedDataset:
-    def __init__(self, model, ids_data, vstack_encoded_spectra, store_embed_file, use_gpu):
+    def __init__(self, model, ids_usi_data, vstack_encoded_spectra, store_embed_file, use_gpu):
         self.ids_vstack_df = None
         self.out_list = []
-        self.embedding_dataset(model, ids_data, vstack_encoded_spectra, store_embed_file, use_gpu)
+        self.embedding_dataset(model, ids_usi_data, vstack_encoded_spectra, store_embed_file, use_gpu)
 
     def get_data(self):
         return self.ids_vstack_df
 
-    def embedding_dataset(self, model, ids_data, encoded_spectra_data, store_embed_file, use_gpu):
+    def embedding_dataset(self, model, ids_usi_data, encoded_spectra_data, store_embed_file, use_gpu):
 
         if use_gpu is True:
             # for gpu
@@ -723,8 +720,8 @@ class EmbedDataset:
                 self.out_list = np.vstack((self.out_list, out1))
 
         vstack_data_df = pd.DataFrame({"embedded_spectra": self.out_list.tolist()})
-        self.ids_vstack_df = pd.concat([ids_data, vstack_data_df], axis=1)
-        self.ids_vstack_df.to_csv(store_embed_file, sep="\t", header=True, index=None, columns=["ids", "embedded_spectra"])
+        self.ids_vstack_df = pd.concat([ids_usi_data["ids"], ids_usi_data["usi"], vstack_data_df], axis=1)
+        self.ids_vstack_df.to_csv(store_embed_file, sep="\t", header=True, index=None, columns=["ids", "usi", "embedded_spectra"])
 
 
 def encode_spectra(prj, input_file, reference_spectra,  **kw):
@@ -801,34 +798,34 @@ def embed_spectra(model, ids_usi_data, vstack_encoded_spectra, output_embedd_fil
     else:
         use_gpu = False
 
-    ids_data = ids_usi_data["ids"]
+    # ids_data = ids_usi_data["ids"]
 
-    EmbedDataset(model, ids_data, vstack_encoded_spectra, output_embedd_file, use_gpu)
+    EmbedDataset(model, ids_usi_data, vstack_encoded_spectra, output_embedd_file, use_gpu)
 
     print("Finish spectra embedding, save embedded spectra to " + output_embedd_file + "!")
 
 
-def encode_and_embed_spectra(model, prj, input_file, reference_spectra):
+def encode_and_embed_spectra(model, refrence_spectra, prj, input_file):
+    """
 
-  """
-  :param model: .pkl format embedding model
-  :param input: get .mgf or .mzML file as input
-  :param reference_spectra: reference_spectra: get a .mgf file contained 500 spectra as referece spectra from normalized dot product calculation
-  :param miss_record: record title of some spectra which loss charge attribute
-  :param output_embedded_file: file to store the embedded data
-  :param use_gpu: bool
-  :return: embedded spectra 32d vector
-  """
+    :param model: .pkl format embedding model
+    :param input: get .mgf or .mzML file as input
+    :param refrence_spectra: refrence_spectra: get a .mgf file contained 500 spectra as referece spectra from normalized dot product calculation
+    :param miss_record: record title of some spectra which loss charge attribute
+    :param output_embedded_file: file to store the embedded data
+    :param use_gpu: bool
+    :return: embedded spectra 32d vector
+    """
 
-  dirname, filename = os.path.split(os.path.abspath(input_file))
-  if input_file.endswith(".mgf"):
-      output_embedded_file = dirname + "/" + str(filename.strip(".mgf")) + "_embedded.txt"
-  elif input_file.endswith(".mzML"):
-      output_embedded_file = dirname + "/" + str(filename.strip(".mzML")) + "_embedded.txt"
-  else:
-      output_embedded_file = dirname + "/" + str(filename.strip(".json")) + "_embedded.txt"
+    dirname, filename = os.path.split(os.path.abspath(input_file))
+    if input_file.endswith(".mgf"):
+        output_embedded_file = dirname + "/" + str(filename.strip(".mgf")) + "_embedded.txt"
+    elif input_file.endswith(".mzML"):
+        output_embedded_file = dirname + "/" + str(filename.strip(".mzML")) + "_embedded.txt"
+    else:
+        output_embedded_file = dirname + "/" + str(filename.strip(".json")) + "_embedded.txt"
 
-  ids_usi_df, vstack_encoded_spectra = encode_spectra(prj, input_file, reference_spectra)
-  embed_spectra(model, ids_usi_df, vstack_encoded_spectra, output_embedded_file)
+    ids_usi_df, vstack_encoded_spectra = encode_spectra(prj, input_file, refrence_spectra)
+    embed_spectra(model, ids_usi_df, vstack_encoded_spectra, output_embedded_file)
 
 

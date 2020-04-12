@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import faiss
 import ast
+import click
 
 DEFAULT_IVF_NLIST = 100
 
@@ -78,7 +79,7 @@ class FaissWriteIndex:
             if update_id_bool is True or self_update_id_bool is True:
                 update_ids_df = pd.DataFrame({"ids": final_ids})
                 ids_vstack_df = pd.concat([update_ids_df, embedded_spectra_data["usi"], embedded_spectra_data["embedded_spectra"]], axis=1)
-                store_embed_new_file = dir_path + str(embedded_file_list[j]).strip("embedded.txt") + "new_ids_embedded.txt"
+                store_embed_new_file = dir_path + str(embedded_file_list[j]).strip('embedded.txt') + 'new_ids_embedded.txt'
                 ids_vstack_df.to_csv(store_embed_new_file, sep="\t", header=True, index=None, columns=["ids", "usi","embedded_spectra"])
                 print("Update ids for " + str(embedded_file_list[j]) + ", and save in new file:" + store_embed_new_file)
 
@@ -88,26 +89,30 @@ class FaissWriteIndex:
             raw_ids.extend(final_ids)
             database_ids.extend(final_ids)
 
-        ids_save_file = output_path.strip(".index") + "ids.npy"
+        ids_save_file = output_path.strip('.index') + '_ids.npy'
         np.save(database_ids_file, database_ids)
         print("Wrote all database ids to {}".format(database_ids_file))
         np.save(ids_save_file, raw_ids)
-        print("Wrote that FAISS index ids to {}".format(ids_save_file))
+        print("Wrote FAISS index ids to {}".format(ids_save_file))
         self.write_faiss_index(index, output_path)
 
-    def merge_indexes(self, *input_indexes, output):
+    def merge_indexes(self, input_indexes, output):
         """
 
-        :param input_indexes: input index files list
-        :param output: a merged indexes file
+        :param input_indexes:
+        :param output:
         :return:
         """
 
         all_ids = []
         index = None
         for input_index in input_indexes:
+            print(input_index)
+            dirname, filename = os.path.split(os.path.abspath(input_index))
+
             # ids
-            ids_file = input_index.strip(".index")+"ids.npy"
+            # ids_file = input_index.strip(".index")+ "_ids.npy"
+            ids_file = dirname + "/" + filename.strip(".index")+"ids.npy"
             ids_data = np.load(ids_file).tolist()
             all_ids.extend(ids_data)
 
@@ -120,9 +125,11 @@ class FaissWriteIndex:
                 index.merge_from(input_index_data, num)
 
         # Wrote to output file
-        ids_save_file = output.strip(".index") + "ids.npy"
+        # output_path, output_file = os.path.split(os.path.abspath(output))
+        ids_save_file = output.strip('.index') + '_ids.npy'
+        # ids_save_file = output_path + "/" + output.strip('.index') + '_ids.npy'
         np.save(ids_save_file, all_ids)
-        print("Wrote that FAISS index database ids to {}".format(ids_save_file))
+        print("Wrote FAISS index database ids to {}".format(ids_save_file))
         self.write_faiss_index(index, output)
 
     def check_ids_with_database(self, database_ids, self_update_new_ids):
@@ -202,9 +209,9 @@ class FaissWriteIndex:
         :param index:
         :return:
         """
-        if faiss.get_num_gpus():
-            print("Converting index from GPU to CPU...")
-            index = faiss.index_gpu_to_cpu(index)
+        # if faiss.get_num_gpus():
+        #     print("Converting index from GPU to CPU...")
+        #     index = faiss.index_gpu_to_cpu(index)
         faiss.write_index(index, out_filepath)
         print("Wrote FAISS index to {}".format(out_filepath))
 
@@ -221,17 +228,6 @@ class FaissWriteIndex:
             index = faiss.index_cpu_to_gpu(faiss.StandardGpuResources(), 0, index)
         return index
 
-#
-# if __name__ == '__main__':
-#     index_maker = FaissWriteIndex()
-#     # index_maker.create_index_for_embedded_spectra(sys.argv[1], sys.argv[2], sys.argv[3])
-#     index_maker.merge_indexes(sys.argv[1], sys.argv[2], output=sys.argv[3])
-#     # index_maker.test_consIVF(sys.argv[1], sys.argv[2])
-#     # index = faiss.read_index(sys.argv[1])
-#     # toremove = np.ascontiguousarray(ids[0:200:3])
-#     # sel = faiss.IDSelectorArray(50, faiss.swig_ptr(toremove[:50]))
-#     # index.get_ids()
-#     # print(index.get_ids())
 
 
 

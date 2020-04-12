@@ -91,7 +91,7 @@ class FaissIndexSearch():
         embedded_spectra = np.vstack(embedded_arrays)
         print("  Read a total of {} spectra".format(embedded_spectra.shape[0]))
         D, I = self.knn_search(index, embedded_spectra.astype('float32'), k)
-        self.write_search_results(D, I, output_file)
+        self.write_knn_search_results(D, I, output_file)
         print("Wrote results to {}...".format(output_file))
 
 
