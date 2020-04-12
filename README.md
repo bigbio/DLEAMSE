@@ -47,7 +47,7 @@ The 500 reference spectra used in our project: [500_rfs_spectra.mgf](https://git
 python mslookup.py embed-ms-file -i test_cml_index/PXD003552_61576_ArchiveSpectrum.json
 ```
 
-* **Create index filera** <br>
+* **Create index files** <br>
 ```
 python mslookup.py make-index -d test_cml_index/database_ids.npy -e test_cml_index/ -o test_cml_index/test_cml_0412_01.index
 ```
