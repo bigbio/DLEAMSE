@@ -37,9 +37,10 @@ DLEAMSE’s encoder and embedder have been packaged and uploaded to pypi library
 
 
 # Usage
-## tmp_mslookup.py: the commanline script of dleamse.
+
 The model file of DLEAMSE: [080802_20_1000_NM500R_model.pkl](https://github.com/bigbio/DLEAMSE/tree/master/src/DLEAMSE/siamese_modle_reference)
 The 500 reference spectra used in our project: [500_rfs_spectra.mgf](https://github.com/bigbio/DLEAMSE/tree/master/src/DLEAMSE/siamese_modle_reference)
+**tmp_mslookup.py: the commandline script of dleamse**:<br>
 
 * **Encode and Embed spectra** <br>
 ```
