@@ -31,7 +31,7 @@ def embed_ms_file(ctx, model,  ref_spectra, project_accession, input_file):
 
 
 @click.command('make-index', short_help="Commandline to make faiss indexIVFFLat index for every MS/MS spectrum\'s 32 features vector")
-@click.option('--database_ids_file',  '-d', help='Input database ids file', required=True)
+@click.option('--database_ids_file',  '-d', help='Input database ids file which is named database_ids.npy', required=True)
 @click.option('--embedded_spectra_path',  '-e', type=click.Path(exists=True), help='Path of embedded spectra file, the files end tith "-embedded.txt" would be used to create index file', required=True)
 @click.option('--output',  '-o', help='Output index file', required=True)
 @click.pass_context
