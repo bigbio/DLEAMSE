@@ -3,14 +3,17 @@ A Deep LEArning-based Mass Spectra Embedder for spectral similarity scoring.
   
 DLEAMSE (based on Siamese Network) is trained and tested with a larger dataset from PRIDE Cluster. The repository stores the encoder and embedder scripts of DLEAMSE to encode and embed spectra.
 
+
 # Training data set
 
 A larger spectral set from PRIDE Cluster is used to construct the training and test data, which use high confidence spectra retrieved from high consistency clusters. We chose PRIDE Cluster data to train and test DLEAMSE, for two reasons: 1. The spectra in high consistency clusters are high confidence spectra. 2. The spectral set from PRIDE Cluster covers more species and instrument types. Two filters were used for retrieving high confidence spectra. The first filter controls the quality of collected clusters. We customized clustering-file-converter (https://github.com/spectra-cluster/clustering-file-converter) to retain the high-quality spectral clusters (cluster size >= 30, cluster ratio >= 0.8, and the total ions current (TIC) >= 0.2). The second filter eliminates duplicate clusters assigned with same peptide sequence, only one in the dupli-cates has been chosen, to ensure that the retained clusters are from different peptides. Then 113,362 clusters have been retrained from PRIDE Cluster release 201504. The needed spectra in clusters are acquired from the PRIDE Archive.
+
 
 # Model and Training
 
 In DLEAMSE, Siamese network (Figure 1a) trains two same embedding models (Figure 1c) with shared weights, and spectra are encoded by the same encoder (Figure 1b) before the embedding. Based on the Euclidean distance between the pair of embedded spectra, the weights of embedding model is learned by contrastive loss function adapted from Hadsell et. al. that penalizes far-apart same-label spectra (label=1) and nearby different-label spectra (label=0). Back propagation from the loss function is used to update the weights in the network. The net-work is trained by stochastic gradient descent with the Adam update rule with a learning rate of 0.005. The codes are implemented in Python3 with the PyTorch framework.
 ![model](https://github.com/bigbio/DLEAMSE/blob/master/src/DLEAMSE/dleamse_modle_references/model.png)
+
 
 # Testing
 ![loss and test](https://github.com/bigbio/DLEAMSE/blob/master/src/DLEAMSE/dleamse_modle_references/loss_and_test.png)
@@ -25,11 +28,13 @@ In DLEAMSE, Siamese network (Figure 1a) trains two same embedding models (Figure
 - faiss-gpu==1.5.3 (if you want to use faiss index making and searching function)
 - more_itertools==7.1.0
 
+
 # Installation
 
 DLEAMSE’s encoder and embedder have been packaged and uploaded to pypi library, the package’s name is [dleamse](https://pypi.org/project/dleamse/).
 
 `python -m pip install dleamse`
+
 
 # Usage
 ## tmp_mslookup.py: the commanline script of dleamse.
@@ -55,6 +60,7 @@ python tmp_mslookup.py merge-indexes test_cml_index/*.index test_cml_index/test_
 ```
 python tmp_mslookup.py range-search -i test_cml_index/test_cml_0412.index -es test_cml_index/*_new_ids_embedded.txt -o test_cml_index/test_cml_rangesearch_rlt.csv
 ```
+
 
 # DLEAMSE's Scripts
 
