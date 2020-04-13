@@ -6,99 +6,72 @@ import click
 from dleamse.dleamse_encode_and_embed import encode_and_embed_spectra
 from dleamse.dleamse_encode_and_embed import SiameseNetwork2
 from dleamse.dleamse_faiss_index_writer import FaissWriteIndex
+from dleamse.dleamse_faiss_index_search import FaissIndexSearch
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
 def cli():
-    """This is the main tool that give access to all commands and options provided by the mslookup and dleamse algorithms"""
+  """This is the main tool that give access to all commands and options provided by the mslookup and dleamse algorithms"""
 
 
 class AppConfigException(object):
-    def __init__(self, value):
-        super(AppConfigException, self).__init__(value)
+  def __init__(self, value):
+    super(AppConfigException, self).__init__(value)
 
 
 @click.command('encode-ms-file',
-               short_help='Commandline to encode every MS spectrum in a file into a 32 features vector')
-@click.option('--model',              '-m', help='Input embedder model file',
-                                      default="./dleamse_model_references/080802_20_1000_NM500R_model.pkl")
-@click.option('--project_accession',  '-p', help='ProteomeXchange dataset accession', default="Project_ID")
-@click.option('--input',              '-i', help='Input MS File (supported: mzML, MGF, JSON)', required=True)
-@click.option('--ref_spectra',        '-r', help='Input 500 reference spectra file', default="./dleamse_model_references/0722_500_rf_spectra.mgf")
-@click.option('--output',             '-o', help='Output vectors file, its default path is the same as input file', default="outputfile.csv")
-@click.option('--miss_record',        '-s', help='Bool, record charge missed spectra', default="True")
-@click.option('--use_gpu',            '-g', help='Bool, use gpu or not', default="False")
-@click.option('--make_faiss_index',   '-f', help='Make faiss index', default="False")
+               short_help='Commandline to encode and embed every MS/MS spectrum in a file into a 32 features vector')
+@click.option('--model', '-m', help='Input embedder model file',
+              default="./dleamse_model_references/080802_20_1000_NM500R_model.pkl")
+@click.option('--ref_spectra', '-r', help='Input 500 reference spectra file',
+              default="./dleamse_model_references/0722_500_rf_spectra.mgf")
+@click.option('--project_accession', '-p', help='ProteomeXchange dataset accession', default="Project_ID")
+@click.option('--input_file', '-i', help='Input MS File (supported: mzML, MGF, JSON)', required=True)
 @click.pass_context
-def encode_ms_file(ctx, model: str, project_accession: str, input: str, ref_spectra: str,
-                   output: str, miss_record: str,
-                   use_gpu: str, make_faiss_index: str):
-    model = model
-    prj = project_accession
-    input_file = input
-    ref_spectra = ref_spectra
-    miss_record = miss_record
-
-    dirname, filename = os.path.split(os.path.abspath(input_file))
-    output = output
-    output_file, miss_record_file, index_ids_file, index_file = None, None, None, None
-
-    if output:
-        dirname, filename = os.path.split(os.path.abspath(input_file))
-        if filename.endswith(".mgf"):
-            output_file = dirname + os.path.sep + filename.strip(".mgf") + "_embedded.npy"
-        elif filename.endswith(".mzML"):
-            output_file = dirname + os.path.sep + filename.strip(".mzML") + "_embedded.npy"
-        else:
-            output_file = dirname + os.path.sep + filename.strip(".json") + "_embedded.npy"
-
-        if miss_record:
-            if filename.endswith(".mgf"):
-                miss_record_file = dirname + os.path.sep + filename.strip(".mgf") + "_miss_record.txt"
-            elif filename.endswith(".mzML"):
-                miss_record_file = dirname + os.path.sep + filename.strip(".mzML") + "_miss_record.txt"
-            else:
-                miss_record_file = dirname + os.path.sep + filename.strip(".json") + "_miss_record.txt"
-
-        if make_faiss_index:
-            if filename.endswith(".mgf"):
-                index_file = dirname + os.path.sep + filename.strip(".mgf") + ".index"
-            elif filename.endswith(".mzML"):
-                index_file = dirname + os.path.sep + filename.strip(".mzML") + ".index"
-            else:
-                index_file = dirname + os.path.sep + filename.strip(".json") + ".index"
-
-    else:
-        output_file = output
-        dirname, filename = os.path.split(os.path.abspath(output))
-        if miss_record:
-            if filename.endswith(".mgf"):
-                miss_record_file = dirname + os.path.sep + filename.strip(".mgf") + "_miss_record.txt"
-            elif filename.endswith(".mzML"):
-                miss_record_file = dirname + os.path.sep + filename.strip(".mzML") + "_miss_record.txt"
-            else:
-                miss_record_file = dirname + os.path.sep + filename.strip(".json") + "_miss_record.txt"
-
-        if make_faiss_index:
-            if filename.endswith(".mgf"):
-                index_ids_file = dirname + os.path.sep + filename.strip(".mgf") + "_ids.txt"
-                index_file = dirname + os.path.sep + filename.strip(".mgf") + ".index"
-            elif filename.endswith(".mzML"):
-                index_ids_file = dirname + os.path.sep + filename.strip(".mzML") + "_ids.txt"
-                index_file = dirname + os.path.sep + filename.strip(".mzML") + ".index"
-            else:
-                index_ids_file = dirname + os.path.sep + filename.strip(".json") + "_ids.txt"
-                index_file = dirname + os.path.sep + filename.strip(".json") + ".index"
-
-    embedded_spectra_data = encode_and_embed_spectra(model, prj, input_file, ref_spectra)
-
-    if make_faiss_index:
-        index_maker = FaissWriteIndex(embedded_spectra_data, index_ids_file, index_file)
+def embed_ms_file(ctx, model, ref_spectra, project_accession, input_file):
+  encode_and_embed_spectra(model, ref_spectra, project_accession, input_file)
 
 
-cli.add_command(encode_ms_file)
+@click.command('make-index',
+               short_help="Commandline to make faiss indexIVFFLat index for every MS/MS spectrum\'s 32 features vector")
+@click.option('--database_ids_file', '-d', help='Input database ids file which is named database_ids.npy',
+              required=True)
+@click.option('--embedded_spectra_path', '-e', type=click.Path(exists=True),
+              help='Path of embedded spectra file, the files end with "-embedded.txt" would be used to create index file',
+              required=True)
+@click.option('--output', '-o', help='Output index file', required=True)
+@click.pass_context
+def make_index(ctx, database_ids_file, embedded_spectra_path, output):
+  index_maker = FaissWriteIndex()
+  index_maker.create_index_for_embedded_spectra(database_ids_file, embedded_spectra_path, output)
+
+
+@click.command('merge-indexes', short_help="Commandline to merge multiple index files")
+@click.argument('input_indexes', nargs=-1)
+@click.argument('output', nargs=1)
+@click.pass_context
+def merge_indexes(ctx, input_indexes, output):
+  index_maker = FaissWriteIndex()
+  index_maker.merge_indexes(input_indexes, output=output)
+
+
+@click.command('range-search', short_help="Commandline to range search query embedded spectra against index file")
+@click.option('--index_file', '-i', help='Index file', required=True)
+@click.option('--embedded_spectra', '-e', help='Input embedded spectra file', required=True)
+@click.option('--threshold', '-t', help='Radius for range search', default=0.1)
+@click.option('--output', '-o', help='Output file of range search result', required=True)
+@click.pass_context
+def range_search(ctx, index_file, embedded_spectra, threshold, output):
+  index_searcher = FaissIndexSearch()
+  index_searcher.execute_range_search(index_file, embedded_spectra, threshold, output)
+
+
+cli.add_command(embed_ms_file)
+cli.add_command(make_index)
+cli.add_command(merge_indexes)
+cli.add_command(range_search)
 
 if __name__ == "__main__":
-    cli()
+  cli()
