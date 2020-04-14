@@ -1,5 +1,6 @@
 # DLEAMSE
 ![Python package](https://github.com/bigbio/DLEAMSE/workflows/Python%20package/badge.svg?branch=master)
+![Python application](https://github.com/bigbio/DLEAMSE/workflows/Python%20application/badge.svg?branch=master)
 
 A Deep LEArning-based Mass Spectra Embedder for spectral similarity scoring. 
   
