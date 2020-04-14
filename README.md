@@ -1,4 +1,6 @@
 # DLEAMSE
+![Python package](https://github.com/bigbio/DLEAMSE/workflows/Python%20package/badge.svg?branch=master)
+
 A Deep LEArning-based Mass Spectra Embedder for spectral similarity scoring. 
   
 DLEAMSE (based on Siamese Network) is trained and tested with a larger dataset from PRIDE Cluster. The repository stores the encoder and embedder scripts of DLEAMSE to encode and embed spectra.
