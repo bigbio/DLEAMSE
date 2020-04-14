@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="dleamse",
-    version="0.0.4",
+    version="0.3.2",
     author="BigBio Team",
     author_email="qinchunyuan1995@gmail.com",
     description=" dleamse's encoding and embedding methods, and dleamse's faiss index (IndexIDMap type) write.",
