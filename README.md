@@ -15,11 +15,13 @@ A larger spectral set from PRIDE Cluster is used to construct the training and t
 # Model and Training
 
 In DLEAMSE, Siamese network (Figure 1a) trains two same embedding models (Figure 1c) with shared weights, and spectra are encoded by the same encoder (Figure 1b) before the embedding. Based on the Euclidean distance between the pair of embedded spectra, the weights of embedding model is learned by contrastive loss function adapted from Hadsell et. al. that penalizes far-apart same-label spectra (label=1) and nearby different-label spectra (label=0). Back propagation from the loss function is used to update the weights in the network. The net-work is trained by stochastic gradient descent with the Adam update rule with a learning rate of 0.005. The codes are implemented in Python3 with the PyTorch framework.
+
+
 ![model](https://github.com/bigbio/DLEAMSE/raw/master/dleamse/dleamse_model_references/model.png)
 
 
 # Testing
-![loss and test](https://github.com/bigbio/DLEAMSE/tree/master/src/dleamse/dleamse_model_references/loss_and_test.png)
+![loss and test](https://github.com/bigbio/DLEAMSE/raw/master/dleamse/dleamse_model_references/loss_and_test.png)
 
 # Requirements
 
@@ -46,22 +48,26 @@ The 500 reference spectra used in our project: [500_rfs_spectra.mgf](https://git
 ## tmp_mslookup.py: the commandline script of dleamse<br>
 
 * **Encode and Embed spectra** <br>
-```
+
+```python
 python mslookup.py embed-ms-file -i test_cml_index/PXD003552_61576_ArchiveSpectrum.json
 ```
 
 * **Create index files** <br>
-```
+
+```python
 python mslookup.py make-index -d test_cml_index/database_ids.npy -e test_cml_index/ -o test_cml_index/test_cml_0412_01.index
 ```
 
 * **Merge index files**<br>
-```
+
+```python
 python tmp_mslookup.py merge-indexes test_cml_index/*.index test_cml_index/test_cml_merge_0412.index
 ```
 
 * **Range Search**<br>
-```
+
+```python
 python tmp_mslookup.py range-search -i test_cml_index/test_cml_0412.index -es test_cml_index/*_new_ids_embedded.txt -o test_cml_index/test_cml_rangesearch_rlt.csv
 ```
 
