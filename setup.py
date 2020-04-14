@@ -1,7 +1,7 @@
 from __future__ import print_function
 from setuptools import setup
 
-with open("../README.md", "r") as fh:
+with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
@@ -19,7 +19,7 @@ setup(
                       'numpy>=1.13.3',
                       'pyteomics>=3.5.1',
                       'torch==1.0.0',
-                      'faiss-gpu>=1.5.3',
+                      'faiss>=1.5.3',
                       'more_itertools == 7.1.0'],
     platforms=['any'],
     classifiers=[
