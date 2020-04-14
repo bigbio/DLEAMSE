@@ -15,7 +15,7 @@ A larger spectral set from PRIDE Cluster is used to construct the training and t
 # Model and Training
 
 In DLEAMSE, Siamese network (Figure 1a) trains two same embedding models (Figure 1c) with shared weights, and spectra are encoded by the same encoder (Figure 1b) before the embedding. Based on the Euclidean distance between the pair of embedded spectra, the weights of embedding model is learned by contrastive loss function adapted from Hadsell et. al. that penalizes far-apart same-label spectra (label=1) and nearby different-label spectra (label=0). Back propagation from the loss function is used to update the weights in the network. The net-work is trained by stochastic gradient descent with the Adam update rule with a learning rate of 0.005. The codes are implemented in Python3 with the PyTorch framework.
-![model](https://github.com/bigbio/DLEAMSE/tree/master/src/dleamse/dleamse_model_references/model.png)
+![model](https://github.com/bigbio/DLEAMSE/raw/master/dleamse/dleamse_model_references/model.png)
 
 
 # Testing
