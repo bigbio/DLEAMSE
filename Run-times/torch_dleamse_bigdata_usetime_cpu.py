@@ -4,7 +4,6 @@ This is a search program!
 Create by qincy, April 17,2019
 """
 
-# 将数据进行嵌入
 import os
 import logging
 import time

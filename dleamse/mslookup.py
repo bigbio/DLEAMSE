@@ -24,13 +24,22 @@ class AppConfigException(object):
 @click.command('encode-ms-file',
                short_help='Commandline to encode and embed every MS/MS spectrum in a file into a 32 features vector')
 @click.option('--model', '-m', help='Input embedder model file',
-              default="./dleamse_model_references/080802_20_1000_NM500R_model.pkl")
+              default="./dleamse/dleamse_model_references/080802_20_1000_NM500R_model.pkl")
 @click.option('--ref_spectra', '-r', help='Input 500 reference spectra file',
-              default="./dleamse_model_references/0722_500_rf_spectra.mgf")
+              default="./dleamse/dleamse_model_references/0722_500_rf_spectra.mgf")
 @click.option('--project_accession', '-p', help='ProteomeXchange dataset accession', default="Project_ID")
 @click.option('--input_file', '-i', help='Input MS File (supported: mzML, MGF, JSON)', required=True)
 @click.pass_context
 def embed_ms_file(ctx, model, ref_spectra, project_accession, input_file):
+  """
+  Encoding the spectra into a 32-vector file
+  :param ctx: Context environment from click
+  :param model: Model trained to improve the similarity search
+  :param ref_spectra: reference spectra from spectra cluster.
+  :param project_accession: ProteomeXchange accession for the file
+  :param input_file: project file to be index.
+  :return:
+  """
   encode_and_embed_spectra(model, ref_spectra, project_accession, input_file)
 
 
@@ -44,6 +53,13 @@ def embed_ms_file(ctx, model, ref_spectra, project_accession, input_file):
 @click.option('--output', '-o', help='Output index file', required=True)
 @click.pass_context
 def make_index(ctx, database_ids_file, embedded_spectra_path, output):
+  """
+  Make index in faiss from the 32-vector file.
+  :param ctx: Context environment from click
+  :param database_ids_file: database with ids and usi files
+  :param embedded_spectra_path: embedded spectra 32-vector file.
+  :param output: index file.
+  """
   index_maker = FaissWriteIndex()
   index_maker.create_index_for_embedded_spectra(database_ids_file, embedded_spectra_path, output)
 
@@ -53,6 +69,13 @@ def make_index(ctx, database_ids_file, embedded_spectra_path, output):
 @click.argument('output', nargs=1)
 @click.pass_context
 def merge_indexes(ctx, input_indexes, output):
+  """
+  Merge input indexes into a big database.
+  :param ctx: Context environment from click
+  :param input_indexes: input indexes file
+  :param output: output database
+  :return:
+  """
   index_maker = FaissWriteIndex()
   index_maker.merge_indexes(input_indexes, output=output)
 
@@ -64,6 +87,15 @@ def merge_indexes(ctx, input_indexes, output):
 @click.option('--output', '-o', help='Output file of range search result', required=True)
 @click.pass_context
 def range_search(ctx, index_file, embedded_spectra, threshold, output):
+  """
+  Search into database different spectra file.
+  :param ctx: Context environment from click
+  :param index_file: Input database
+  :param embedded_spectra: embedded spectra to be search
+  :param threshold: threshold to be use for search, default 0.1
+  :param output: out file including all the usi that have been found.
+  :return:
+  """
   index_searcher = FaissIndexSearch()
   index_searcher.execute_range_search(index_file, embedded_spectra, threshold, output)
 
