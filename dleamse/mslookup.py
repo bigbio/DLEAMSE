@@ -24,9 +24,9 @@ class AppConfigException(object):
 @click.command('encode-ms-file',
                short_help='Commandline to encode and embed every MS/MS spectrum in a file into a 32 features vector')
 @click.option('--model', '-m', help='Input embedder model file',
-              default="./dleamse_model_references/080802_20_1000_NM500R_model.pkl")
+              default="./dleamse/dleamse_model_references/080802_20_1000_NM500R_model.pkl")
 @click.option('--ref_spectra', '-r', help='Input 500 reference spectra file',
-              default="./dleamse_model_references/0722_500_rf_spectra.mgf")
+              default="./dleamse/dleamse_model_references/0722_500_rf_spectra.mgf")
 @click.option('--project_accession', '-p', help='ProteomeXchange dataset accession', default="Project_ID")
 @click.option('--input_file', '-i', help='Input MS File (supported: mzML, MGF, JSON)', required=True)
 @click.pass_context
