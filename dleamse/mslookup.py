@@ -21,7 +21,7 @@ class AppConfigException(object):
     super(AppConfigException, self).__init__(value)
 
 
-@click.command('encode-ms-file',
+@click.command('embed-ms-file',
                short_help='Commandline to encode and embed every MS/MS spectrum in a file into a 32 features vector')
 @click.option('--model', '-m', help='Input embedder model file',
               default="./dleamse/dleamse_model_references/080802_20_1000_NM500R_model.pkl")
