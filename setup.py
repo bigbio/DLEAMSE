@@ -19,7 +19,7 @@ setup(
                       'numpy>=1.13.3',
                       'pyteomics>=3.5.1',
                       'torch==1.0.0',
-                      'faiss>=1.5.3',
+                      'faiss-cpu>=1.5.3',
                       'more_itertools == 7.1.0'],
     platforms=['any'],
     classifiers=[
@@ -28,6 +28,6 @@ setup(
         "Operating System :: OS Independent",
         'Topic :: Scientific/Engineering :: Bio-Informatics'
     ],
-    python_requires='>=3.5',
+    python_requires='>3.5',
 
 )
