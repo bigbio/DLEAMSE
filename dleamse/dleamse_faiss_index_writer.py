@@ -115,7 +115,7 @@ class FaissWriteIndex:
 
       # ids
       # ids_file = input_index.strip(".index")+ "_ids.npy"
-      ids_file = dirname + "/" + filename.strip(".index") + "ids.npy"
+      ids_file = dirname + "/" + filename.strip('.index') + "_ids.npy"
       ids_data = np.load(ids_file).tolist()
       all_ids.extend(ids_data)
 
