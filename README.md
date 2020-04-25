@@ -30,7 +30,7 @@ In DLEAMSE, Siamese network (Figure 1a) trains two same embedding models (Figure
 - pyteomics>=3.5.1
 - numpy>=1.13.3
 - numba>=0.45.0
-- faiss-gpu==1.5.3 (if you want to use faiss index making and searching function)
+- faiss-cpu (conda install faiss-cpu pytorch -c)
 - more_itertools==7.1.0
 
 
@@ -68,7 +68,7 @@ python mslookup.py merge-indexes test_cml_index/*.index test_cml_index/test_cml_
 * **Range Search**<br>
 
 ```python
-python mslookup.py range-search -i test_cml_index/test_cml_0412.index -es test_cml_index/*_new_ids_embedded.txt -o test_cml_index/test_cml_rangesearch_rlt.csv
+python mslookup.py range-search -i test_cml_index/test_cml_0412.index -e test_cml_index/*_new_ids_embedded.txt -o test_cml_index/test_cml_rangesearch_rlt.csv
 ```
 
 

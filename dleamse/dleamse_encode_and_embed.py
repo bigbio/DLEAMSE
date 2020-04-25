@@ -745,7 +745,7 @@ def encode_spectra(prj, input_file, reference_spectra, **kw):
     encoded_spectra_save_file = dirname + "/" + filename.strip((filename.split(".")[-1])).strip(".") + "_encoded.npy"
 
   if str(input_file).endswith(".mgf"):
-    spectra_num = more_itertools.ilen(mgf_read(input, convert_arrays=1))
+    spectra_num = more_itertools.ilen(mgf_read(input_file, convert_arrays=1))
 
     mgf_encoder = EncodeDataset(spectra_num)
     ids_usi_df, vstack_data = mgf_encoder.transform_mgf(prj, input_file, reference_spectra, miss_record)
