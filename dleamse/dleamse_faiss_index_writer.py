@@ -108,7 +108,7 @@ class FaissWriteIndex:
 
     self.write_faiss_index(index, output_path)
 
-  def merge_indexes(self, *input_indexes, output):
+  def merge_indexes(self, input_indexes, output):
     """
 
         :param input_indexes:
@@ -120,7 +120,6 @@ class FaissWriteIndex:
     index = None
     i = 0
     for input_index in input_indexes:
-      print(input_index)
       dirname, filename = os.path.split(os.path.abspath(input_index))
 
       # ids
@@ -139,13 +138,11 @@ class FaissWriteIndex:
         index = input_index_data
       else:
         num = ids_usi_data.shape[0]
-        print(num)
         index.merge_from(input_index_data, num)
     # Wrote to output file
     # output_path, output_file = os.path.split(os.path.abspath(output))
     dirname, filename = os.path.split(os.path.abspath(output))
     ids_save_file = dirname + "/" + filename.strip('.index') + '_ids_usi.csv'
-    print(ids_save_file)
     # ids_save_file = output_path + "/" + output.strip('.index') + '_ids.npy'
     all_ids_usi.to_csv(ids_save_file, index=None)
     print("Wrote FAISS index database ids to {}".format(ids_save_file))
@@ -247,11 +244,5 @@ class FaissWriteIndex:
       index = faiss.index_cpu_to_gpu(faiss.StandardGpuResources(), 0, index)
     return index
 
-
-if __name__ == "__main__":
-    index_list = sys.argv[1]
-
-    index_maker = FaissWriteIndex()
-    index_maker.merge_indexes(index_list, output="test_cml_index/test_merge_0428.index")
 
 
