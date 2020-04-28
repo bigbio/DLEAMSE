@@ -91,7 +91,7 @@ def merge_indexes(ctx, input_indexes, output):
 @click.option('--index_file', '-i', help='Index file', required=True)
 @click.option('--index_ids_usi_file', '-u', help="Index's ids_usi data file", required=True)
 @click.option('--embedded_spectra', '-e', help='Input embedded spectra file', required=True)
-@click.option('--threshold', '-t', help='Radius for range search', default=0.1)
+@click.option('--threshold', '-t', help='Radius for range search', default=0.07)
 @click.option('--output', '-o', help='Output file of range search result', required=True)
 @click.pass_context
 def range_search(ctx, index_file, index_ids_usi_file, embedded_spectra, threshold, output):
