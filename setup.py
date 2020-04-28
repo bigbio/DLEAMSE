@@ -15,6 +15,7 @@ setup(
     license="'Apache 2.0",
     url="https://github.com/bigbio/DLEAMSE",
     packages=["dleamse"],
+    scripts=['dleamse/mslookup.py'],
     install_requires=['numba>=0.45',
                       'numpy>=1.13.3',
                       'pyteomics>=3.5.1',

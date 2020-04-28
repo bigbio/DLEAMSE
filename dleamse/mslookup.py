@@ -3,12 +3,18 @@ import os
 
 import click
 
+import warnings
+
 from dleamse.dleamse_encode_and_embed import encode_and_embed_spectra
 from dleamse.dleamse_encode_and_embed import SiameseNetwork2
 from dleamse.dleamse_faiss_index_writer import FaissWriteIndex
 from dleamse.dleamse_faiss_index_search import FaissIndexSearch
+from numba.errors import NumbaDeprecationWarning, NumbaPendingDeprecationWarning
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+
+warnings.simplefilter('ignore', category=NumbaDeprecationWarning)
+warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
@@ -17,6 +23,7 @@ def cli():
 
 
 class AppConfigException(object):
+
   def __init__(self, value):
     super(AppConfigException, self).__init__(value)
 
