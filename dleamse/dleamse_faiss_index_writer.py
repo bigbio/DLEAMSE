@@ -18,7 +18,7 @@ class FaissWriteIndex:
     self.tmp = None
     print("Initialized a faiss index class.")
 
-  def create_index_for_embedded_spectra(self, database_ids_file, ids_embedded_spectra_path, output_path):
+  def create_index_for_embedded_spectra(self, database_usi_ids_file, ids_embedded_spectra_path, output_path):
     """
 
         :param database_ids_file:
@@ -27,12 +27,15 @@ class FaissWriteIndex:
         :return:
         """
 
-    raw_ids, embedded_file_list = [], []
-    if os.path.exists(database_ids_file):
-      database_ids = np.load(database_ids_file).tolist()
+    raw_ids, raw_usi, embedded_file_list = [], [], []
+    if os.path.exists(database_usi_ids_file):
+      database_data = pd.read_csv(database_usi_ids_file, index_col=None)
+      database_ids = database_data["ids"].values.tolist()
+      database_usi = database_data["usi"].values.tolist()
+      # database_ids = np.load(database_ids_file).tolist()
     else:
-      database_ids = []
-      print("\"" + database_ids_file + " \" does not exist, it will be created!")
+      database_ids, database_usi = [], []
+      print("\"" + database_usi_ids_file + " \" does not exist, it will be created!")
 
     index = self.make_faiss_index_ivf64()
 
@@ -49,6 +52,7 @@ class FaissWriteIndex:
     for j in range(len(embedded_file_list)):
       embedded_spectra_data = pd.read_csv(dir_path + embedded_file_list[j], sep="\t", index_col=None)
       ids_data = embedded_spectra_data["ids"].values
+      usi_data = embedded_spectra_data["usi"].values.tolist()
       spectra_vectors = embedded_spectra_data["embedded_spectra"].values
       tmp_data = []
       for vec in spectra_vectors:
@@ -68,7 +72,7 @@ class FaissWriteIndex:
           if self_tmp_id != self_new_id:
             self_update_id_bool = True
           self_update_new_ids.append(self_tmp_id)
-        print("Need to self update ids? {}".format(self_update_id_bool))
+        print("Need to self-update ids? {}".format(self_update_id_bool))
 
         # Check with database_ids
         final_ids, update_id_bool = self.check_ids_with_database(database_ids, self_update_new_ids)
@@ -79,8 +83,7 @@ class FaissWriteIndex:
 
       if update_id_bool is True or self_update_id_bool is True:
         update_ids_df = pd.DataFrame({"ids": final_ids})
-        ids_vstack_df = pd.concat(
-          [update_ids_df, embedded_spectra_data["usi"], embedded_spectra_data["embedded_spectra"]], axis=1)
+        ids_vstack_df = pd.concat([update_ids_df, embedded_spectra_data["usi"], embedded_spectra_data["embedded_spectra"]], axis=1)
         store_embed_new_file = dir_path + str(embedded_file_list[j]).strip('embedded.txt') + 'new_ids_embedded.txt'
         ids_vstack_df.to_csv(store_embed_new_file, sep="\t", header=True, index=None,
                              columns=["ids", "usi", "embedded_spectra"])
@@ -90,13 +93,19 @@ class FaissWriteIndex:
       index.train(tmp_spectra_vectors.astype('float32'))
       index.add_with_ids(tmp_spectra_vectors.astype('float32'), np.array(final_ids))
       raw_ids.extend(final_ids)
+      raw_usi.extend(usi_data)
       database_ids.extend(final_ids)
+      database_usi.extend(usi_data)
 
-    ids_save_file = output_path.strip('.index') + '_ids.npy'
-    np.save(database_ids_file, database_ids)
-    print("Wrote all database ids to {}".format(database_ids_file))
-    np.save(ids_save_file, raw_ids)
-    print("Wrote FAISS index ids to {}".format(ids_save_file))
+    print("Wrote all database usi and ids to {}".format(database_usi_ids_file))
+    new_database_data = pd.DataFrame({"ids": database_ids, "usi": database_usi}, columns=["ids", "usi"])
+    new_database_data.to_csv(database_usi_ids_file, header=True, index=False)
+
+    ids_save_file = output_path.strip('index').strip(".") + '_ids_usi.csv'
+    print("Wrote FAISS index usi and ids to {}".format(ids_save_file))
+    new_data_df = pd.DataFrame({"ids": raw_ids, "usi": raw_usi})
+    new_data_df.to_csv(ids_save_file, header=True, index=False)
+
     self.write_faiss_index(index, output_path)
 
   def merge_indexes(self, input_indexes, output):
@@ -230,3 +239,5 @@ class FaissWriteIndex:
       print("read_faiss_index: Converting FAISS index from CPU to GPU.")
       index = faiss.index_cpu_to_gpu(faiss.StandardGpuResources(), 0, index)
     return index
+
+

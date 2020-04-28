@@ -126,7 +126,7 @@ class FaissIndexSearch:
                              columns=["query_id", "limit_num", "result"])
     result_df.to_csv(outpath, index=False)
 
-  def execute_range_search(self, index_file, embedded_spectra_file, threshold, output_file):
+  def execute_range_search(self, index_file, index_ids_file, embedded_spectra_file, threshold, output_file):
 
     print("loading embedded spectra vector...")
     # embedded_arrays = []
