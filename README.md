@@ -89,9 +89,9 @@ A database ids file wihch is named database_ids.npy must to be keep as the param
 
 * **Merge multiple index files:** <br>
 Add multiple new embedded_spectra files to the existing raw index file (.index), and generate a new .index file and its corresponding index's ids file.
-The ids of all new embedded_spectra file and the ids of raw index file will be duplicate checked. If there is a file with duplicate ID, its ID will be updated and a new file will be generated.<br>
+The ids-usi of all new embedded_spectra file and the ids-usi of raw index file will be duplicate checked. If there is a file with duplicate ID, its ID will be updated and a new file will be generated.<br>
 
 
 ## **About index search : dleamse_faiss_index_search.py**:
-* **Range Search query 32D spectra vectors against spectra library's index file, Default threshold is 0.1.**:<br>
+* **Range Search query 32D spectra vectors against spectra library's index file, Default threshold is 0.07.**:<br>
 Based on faiss's range search method; A result file (endwith .csv) will be generated, the result's dataframe has three coloumns, "query_id, limit_num, result"
