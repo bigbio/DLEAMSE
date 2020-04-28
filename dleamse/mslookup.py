@@ -52,16 +52,16 @@ def embed_ms_file(ctx, model, ref_spectra, project_accession, input_file):
               required=True)
 @click.option('--output', '-o', help='Output index file', required=True)
 @click.pass_context
-def make_index(ctx, database_ids_file, embedded_spectra_path, output):
+def make_index(ctx, database_ids_usi_file, embedded_spectra_path, output):
   """
   Make index in faiss from the 32-vector file.
   :param ctx: Context environment from click
-  :param database_ids_file: database with ids and usi files
+  :param database_ids_usi_file: database with ids and usi files
   :param embedded_spectra_path: embedded spectra 32-vector file.
   :param output: index file.
   """
   index_maker = FaissWriteIndex()
-  index_maker.create_index_for_embedded_spectra(database_ids_file, embedded_spectra_path, output)
+  index_maker.create_index_for_embedded_spectra(database_ids_usi_file, embedded_spectra_path, output)
 
 
 @click.command('merge-indexes', short_help="Commandline to merge multiple index files")
