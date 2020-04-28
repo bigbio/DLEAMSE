@@ -108,7 +108,7 @@ class FaissWriteIndex:
 
     self.write_faiss_index(index, output_path)
 
-  def merge_indexes(self, input_indexes, output):
+  def merge_indexes(self, *input_indexes, output):
     """
 
         :param input_indexes:
@@ -116,31 +116,38 @@ class FaissWriteIndex:
         :return:
         """
 
-    all_ids = []
+    all_ids_usi = None
     index = None
+    i = 0
     for input_index in input_indexes:
       print(input_index)
       dirname, filename = os.path.split(os.path.abspath(input_index))
 
       # ids
       # ids_file = input_index.strip(".index")+ "_ids.npy"
-      ids_file = dirname + "/" + filename.strip('.index') + "_ids.npy"
-      ids_data = np.load(ids_file).tolist()
-      all_ids.extend(ids_data)
+      ids_file = dirname + "/" + filename.strip('.index') + "_ids_usi.csv"
+      ids_usi_data = pd.read_csv(ids_file, index_col=None)
+      if i == 0:
+          all_ids_usi = ids_usi_data
+          i += 1
+      else:
+          all_ids_usi = pd.concat([all_ids_usi, ids_usi_data])
 
       # index
       input_index_data = faiss.read_index(input_index)
       if not index:
         index = input_index_data
       else:
-        num = len(ids_data)
+        num = ids_usi_data.shape[0]
+        print(num)
         index.merge_from(input_index_data, num)
-
     # Wrote to output file
     # output_path, output_file = os.path.split(os.path.abspath(output))
-    ids_save_file = output.strip('.index') + '_ids.npy'
+    dirname, filename = os.path.split(os.path.abspath(output))
+    ids_save_file = dirname + "/" + filename.strip('.index') + '_ids_usi.csv'
+    print(ids_save_file)
     # ids_save_file = output_path + "/" + output.strip('.index') + '_ids.npy'
-    np.save(ids_save_file, all_ids)
+    all_ids_usi.to_csv(ids_save_file, index=None)
     print("Wrote FAISS index database ids to {}".format(ids_save_file))
     self.write_faiss_index(index, output)
 
@@ -239,5 +246,12 @@ class FaissWriteIndex:
       print("read_faiss_index: Converting FAISS index from CPU to GPU.")
       index = faiss.index_cpu_to_gpu(faiss.StandardGpuResources(), 0, index)
     return index
+
+
+if __name__ == "__main__":
+    index_list = sys.argv[1]
+
+    index_maker = FaissWriteIndex()
+    index_maker.merge_indexes(index_list, output="test_cml_index/test_merge_0428.index")
 
 
