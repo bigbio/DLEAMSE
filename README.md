@@ -68,7 +68,7 @@ python mslookup.py merge-indexes test_cml_index/*.index test_cml_index/test_cml_
 * **Range Search**<br>
 
 ```python
-python mslookup.py range-search -i test_cml_index/test_cml_0412.index -u test_cml_index/test_cml_0412_ids_usi.csv -e test_cml_index/*_new_ids_embedded.txt -o test_cml_index/test_cml_rangesearch_rlt.csv
+python mslookup.py range-search -i test_cml_index/test_cml_0412.index -u test_cml_index/test_cml_0412_ids_usi.csv -e test_cml_index/*_embedded.txt -o test_cml_index/test_cml_rangesearch_rlt.csv
 ```
 
 
