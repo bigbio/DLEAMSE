@@ -56,7 +56,7 @@ python mslookup.py embed-ms-file -i test_cml_index/PXD003552_61576_ArchiveSpectr
 * **Create index files** <br>
 
 ```python
-python mslookup.py make-index -d test_cml_index/database_ids.npy -e test_cml_index/ -o test_cml_index/test_cml_0412_01.index
+python mslookup.py make-index -d test_cml_index/database_ids_usi.csv -e test_cml_index/ -o test_cml_index/test_cml_0412_01.index
 ```
 
 * **Merge index files**<br>
@@ -68,7 +68,7 @@ python mslookup.py merge-indexes test_cml_index/*.index test_cml_index/test_cml_
 * **Range Search**<br>
 
 ```python
-python mslookup.py range-search -i test_cml_index/test_cml_0412.index -e test_cml_index/*_new_ids_embedded.txt -o test_cml_index/test_cml_rangesearch_rlt.csv
+python mslookup.py range-search -i test_cml_index/test_cml_0412.index -u test_cml_index/test_cml_0412_ids_usi.csv -e test_cml_index/*_new_ids_embedded.txt -o test_cml_index/test_cml_rangesearch_rlt.csv
 ```
 
 
