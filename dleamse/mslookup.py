@@ -45,7 +45,7 @@ def embed_ms_file(ctx, model, ref_spectra, project_accession, input_file):
 
 @click.command('make-index',
                short_help="Commandline to make faiss indexIVFFLat index for every MS/MS spectrum\'s 32 features vector")
-@click.option('--database_ids_file', '-d', help='Input database ids file which is named database_ids.npy',
+@click.option('--database_ids_usi_file', '-d', help='Input database ids file which is named database_ids_usi.csv',
               required=True)
 @click.option('--embedded_spectra_path', '-e', type=click.Path(exists=True),
               help='Path of embedded spectra file, the files end with "-embedded.txt" would be used to create index file',
@@ -82,6 +82,7 @@ def merge_indexes(ctx, input_indexes, output):
 
 @click.command('range-search', short_help="Commandline to range search query embedded spectra against index file")
 @click.option('--index_file', '-i', help='Index file', required=True)
+@click.option('--index_ids_usi_file', '-u', help="Index's ids_usi data file", required=True)
 @click.option('--embedded_spectra', '-e', help='Input embedded spectra file', required=True)
 @click.option('--threshold', '-t', help='Radius for range search', default=0.1)
 @click.option('--output', '-o', help='Output file of range search result', required=True)
