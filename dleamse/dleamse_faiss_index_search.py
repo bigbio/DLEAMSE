@@ -6,6 +6,8 @@ Search a file full of embedded spectra against a faiss index, and save the resul
 import argparse
 import ast
 import os
+import sys
+
 import faiss
 import numpy as np
 import h5py
@@ -95,7 +97,7 @@ class FaissIndexSearch:
     self.write_knn_search_results(D, I, output_file)
     print("Wrote results to {}...".format(output_file))
 
-  def range_search(self, index_path, embedded, threshold, outpath="faiss_range_search_result.csv"):
+  def range_search(self, index_path, index_ids_usi_file, embedded, threshold, outpath="faiss_range_search_result.csv"):
     """
         Range Search can only use in CPU
         :param outpath:
@@ -112,6 +114,8 @@ class FaissIndexSearch:
     result = index.range_search(embedded, dist)
     limit, D, I = result[0], result[1], result[2]
 
+    index_ids_usi_df = pd.read_csv(index_ids_usi_file, index_col=None)
+
     for i in range(embedded.shape[0]):
       query_id.append(i)
       limit_num.append(limit[i + 1] - limit[i])
@@ -119,14 +123,15 @@ class FaissIndexSearch:
       tmp_D = D[limit[i]:limit[i + 1]]
       tmp_result = {}
       for i in range(limit[i + 1] - limit[i]):
-        tmp_result[tmp_I[i]] = tmp_D[i]
+        key = index_ids_usi_df.loc[index_ids_usi_df["ids"] == tmp_I[i]]["usi"].values[0]
+        tmp_result[key] = tmp_D[i]
       result_list.append(tmp_result)
 
     result_df = pd.DataFrame({"query_id": query_id, "limit_num": limit_num, "result": result_list},
                              columns=["query_id", "limit_num", "result"])
     result_df.to_csv(outpath, index=False)
 
-  def execute_range_search(self, index_file, index_ids_file, embedded_spectra_file, threshold, output_file):
+  def execute_range_search(self, index_file, index_ids_usi_file, embedded_spectra_file, threshold, output_file):
 
     print("loading embedded spectra vector...")
     # embedded_arrays = []
@@ -135,5 +140,5 @@ class FaissIndexSearch:
     # embedded_spectra = np.vstack(embedded_arrays)
     print("  Read a total of {} spectra".format(run_spectra.shape[0]))
 
-    self.range_search(index_file, run_spectra.astype('float32'), threshold, output_file)
+    self.range_search(index_file, index_ids_usi_file, run_spectra.astype('float32'), threshold, output_file)
     print("Wrote results to {}...".format(output_file))
