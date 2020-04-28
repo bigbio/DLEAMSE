@@ -87,7 +87,7 @@ def merge_indexes(ctx, input_indexes, output):
 @click.option('--threshold', '-t', help='Radius for range search', default=0.1)
 @click.option('--output', '-o', help='Output file of range search result', required=True)
 @click.pass_context
-def range_search(ctx, index_file, embedded_spectra, threshold, output):
+def range_search(ctx, index_file, index_ids_usi_file, embedded_spectra, threshold, output):
   """
   Search into database different spectra file.
   :param ctx: Context environment from click
@@ -98,7 +98,7 @@ def range_search(ctx, index_file, embedded_spectra, threshold, output):
   :return:
   """
   index_searcher = FaissIndexSearch()
-  index_searcher.execute_range_search(index_file, embedded_spectra, threshold, output)
+  index_searcher.execute_range_search(index_file, index_ids_usi_file, embedded_spectra, threshold, output)
 
 
 cli.add_command(embed_ms_file)

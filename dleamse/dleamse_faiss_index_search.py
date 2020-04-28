@@ -122,9 +122,9 @@ class FaissIndexSearch:
       tmp_I = I[limit[i]:limit[i + 1]]
       tmp_D = D[limit[i]:limit[i + 1]]
       tmp_result = {}
-      for i in range(limit[i + 1] - limit[i]):
-        key = index_ids_usi_df.loc[index_ids_usi_df["ids"] == tmp_I[i]]["usi"].values[0]
-        tmp_result[key] = tmp_D[i]
+      for j in range(limit[i + 1] - limit[i]):
+        key = index_ids_usi_df.loc[index_ids_usi_df["ids"] == tmp_I[j]]["usi"].values[0]
+        tmp_result[key] = tmp_D[j]
       result_list.append(tmp_result)
 
     result_df = pd.DataFrame({"query_id": query_id, "limit_num": limit_num, "result": result_list},
@@ -142,3 +142,14 @@ class FaissIndexSearch:
 
     self.range_search(index_file, index_ids_usi_file, run_spectra.astype('float32'), threshold, output_file)
     print("Wrote results to {}...".format(output_file))
+
+
+if __name__ == "__main__":
+  index_file = sys.argv[1]
+  index_ids_usi_file = sys.argv[2]
+  embedded_spectra = sys.argv[3]
+  threshold = 0.07
+  output = sys.argv[4]
+
+  index_searcher = FaissIndexSearch()
+  index_searcher.execute_range_search(index_file, index_ids_usi_file, embedded_spectra, threshold, output)
