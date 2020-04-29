@@ -1,4 +1,4 @@
-numba==0.47.0
+numba==0.49.0
 pyteomics==4.1.1
 numpy==1.18.1
 more_itertools==7.1.0

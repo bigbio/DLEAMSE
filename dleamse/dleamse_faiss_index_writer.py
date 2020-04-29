@@ -20,12 +20,12 @@ class FaissWriteIndex:
 
   def create_index_for_embedded_spectra(self, database_usi_ids_file, ids_embedded_spectra_path, output_path):
     """
-
-        :param database_ids_file:
-        :param ids_embedded_spectra_path:
-        :param output_path:
-        :return:
-        """
+    Create index embedded spectra
+    :param database_ids_file:
+    :param ids_embedded_spectra_path:
+    :param output_path:
+    :return:
+    """
 
     raw_ids, raw_usi, embedded_file_list = [], [], []
     if os.path.exists(database_usi_ids_file):
