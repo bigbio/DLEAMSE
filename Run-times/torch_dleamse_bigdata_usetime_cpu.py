@@ -39,30 +39,30 @@ class SiameseNetwork2(nn.Module):
 
         self.fc2 = nn.Linear(25775, 32)
 
-    def forward_once(self, preInfo, fragInfo, refSpecInfo):
-        preInfo = self.fc1_1(preInfo)
-        preInfo = F.selu(preInfo)
-        preInfo = self.fc1_2(preInfo)
-        preInfo = F.selu(preInfo)
-        preInfo = preInfo.view(preInfo.size(0), -1)
+    def forward_once(self, pre_info, frag_info, ref_spec_info):
+        pre_info = self.fc1_1(pre_info)
+        pre_info = F.selu(pre_info)
+        pre_info = self.fc1_2(pre_info)
+        pre_info = F.selu(pre_info)
+        pre_info = pre_info.view(pre_info.size(0), -1)
 
-        fragInfo = self.cnn21(fragInfo)
-        fragInfo = F.selu(fragInfo)
-        fragInfo = self.maxpool21(fragInfo)
-        fragInfo = F.selu(fragInfo)
-        fragInfo = self.cnn22(fragInfo)
-        fragInfo = F.selu(fragInfo)
-        fragInfo = self.maxpool22(fragInfo)
-        fragInfo = F.selu(fragInfo)
-        fragInfo = fragInfo.view(fragInfo.size(0), -1)
+        frag_info = self.cnn21(frag_info)
+        frag_info = F.selu(frag_info)
+        frag_info = self.maxpool21(frag_info)
+        frag_info = F.selu(frag_info)
+        frag_info = self.cnn22(frag_info)
+        frag_info = F.selu(frag_info)
+        frag_info = self.maxpool22(frag_info)
+        frag_info = F.selu(frag_info)
+        frag_info = frag_info.view(frag_info.size(0), -1)
 
-        refSpecInfo = self.cnn11(refSpecInfo)
-        refSpecInfo = F.selu(refSpecInfo)
-        refSpecInfo = self.maxpool11(refSpecInfo)
-        refSpecInfo = F.selu(refSpecInfo)
-        refSpecInfo = refSpecInfo.view(refSpecInfo.size(0), -1)  # 改变数据的形状，-1表示不确定，视情况而定
+        ref_spec_info = self.cnn11(ref_spec_info)
+        ref_spec_info = F.selu(ref_spec_info)
+        ref_spec_info = self.maxpool11(ref_spec_info)
+        ref_spec_info = F.selu(ref_spec_info)
+        ref_spec_info = ref_spec_info.view(ref_spec_info.size(0), -1)  # 改变数据的形状，-1表示不确定，视情况而定
 
-        output = torch.cat((preInfo, fragInfo, refSpecInfo), 1)
+        output = torch.cat((pre_info, frag_info, ref_spec_info), 1)
         # output = self.dropout(output)
         output = self.fc2(output)
         return output
@@ -217,7 +217,7 @@ class RawDataSet01:
         return charge
 
 
-class Dataset_RawDataset(data.dataset.Dataset):
+class dataset_raw_dataset(data.dataset.Dataset):
     def __init__(self, data):
         self.mgf_dataset = data
 
@@ -315,7 +315,7 @@ def embedding_dataset(net, spectrum_list, reference_intensity, spectra_pairs_num
     tmp_time_02 = time.perf_counter()
     print("enconding use time : {}".format(tmp_time_02 - tmp_time_01))
 
-    dataset = Dataset_RawDataset(vstack_data)
+    dataset = dataset_raw_dataset(vstack_data)
     print(dataset.__len__())
     dataloader = data.DataLoader(dataset=dataset, batch_size=192, shuffle=False, num_workers=1)
     # tmp_time_03 = time.perf_counter()
