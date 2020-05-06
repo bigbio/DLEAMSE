@@ -259,7 +259,7 @@ class FaissIndexSearch:
     # embedded_arrays.append(run_spectra)
     # embedded_spectra = np.vstack(embedded_arrays)
     print("  Read a total of {} spectra".format(run_spectra.shape[0]))
-    if lower_threshold == 0 or lower_threshold == upper_threshold:
+    if lower_threshold == 0:
       print("Runing range search ...")
       self.new_range_search(index_file, index_ids_usi_file, run_spectra.astype('float32'), threshold, output_file)
       print("Wrote results to {}...".format(output_file))
@@ -271,16 +271,3 @@ class FaissIndexSearch:
       print("Wrong lower_threshold value, please enter a correct threshold value.")
 
 
-if __name__ == "__main__":
-  index_file = sys.argv[1]
-  index_ids_usi_file = sys.argv[2]
-  embedded_spectra = sys.argv[3]
-  threshold = 0.07
-  output = sys.argv[4]
-
-  index_searcher = FaissIndexSearch()
-  index_searcher.execute_range_search(index_file, index_ids_usi_file, embedded_spectra, threshold, output)
-
-  # data = [{'a':1, 'b':2, 'c':[{'a1':1, 'b1':2, 'c1':3}, {'a2':1, 'b2':2, 'c2':3}]}, {'a1':1, 'b1':2, 'c1':3}]
-  # json_data = json.dumps(data)
-  # print(json_data)
