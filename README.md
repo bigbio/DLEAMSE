@@ -104,5 +104,5 @@ The ids-usi of all new embedded_spectra file and the ids-usi of raw index file w
 
 
 ## **About index search : dleamse_faiss_index_search.py**:
-* **Range Search query 32D spectra vectors against spectra library's index file, Default lower_threshold is 0 and upper_threshold is 0.07.**:<br>
+Range Search query 32D spectra vectors against spectra library's index file, Default lower_threshold is 0 and upper_threshold is 0.07.<br>
 
