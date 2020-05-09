@@ -67,8 +67,19 @@ python mslookup.py merge-indexes test_cml_index/*.index test_cml_index/test_cml_
 
 * **Range Search**<br>
 
+In this case, lower_threshold and upper_threshold of range searchng are default values, lower_threshold(-lt)=0, upper_threshold(-ut)=0.07.
 ```python
-python mslookup.py range-search -i test_cml_index/test_cml_0412.index -u test_cml_index/test_cml_0412_ids_usi.csv -e test_cml_index/*_embedded.txt -o test_cml_index/test_cml_rangesearch_rlt.csv
+python mslookup.py range-search -i test_cml_index/test_cml_0412.index -u test_cml_index/test_cml_0412_ids_usi.csv -e test_cml_index/*_embedded.txt -o test_cml_index/test_cml_rangesearch_rlt.json
+```
+
+In this case, lower_threshold(-lt)=0.01, and upper_threshold(-ut) is set to default value 0.07.
+```python
+python mslookup.py range-search -i test_cml_index/test_cml_0412.index -u test_cml_index/test_cml_0412_ids_usi.csv -e test_cml_index/*_embedded.txt -lt 0.01 -o test_cml_index/test_cml_rangesearch_rlt.json
+```
+
+In this case, lower_threshold(-lt)=0.01, and upper_threshold(-ut) = 0.05.
+```python
+python mslookup.py range-search -i test_cml_index/test_cml_0412.index -u test_cml_index/test_cml_0412_ids_usi.csv -e test_cml_index/*_embedded.txt -lt 0.01 -ut 0.05 -o test_cml_index/test_cml_rangesearch_rlt.json
 ```
 
 
@@ -93,5 +104,5 @@ The ids-usi of all new embedded_spectra file and the ids-usi of raw index file w
 
 
 ## **About index search : dleamse_faiss_index_search.py**:
-* **Range Search query 32D spectra vectors against spectra library's index file, Default threshold is 0.07.**:<br>
-Based on faiss's range search method; A result file (endwith .csv) will be generated, the result's dataframe has three coloumns, "query_id, limit_num, result"
+* **Range Search query 32D spectra vectors against spectra library's index file, Default lower_threshold is 0 and upper_threshold is 0.07.**:<br>
+
