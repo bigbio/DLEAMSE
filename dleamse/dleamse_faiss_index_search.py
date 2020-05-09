@@ -261,11 +261,11 @@ class FaissIndexSearch:
     # embedded_spectra = np.vstack(embedded_arrays)
     print("  Read a total of {} spectra".format(run_spectra.shape[0]))
     if lower_threshold == 0:
-      print("Runing range search ...")
+      print("Running range search ...")
       self.new_range_search(index_file, index_ids_usi_file, run_spectra.astype('float32'), upper_threshold, output_file)
       print("Wrote results to {}...".format(output_file))
     elif 0 < lower_threshold < upper_threshold:
-      print("Runing upper range search ...")
+      print("Running upper range search ...")
       self.upper_range_search(index_file, index_ids_usi_file, run_spectra.astype('float32'), lower_threshold, upper_threshold, output_file)
       print("Wrote results to {}...".format(output_file))
     else:
