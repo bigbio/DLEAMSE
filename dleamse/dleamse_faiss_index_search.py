@@ -100,13 +100,14 @@ class FaissIndexSearch:
 
   def range_search(self, index_path, index_ids_usi_file, embedded, threshold, outpath="faiss_range_search_result.csv"):
     """
-        Range Search can only use in CPU
-        :param outpath:
-        :param threshold: similarity thershold
-        :param index_path: index path
-        :param embedded: embeded file
-        :return:
-        """
+    Range Search can only use in CPU
+    :param outpath:
+    :param threshold: similarity thershold
+    :param index_path: index path
+    :param embedded: embedded file
+    :param index_ids_usi_file: ids, usis file
+    :return:
+    """
     print("loading index file...")
     index = faiss.read_index(index_path)  # cpu
     dist = threshold  # Threshold
