@@ -1,4 +1,4 @@
-numba==0.47.0
+numba==0.49.0
 pyteomics==4.1.1
 numpy==1.18.1
 more_itertools==7.1.0
@@ -7,3 +7,6 @@ faiss-cpu
 click
 scipy
 h5py
+torch==1.0.0
+torchvision===0.2.1
+lxml
