@@ -5,11 +5,18 @@ import click
 
 import warnings
 
-from dleamse.dleamse_encode_and_embed import encode_and_embed_spectra
-from dleamse.dleamse_encode_and_embed import SiameseNetwork2
-from dleamse.dleamse_faiss_index_writer import FaissWriteIndex
-from dleamse.dleamse_faiss_index_search import FaissIndexSearch
+# from dleamse.dleamse_encode_and_embed import encode_and_embed_spectra
+# from dleamse.dleamse_encode_and_embed import SiameseNetwork2
+# from dleamse.dleamse_faiss_index_writer import FaissWriteIndex
+# from dleamse.dleamse_faiss_index_search import FaissIndexSearch
+
+from dleamse_encode_and_embed import encode_and_embed_spectra
+from dleamse_encode_and_embed import SiameseNetwork2
+from dleamse_faiss_index_writer import FaissWriteIndex
+from dleamse_faiss_index_search import FaissIndexSearch
 from numba.errors import NumbaDeprecationWarning, NumbaPendingDeprecationWarning
+
+DEFAULT_IVF_NLIST = 100
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
@@ -93,9 +100,10 @@ def merge_indexes(ctx, input_indexes, output):
 @click.option('--embedded_spectra', '-e', help='Input embedded spectra file', required=True)
 @click.option('--lower_threshold', '-lt', help='Lower radius for range search', default=0.0)
 @click.option('--upper_threshold', '-ut', help='Upper radius for range search', default=0.07)
+@click.option('--nprobe', '-n', help='Faiss index nprobe', default=DEFAULT_IVF_NLIST)
 @click.option('--output', '-o', help='Output file of range search result', required=True)
 @click.pass_context
-def range_search(ctx, index_file, index_ids_usi_file, embedded_spectra, lower_threshold, upper_threshold, output):
+def range_search(ctx, index_file, index_ids_usi_file, embedded_spectra, lower_threshold, upper_threshold, nprobe, output):
   """
   Search into database different spectra file.
   :param ctx: Context environment from click
@@ -106,7 +114,7 @@ def range_search(ctx, index_file, index_ids_usi_file, embedded_spectra, lower_th
   :return:
   """
   index_searcher = FaissIndexSearch()
-  index_searcher.execute_range_search(index_file, index_ids_usi_file, embedded_spectra, lower_threshold, upper_threshold, output)
+  index_searcher.execute_range_search(index_file, index_ids_usi_file, embedded_spectra, lower_threshold, upper_threshold, nprobe, output)
 
 
 cli.add_command(embed_ms_file)
