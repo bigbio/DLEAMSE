@@ -5,8 +5,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-#ignore big mgf test file
-*.mgf
 
 # C extensions
 *.so
