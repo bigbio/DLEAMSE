@@ -16,6 +16,8 @@ from dleamse_faiss_index_writer import FaissWriteIndex
 from dleamse_faiss_index_search import FaissIndexSearch
 from numba.errors import NumbaDeprecationWarning, NumbaPendingDeprecationWarning
 
+DEFAULT_IVF_NLIST = 100
+
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
 warnings.simplefilter('ignore', category=NumbaDeprecationWarning)
@@ -98,7 +100,7 @@ def merge_indexes(ctx, input_indexes, output):
 @click.option('--embedded_spectra', '-e', help='Input embedded spectra file', required=True)
 @click.option('--lower_threshold', '-lt', help='Lower radius for range search', default=0)
 @click.option('--upper_threshold', '-ut', help='Upper radius for range search', default=0.07)
-@click.option('--nprobe', '-n', help='Faiss index nprobe', default=64)
+@click.option('--nprobe', '-n', help='Faiss index nprobe', default=DEFAULT_IVF_NLIST)
 @click.option('--output', '-o', help='Output file of range search result', required=True)
 @click.pass_context
 def range_search(ctx, index_file, index_ids_usi_file, embedded_spectra, lower_threshold, upper_threshold, nprobe, output):
