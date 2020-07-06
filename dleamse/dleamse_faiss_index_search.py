@@ -133,7 +133,7 @@ class FaissIndexSearch:
                              columns=["query_id", "limit_num", "result"])
     result_df.to_csv(outpath, index=False)
 
-  def upper_range_search(self, index_path, index_ids_usi_file, embedded, lower_t, threshold, outpath="faiss_range_search_result.csv"):
+  def upper_range_search(self, index_path, index_ids_usi_file, embedded, lower_t, threshold, nprobe, outpath="faiss_range_search_result.csv"):
     """
         Range Search can only use in CPU
         :param outpath:
@@ -147,6 +147,7 @@ class FaissIndexSearch:
     index = faiss.read_index(index_path)  # cpu
     dist = threshold  # Threshold
     query_id, limit_num, result_list = [], [], []
+    index.nprobe = nprobe
     print("The number of query embedded spectra : {}".format(embedded.shape[0]))
     result = index.range_search(embedded, dist)
     lower_result = index.range_search(embedded, lower_t)
@@ -206,7 +207,7 @@ class FaissIndexSearch:
     #                          columns=["query_id", "limit_num", "result"])
     # result_df.to_csv(outpath, index=False)
 
-  def new_range_search(self, index_path, index_ids_usi_file, embedded, threshold, outpath="faiss_range_search_result.csv"):
+  def new_range_search(self, index_path, index_ids_usi_file, embedded, threshold, nprobe, outpath="faiss_range_search_result.csv"):
     """
         Range Search can only use in CPU
         :param outpath:
@@ -220,6 +221,7 @@ class FaissIndexSearch:
     index = faiss.read_index(index_path)  # cpu
     dist = threshold  # Threshold
 
+    index.nprobe = nprobe
     print("The number of query embedded spectra : {}".format(embedded.shape[0]))
     result = index.range_search(embedded, dist)
 
@@ -252,7 +254,7 @@ class FaissIndexSearch:
     f.write(json_data)
     f.close()
 
-  def execute_range_search(self, index_file, index_ids_usi_file, embedded_spectra_file, lower_threshold, upper_threshold, output_file):
+  def execute_range_search(self, index_file, index_ids_usi_file, embedded_spectra_file, lower_threshold, upper_threshold, nprobe, output_file):
 
     print("loading embedded spectra vector...")
     # embedded_arrays = []
@@ -262,11 +264,11 @@ class FaissIndexSearch:
     print("  Read a total of {} spectra".format(run_spectra.shape[0]))
     if lower_threshold == 0:
       print("Runing range search ...")
-      self.new_range_search(index_file, index_ids_usi_file, run_spectra.astype('float32'), upper_threshold, output_file)
+      self.new_range_search(index_file, index_ids_usi_file, run_spectra.astype('float32'), upper_threshold, nprobe, output_file)
       print("Wrote results to {}...".format(output_file))
     elif 0 < lower_threshold < upper_threshold:
       print("Runing upper range search ...")
-      self.upper_range_search(index_file, index_ids_usi_file, run_spectra.astype('float32'), lower_threshold, upper_threshold, output_file)
+      self.upper_range_search(index_file, index_ids_usi_file, run_spectra.astype('float32'), lower_threshold, upper_threshold, nprobe, output_file)
       print("Wrote results to {}...".format(output_file))
     else:
       print("Wrong lower_threshold value, please enter a correct threshold value.")
