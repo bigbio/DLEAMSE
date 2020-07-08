@@ -172,7 +172,7 @@ class FaissIndexSearch:
       else:
         tmp_I, tmp_D = [], []
         test_tmp_I = I[limit[i]:limit[i + 1]]
-        test_tmp_D =  D[limit[i]:limit[i + 1]]
+        test_tmp_D = D[limit[i]:limit[i + 1]]
         test_l_I = lower_I[lower_limit[i]:lower_limit[i + 1]]
         test_l_D = lower_D[lower_limit[i]:lower_limit[i + 1]]
         for k in range(upper_limit_num):
