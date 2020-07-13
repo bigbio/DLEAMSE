@@ -713,7 +713,23 @@ class EmbedDataset:
       else:
         self.out_list = np.vstack((self.out_list, out1))
 
-    vstack_data_df = pd.DataFrame({"embedded_spectra": self.out_list.tolist()})
+    """
+    20200712 modified: It increases the robustness of the program. The previous program could not handle the case of only one query.
+    previous code: vstack_data_df = pd.DataFrame({"embedded_spectra": self.out_list.tolist()}), 
+    modified code: 
+    if len(list(np.array(self.out_list.tolist()).shape))>1:
+      vstack_data_df = pd.DataFrame({"embedded_spectra": self.out_list.tolist()})
+    else:
+      vstack_data_df = pd.DataFrame({"embedded_spectra": [self.out_list.tolist()]})
+    """
+    #vstack_data_df = pd.DataFrame({"embedded_spectra": self.out_list.tolist()})
+    print("\n\n************ np.array(self.out_list.tolist()).shape: ",np.array(self.out_list.tolist()).shape)
+    print("\n\n************  len np.array(self.out_list.tolist()).shape: ",len(list(np.array(self.out_list.tolist()).shape)))
+    if len(list(np.array(self.out_list.tolist()).shape))>1:
+      vstack_data_df = pd.DataFrame({"embedded_spectra": self.out_list.tolist()})
+    else:
+      vstack_data_df = pd.DataFrame({"embedded_spectra": [self.out_list.tolist()]})
+    print("\n\n*********** vstack_data_df: ",vstack_data_df)
     self.ids_vstack_df = pd.concat([ids_usi_data["ids"], ids_usi_data["usi"], vstack_data_df], axis=1)
     self.ids_vstack_df.to_csv(store_embed_file, sep="\t", header=True, index=None,
                               columns=["ids", "usi", "embedded_spectra"])
