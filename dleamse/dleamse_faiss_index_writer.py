@@ -18,7 +18,7 @@ class FaissWriteIndex:
     self.tmp = None
     print("Initialized a faiss index class.")
 
-  def create_index_for_embedded_spectra(self, database_usi_ids_file, ids_embedded_spectra_path, output_path):
+  def create_index_for_embedded_spectra(self, database_usi_ids_file, ids_embedded_spectra_path,output_path):
     """
     Create index embedded spectra
     :param database_ids_file:
