@@ -1,8 +1,6 @@
 import os
 import sys
- 
 sys.path.append('../')
-
 from dleamse_encode_and_embed import encode_and_embed_spectra
 from dleamse_encode_and_embed import SiameseNetwork2
 from dleamse_faiss_index_writer import FaissWriteIndex
@@ -82,7 +80,7 @@ def search_spectra():
   """
   print(result)
   print(result.output)
-  print(result.exit_code)
+  #print(result.exit_code)
   assert result.exit_code == 0
 
 if __name__ == '__main__':
