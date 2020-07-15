@@ -825,7 +825,6 @@ def encode_and_embed_spectra(model, refrence_spectra, prj, input_file):
     :param refrence_spectra: refrence_spectra: get a .mgf file contained 500 spectra as referece spectra from normalized dot product calculation
     :return: embedded spectra 32d vector
   """
-
   dirname, filename = os.path.split(os.path.abspath(input_file))
   if input_file.endswith(".mgf"):
     output_embedded_file = dirname + "/" + str(filename.strip(".mgf")) + "_embedded.txt"
