@@ -21,6 +21,7 @@ from click.testing import CliRunner
 from mslookup import cli
 
 def embeded_db_spectra():
+    print("****",file_dir,parent_dir)
     runner = CliRunner()
     result = runner.invoke(cli,
                            ['embed-ms-file', '-m', parent_dir+'dleamse_model_references/080802_20_1000_NM500R_model.pkl', '-r', parent_dir+'dleamse_model_references/0722_500_rf_spectra.mgf', '-i', parent_dir+'testdata/PXD015890_114263_ArchiveSpectrum.json',
