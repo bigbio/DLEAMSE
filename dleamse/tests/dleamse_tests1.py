@@ -1,7 +1,10 @@
 import os
 import sys
  
-sys.path.append('../')
+file_dir = os.path.dirname(__file__)
+sys.path.append(file_dir)
+parent_dir = os.path.dirname(__file__) + "/.."
+sys.path.append(parent_dir)
 
 from dleamse_encode_and_embed import encode_and_embed_spectra
 from dleamse_encode_and_embed import SiameseNetwork2
