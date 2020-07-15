@@ -1,19 +1,8 @@
 import os
-import sys
-sys.path.append('../')
-from dleamse_encode_and_embed import encode_and_embed_spectra
-from dleamse_encode_and_embed import SiameseNetwork2
-from dleamse_faiss_index_writer import FaissWriteIndex
-from dleamse_faiss_index_search import FaissIndexSearch
-from numba.errors import NumbaDeprecationWarning, NumbaPendingDeprecationWarning
-import logging
-import click
-import warnings
 
 from click.testing import CliRunner
 
-#from dleamse.mslookup import cli
-from mslookup import cli
+from dleamse.mslookup import cli
 
 def embeded_db_spectra():
     runner = CliRunner()
