@@ -101,7 +101,12 @@ class FaissWriteIndex:
     new_database_data = pd.DataFrame({"ids": database_ids, "usi": database_usi}, columns=["ids", "usi"])
     new_database_data.to_csv(database_usi_ids_file, header=True, index=False)
 
-    ids_save_file = output_path.strip('index').strip(".") + '_ids_usi.csv'
+    print("output_path***",output_path)
+    if "../" in output_path:
+      ids_save_file = ".."+output_path.strip('.index') + '_ids_usi.csv'
+    else:
+      ids_save_file = output_path.strip('index').strip(".") + '_ids_usi.csv'
+    print("ids_save_file***",ids_save_file)
     print("Wrote FAISS index usi and ids to {}".format(ids_save_file))
     new_data_df = pd.DataFrame({"ids": raw_ids, "usi": raw_usi})
     new_data_df.to_csv(ids_save_file, header=True, index=False)

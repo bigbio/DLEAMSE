@@ -5,14 +5,15 @@ import click
 
 import warnings
 
-# from dleamse.dleamse_encode_and_embed import encode_and_embed_spectra
-# from dleamse.dleamse_encode_and_embed import SiameseNetwork2
-# from dleamse.dleamse_faiss_index_writer import FaissWriteIndex
-# from dleamse.dleamse_faiss_index_search import FaissIndexSearch
+#from dleamse.dleamse_encode_and_embed import encode_and_embed_spectra
+#from dleamse.dleamse_encode_and_embed import SiameseNetwork2
+#from dleamse.dleamse_faiss_index_writer import FaissWriteIndex
+#from dleamse.dleamse_faiss_index_search import FaissIndexSearch
 
 from dleamse_encode_and_embed import encode_and_embed_spectra
 from dleamse_faiss_index_writer import FaissWriteIndex
 from dleamse_faiss_index_search import FaissIndexSearch
+from dleamse_encode_and_embed import SiameseNetwork2
 from numba.errors import NumbaDeprecationWarning, NumbaPendingDeprecationWarning
 
 DEFAULT_IVF_NLIST = 100

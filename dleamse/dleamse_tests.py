@@ -1,10 +1,4 @@
 import os
-import sys
- 
-file_dir = os.path.dirname(__file__)
-sys.path.append(file_dir)
-parent_dir = os.path.dirname(__file__) + "/.."
-sys.path.append(parent_dir)
 
 from dleamse_encode_and_embed import encode_and_embed_spectra
 from dleamse_encode_and_embed import SiameseNetwork2
@@ -21,10 +15,9 @@ from click.testing import CliRunner
 from mslookup import cli
 
 def embeded_db_spectra():
-    print("****",file_dir,parent_dir)
     runner = CliRunner()
     result = runner.invoke(cli,
-                           ['embed-ms-file', '-m', 'dleamse_model_references/080802_20_1000_NM500R_model.pkl', '-r', 'dleamse_model_references/0722_500_rf_spectra.mgf', '-i', 'testdata/PXD015890_114263_ArchiveSpectrum.json',
+                           ['embed-ms-file', '-i', 'testdata/PXD015890_114263_ArchiveSpectrum.json',
                             '-p', 'PXD015890'])
     """
     python mslookup.py embed-ms-file -i testdata/PXD015890_114263_ArchiveSpectrum.json -p PXD015890
@@ -43,15 +36,12 @@ def make_db():
   """
   python mslookup.py make-index -d testdata/db.csv -e testdata/ -o testdata/db.index
   """
-  print(result)
-  print(result.output)
-  print(result.exit_code)
   assert result.exit_code == 0
 
 def embeded_query_spectra():
   runner = CliRunner()
   result = runner.invoke(cli,
-                         ['embed-ms-file', '-m', 'dleamse_model_references/080802_20_1000_NM500R_model.pkl', '-r','dleamse_model_references/0722_500_rf_spectra.mgf', '-i', 'testdata/query.json',
+                         ['embed-ms-file', '-i', 'testdata/query.json',
                           '-p', 'PXD015890'])
   """
   python mslookup.py embed-ms-file -i testdata/query.json -p PXD015890
