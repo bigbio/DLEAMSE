@@ -37,4 +37,3 @@ jobs:
         cd dleamse
         # python tests/dleamse_tests1.py
         python tests/dleamse_tests.py
-        
