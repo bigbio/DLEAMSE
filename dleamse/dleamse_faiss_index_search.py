@@ -169,6 +169,9 @@ class FaissIndexSearch:
       if upper_limit_num == lower_limit_num:
         tmp_I = I[limit[i]:limit[i + 1]]
         tmp_D = D[limit[i]:limit[i + 1]]
+        """20200720 modified：The previous code did not have this line. The previous code directly uses distance to represent the score, 
+        that is, distance = = 0.0 is the best match and = = 1 is the complete mismatch. Now, the 1-distance style is used as the adjustment."""
+        tmp_D = [1-k2 for k2 in D[limit[i]:limit[i + 1]]]
       else:
         tmp_I, tmp_D = [], []
         test_tmp_I = I[limit[i]:limit[i + 1]]
@@ -180,7 +183,10 @@ class FaissIndexSearch:
             continue
           else:
             tmp_I.append(test_tmp_I[k])
-            tmp_D.append(test_tmp_D[k])
+            #tmp_D.append(test_tmp_D[k]) # precious code
+            tmp_D.append(1-test_tmp_D[k])
+            """20200720 modified：The previous code did not have this line. The previous code directly uses distance to represent the score, 
+      		that is, distance = = 0.0 is the best match and = = 1 is the complete mismatch. Now, the 1-distance style is used as the adjustment."""
 
       tmp_result_list = []
       for j in range(upper_limit_num - lower_limit_num):
@@ -237,6 +243,9 @@ class FaissIndexSearch:
       tmp_result_dict["query_index"] = i
       tmp_I = I[limit[i]:limit[i + 1]]
       tmp_D = D[limit[i]:limit[i + 1]]
+      """20200720 modified：The previous code did not have this line. The previous code directly uses distance to represent the score, 
+      that is, distance = = 0.0 is the best match and = = 1 is the complete mismatch. Now, the 1-distance style is used as the adjustment."""
+      tmp_D = [1-k for k in D[limit[i]:limit[i + 1]]]
 
       tmp_result_list = []
       for j in range(limit[i + 1] - limit[i]):
