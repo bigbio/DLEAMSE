@@ -3,7 +3,9 @@
 ![Python package](https://github.com/bigbio/DLEAMSE/workflows/Python%20package/badge.svg?branch=master)
 ![Python application](https://github.com/bigbio/DLEAMSE/workflows/Python%20application/badge.svg?branch=master)
 
-A Deep LEArning-based Mass Spectra Embedder for spectral similarity scoring. DLEAMSE (based on Siamese Network) is trained and tested with a larger dataset from PRIDE Cluster. The repository stores the encoder and embedder scripts of DLEAMSE to encode and embed spectra.
+A **D**eep **LEA**rning-based **M**ass **S**pectra **E**mbedder for spectral similarity scoring. DLEAMSE (based on Siamese Network) is trained and tested with a larger dataset from PRIDE Cluster. The repository stores the encoder and embedder scripts of DLEAMSE to encode and embed spectra.
+
+The following repo presented the model `DLEAMSE` and the tool `mslookup`.
 
 ## Training data set
 
@@ -44,6 +46,8 @@ python -m pip install dleamse
 The model file of DLEAMSE: [080802_20_1000_NM500R_model.pkl](https://github.com/bigbio/DLEAMSE/tree/master/src/DLEAMSE/siamese_modle_reference)
 The 500 reference spectra used in our project: [500_rfs_spectra.mgf](https://github.com/bigbio/DLEAMSE/tree/master/src/DLEAMSE/siamese_modle_reference)
 ## mslookup.py: the commandline script of dleamse<br>
+
+# MSLOOKUP
 
 ## Encode and Embed spectra
 
