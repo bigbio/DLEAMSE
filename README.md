@@ -66,16 +66,19 @@ python mslookup.py merge-indexes test_cml_index/*.index test_cml_index/test_cml_
 ### Range Search
 
 In this case, lower_threshold and upper_threshold of range searching are default values, lower_threshold(-lt)=0, upper_threshold(-ut)=0.07.
+
 ```python
 python mslookup.py range-search -i test_cml_index/test_cml_0412.index -u test_cml_index/test_cml_0412_ids_usi.csv -e test_cml_index/*_embedded.txt -o test_cml_index/test_cml_rangesearch_rlt.json
 ```
 
 In this case, lower_threshold(-lt)=0.01, and upper_threshold(-ut) is set to default value 0.07.
+
 ```python
 python mslookup.py range-search -i test_cml_index/test_cml_0412.index -u test_cml_index/test_cml_0412_ids_usi.csv -e test_cml_index/*_embedded.txt -lt 0.01 -o test_cml_index/test_cml_rangesearch_rlt.json
 ```
 
 In this case, lower_threshold(-lt)=0.01, and upper_threshold(-ut) = 0.05.
+
 ```python
 python mslookup.py range-search -i test_cml_index/test_cml_0412.index -u test_cml_index/test_cml_0412_ids_usi.csv -e test_cml_index/*_embedded.txt -lt 0.01 -ut 0.05 -o test_cml_index/test_cml_rangesearch_rlt.json
 ```
