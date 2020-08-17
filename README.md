@@ -49,6 +49,8 @@ The 500 reference spectra used in our project: [500_rfs_spectra.mgf](https://git
 
 # MSLOOKUP
 
+The `mslookup` is a tool developed using the `DLEAMSE` model and algorithm and `faiss` database to encode, index and search previously identified/unidentified spectra in public repositories.
+
 ## Encode and Embed spectra
 
 ```python
