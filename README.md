@@ -97,5 +97,5 @@ Range Search query 32D spectra vectors against spectra library's index file, Def
 
 ## Databases
 
-We have released a couple of databases for the users of the `mslookup` tool (ftp://ftp.pride.ebi.ac.uk/pride/data/proteogenomics/projects/mslookup/). Databases can be download from the FTP and use locally in your own computer.
+We have released a couple of databases for the users of the `mslookup` tool [databases](ftp://ftp.pride.ebi.ac.uk/pride/data/proteogenomics/projects/mslookup/). Databases can be download from the FTP and use locally in your own computer.
 
