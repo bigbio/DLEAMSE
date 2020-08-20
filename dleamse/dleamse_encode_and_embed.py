@@ -346,6 +346,7 @@ class EncodeDataset:
       [bin_spectrum(r.get('m/z array'), r.get('intensity array')) for r in reference_spectra])
     ndp_r_spec_list = caculate_r_spec(reference_intensity)
 
+    print("--==--")
     self.ids_usi_dict, self.ids_list, self.usi_list, peakslist1, precursor_feature_list1 = {}, [], [], [], []
     ndp_spec_list = []
     i, j, k = 0, 0, 0
