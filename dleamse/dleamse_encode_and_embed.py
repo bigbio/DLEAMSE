@@ -825,7 +825,7 @@ def embed_spectra(model, ids_usi_data, vstack_encoded_spectra, output_embedd_fil
   else:
     use_gpu = False
 
-  use_gpu=True
+  #use_gpu=True
   # ids_data = ids_usi_data["ids"]
 
   EmbedDataset(model, ids_usi_data, vstack_encoded_spectra, output_embedd_file, use_gpu)
