@@ -5,6 +5,13 @@ file_dir = os.path.dirname(__file__)
 sys.path.append(file_dir)
 parent_dir = os.path.dirname(__file__) + "/.."
 sys.path.append(parent_dir)
+# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/testdata")
+# sys.path.append(sys.path[0]+"/..")
+# sys.path.remove(sys.path[0])
+print(sys.path)
+print(__file__)
+print(os.path.dirname(__file__))
 
 from dleamse_encode_and_embed import encode_and_embed_spectra
 from dleamse_encode_and_embed import SiameseNetwork2
@@ -21,7 +28,6 @@ from click.testing import CliRunner
 from mslookup import cli
 
 def embeded_db_spectra():
-    print("****",file_dir,parent_dir)
     runner = CliRunner()
     result = runner.invoke(cli,
                            ['embed-ms-file', '-m', 'dleamse_model_references/080802_20_1000_NM500R_model.pkl', '-r', 'dleamse_model_references/0722_500_rf_spectra.mgf', '-i', 'testdata/PXD015890_114263_ArchiveSpectrum.json',
