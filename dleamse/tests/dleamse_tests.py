@@ -5,11 +5,6 @@ file_dir = os.path.dirname(__file__)
 sys.path.append(file_dir)
 parent_dir = os.path.dirname(__file__) + "/.."
 sys.path.append(parent_dir)
-sys.path.append("..") #./dleamse/
-print(sys.path)
-
-abspath_dleamse = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/"
-print(abspath_dleamse)
 
 from dleamse_encode_and_embed import encode_and_embed_spectra
 from dleamse_encode_and_embed import SiameseNetwork2
@@ -26,9 +21,10 @@ from click.testing import CliRunner
 from mslookup import cli
 
 def embeded_db_spectra():
+    print("****",file_dir,parent_dir)
     runner = CliRunner()
     result = runner.invoke(cli,
-                           ['embed-ms-file', '-m', abspath_dleamse+'dleamse_model_references/080802_20_1000_NM500R_model.pkl', '-r', abspath_dleamse+'dleamse_model_references/0722_500_rf_spectra.mgf', '-i', abspath_dleamse+'testdata/PXD015890_114263_ArchiveSpectrum.json',
+                           ['embed-ms-file', '-m', 'dleamse_model_references/080802_20_1000_NM500R_model.pkl', '-r', 'dleamse_model_references/0722_500_rf_spectra.mgf', '-i', 'testdata/PXD015890_114263_ArchiveSpectrum.json',
                             '-p', 'PXD015890'])
     """
     python mslookup.py embed-ms-file -i testdata/PXD015890_114263_ArchiveSpectrum.json -p PXD015890
@@ -42,8 +38,8 @@ def embeded_db_spectra():
 def make_db():
   runner = CliRunner()
   result = runner.invoke(cli,
-                         ['make-index', '-d', abspath_dleamse+'testdata/db.csv',
-                          '-e', abspath_dleamse+'testdata/', '-o', abspath_dleamse+'testdata/db.index'])
+                         ['make-index', '-d', 'testdata/db.csv',
+                          '-e', 'testdata/', '-o', 'testdata/db.index'])
   """
   python mslookup.py make-index -d testdata/db.csv -e testdata/ -o testdata/db.index
   """
@@ -55,7 +51,7 @@ def make_db():
 def embeded_query_spectra():
   runner = CliRunner()
   result = runner.invoke(cli,
-                         ['embed-ms-file', '-m', abspath_dleamse+'dleamse_model_references/080802_20_1000_NM500R_model.pkl', '-r',abspath_dleamse+'dleamse_model_references/0722_500_rf_spectra.mgf', '-i', abspath_dleamse+'testdata/query.json',
+                         ['embed-ms-file', '-m', 'dleamse_model_references/080802_20_1000_NM500R_model.pkl', '-r','dleamse_model_references/0722_500_rf_spectra.mgf', '-i', 'testdata/query.json',
                           '-p', 'PXD015890'])
   """
   python mslookup.py embed-ms-file -i testdata/query.json -p PXD015890
@@ -66,20 +62,20 @@ def embeded_query_spectra():
   assert result.exit_code == 0
 
 def clean_db():
-  #os.remove(abspath_dleamse+"testdata/PXD015890_114263_ArchiveSpectrum_encoded.npy")
-  os.remove(abspath_dleamse+"testdata/PXD015890_114263_ArchiveSpectrum_ids_usi.txt")
-  os.remove(abspath_dleamse+"testdata/db.index")
-  #os.remove(abspath_dleamse+"testdata/usi_db.csv") #No such file was generated
-  os.remove(abspath_dleamse+"testdata/db_ids_usi.csv")
-  #os.remove(abspath_dleamse+"testdata/query_encoded.npy")
-  os.remove(abspath_dleamse+"testdata/query_ids_usi.txt")
+  os.remove("testdata/PXD015890_114263_ArchiveSpectrum_encoded.npy")
+  os.remove("testdata/PXD015890_114263_ArchiveSpectrum_ids_usi.txt")
+  os.remove("testdata/db.index")
+  #os.remove("testdata/usi_db.csv") #No such file was generated
+  os.remove("testdata/db_ids_usi.csv")
+  os.remove("testdata/query_encoded.npy")
+  os.remove("testdata/query_ids_usi.txt")
 
 
 def search_spectra():
   runner = CliRunner()
   result = runner.invoke(cli,
-                         ['range-search', '-i', abspath_dleamse+'testdata/db.index',
-                          '-u', abspath_dleamse+'testdata/db_ids_usi.csv', '-n', 100,'-e', abspath_dleamse+'testdata/query_embedded.txt', '-o', abspath_dleamse+'testdata/minor.csv', '-ut', 0.099, '-lt', 0.0])
+                         ['range-search', '-i', 'testdata/db.index',
+                          '-u', 'testdata/db_ids_usi.csv', '-n', 100,'-e', 'testdata/query_embedded.txt', '-o', 'testdata/minor.csv', '-ut', 0.099, '-lt', 0.0])
   """
   result = runner.invoke(cli,
                          ['range-search', '-i', 'testdata/db.index',
