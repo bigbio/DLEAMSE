@@ -9,7 +9,7 @@ sys.path.append("..") #./dleamse/
 print(sys.path)
 
 abspath_dleamse = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/"
-print(abspath_dleamse)
+#print(abspath_dleamse)
 
 from dleamse_encode_and_embed import encode_and_embed_spectra
 from dleamse_encode_and_embed import SiameseNetwork2
