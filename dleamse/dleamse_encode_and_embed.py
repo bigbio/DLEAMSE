@@ -778,7 +778,7 @@ def encode_spectra(prj, input_file, reference_spectra, **kw):
     ids_usi_df, vstack_data = mgf_encoder.transform_mgf(prj, input_file, reference_spectra, miss_record)
 
     pd.DataFrame(ids_usi_df).to_csv(ids_usi_save_file, header=True, index=None)
-    np.save(encoded_spectra_save_file, vstack_data)
+    #np.save(encoded_spectra_save_file, vstack_data)
 
     return ids_usi_df, vstack_data
 
@@ -789,7 +789,7 @@ def encode_spectra(prj, input_file, reference_spectra, **kw):
     ids_usi_df, vstack_data = mzml_encoder.transform_mzml(prj, input_file, reference_spectra, miss_record)
 
     pd.DataFrame(ids_usi_df).to_csv(ids_usi_save_file, header=True, index=None)
-    np.save(encoded_spectra_save_file, vstack_data)
+    #np.save(encoded_spectra_save_file, vstack_data)
 
     return ids_usi_df, vstack_data
   else:
@@ -803,7 +803,7 @@ def encode_spectra(prj, input_file, reference_spectra, **kw):
 
     pd.DataFrame(ids_usi_df).to_csv(ids_usi_save_file, header=True, index=None)
     print("start .npy...3")
-    np.save(encoded_spectra_save_file, vstack_data)
+    #np.save(encoded_spectra_save_file, vstack_data)
     print("start .npy...4")
 
     return ids_usi_df, vstack_data

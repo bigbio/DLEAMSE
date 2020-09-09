@@ -62,12 +62,12 @@ def embeded_query_spectra():
   assert result.exit_code == 0
 
 def clean_db():
-  os.remove("testdata/PXD015890_114263_ArchiveSpectrum_encoded.npy")
+  #os.remove("testdata/PXD015890_114263_ArchiveSpectrum_encoded.npy")
   os.remove("testdata/PXD015890_114263_ArchiveSpectrum_ids_usi.txt")
   os.remove("testdata/db.index")
   #os.remove("testdata/usi_db.csv") #No such file was generated
   os.remove("testdata/db_ids_usi.csv")
-  os.remove("testdata/query_encoded.npy")
+  #os.remove("testdata/query_encoded.npy")
   os.remove("testdata/query_ids_usi.txt")
 
 

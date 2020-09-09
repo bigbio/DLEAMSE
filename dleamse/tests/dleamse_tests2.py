@@ -74,6 +74,21 @@ def clean_db():
   #os.remove(abspath_dleamse+"testdata/query_encoded.npy")
   os.remove(abspath_dleamse+"testdata/query_ids_usi.txt")
 
+def clean_db2():
+  os.remove(abspath_dleamse+"testdata/PXD015890_114263_ArchiveSpectrum_ids_usi.txt")
+  os.remove(abspath_dleamse+"testdata/PXD015890_114263_ArchiveSpectrum_embedded.txt")
+  os.remove(abspath_dleamse+"testdata/db.index")
+  os.remove(abspath_dleamse+"testdata/db_ids_usi.csv")
+  os.remove(abspath_dleamse+"testdata/db.csv")
+  os.remove(abspath_dleamse+"testdata/query_ids_usi.txt")
+  os.remove(abspath_dleamse+"testdata/query_embedded.txt")
+
+def clean_resultfiles():
+  os.remove(abspath_dleamse+"testdata/minor.csv")
+  os.remove(abspath_dleamse+"testdata/minortoautosearch.csv")
+  os.remove(abspath_dleamse+"testdata/minoronestopsearch.csv")
+
+
 
 def search_spectra():
   runner = CliRunner()
@@ -93,10 +108,46 @@ def search_spectra():
   print(result.exit_code)
   assert result.exit_code == 0
 
+
+def auto_search_spectra():
+  runner = CliRunner()
+  result = runner.invoke(cli,
+                         ['auto-range-search', '-i', abspath_dleamse+'testdata/db.index',
+                          '-u', abspath_dleamse+'testdata/db_ids_usi.csv', '-n', 100,'-e', abspath_dleamse+'testdata/query.json', '-o', abspath_dleamse+'testdata/minortoautosearch.csv', '-ut', 0.099, '-lt', 0.0])
+  """
+  python mslookup.py auto-range-search -i ./testdata/db.index -u ./testdata/db_ids_usi.csv -e testdata/query.json -lt 0.0 -ut 0.099 -o testdata/minortoautosearch.json
+  """
+  print(result)
+  print(result.output)
+  print(result.exit_code)
+  assert result.exit_code == 0
+
+
+
+def onestop_search_spectra():
+  runner = CliRunner()
+  result = runner.invoke(cli,
+                         ['onestop-range-search', '-d', abspath_dleamse+'testdata/db.csv', '-odb', abspath_dleamse+'testdata/db.index', '-ls', abspath_dleamse+'testdata/PXD015890_114263_ArchiveSpectrum.json', '-n', 100,'-e', abspath_dleamse+'testdata/query.json', '-o', abspath_dleamse+'testdata/minoronestopsearch.csv', '-ut', 0.099, '-lt', 0.0])
+  """
+  python mslookup.py onestop-range-search -d testdata/db.csv -odb testdata/db.index -ls testdata/PXD015890_114263_ArchiveSpectrum.json -e testdata/query.json -lt 0.0 -ut 0.099 -o testdata/minoronestopsearch.json
+  """
+  print(result)
+  print(result.output)
+  print(result.exit_code)
+  assert result.exit_code == 0
+
+
+
+
 if __name__ == '__main__':
     embeded_db_spectra()
     make_db()
     embeded_query_spectra()
     search_spectra()
-    clean_db()
+    auto_search_spectra()
+    clean_db2()
+    
+    onestop_search_spectra()
+    clean_db2()
+    clean_resultfiles()
 
