@@ -162,9 +162,6 @@ def auto_range_search(ctx, model, ref_spectra, index_file, project_accession, in
   index_searcher.execute_range_search(index_file, index_ids_usi_file, embedded_spectra, lower_threshold, upper_threshold, nprobe, output)
 
 
-
-
-
 @click.command('onestop-range-search', short_help="Commandline to one-stop range search query embedded spectra against index file")
 @click.option('--model', '-m', help='Input embedder model file',
               default="./dleamse_model_references/080802_20_1000_NM500R_model.pkl")
