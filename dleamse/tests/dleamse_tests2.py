@@ -96,11 +96,6 @@ def search_spectra():
                          ['range-search', '-i', abspath_dleamse+'testdata/db.index',
                           '-u', abspath_dleamse+'testdata/db_ids_usi.csv', '-n', 100,'-e', abspath_dleamse+'testdata/query_embedded.txt', '-o', abspath_dleamse+'testdata/minor.csv', '-ut', 0.099, '-lt', 0.0])
   """
-  result = runner.invoke(cli,
-                         ['range-search', '-i', 'testdata/db.index',
-                          '-u', 'testdata/db_ids_usi.csv', '-e', 'testdata/query_encoded_embedded.txt', '-o', 'testadata/minor.csv', '-ut', '0.099', '-lt', '0.07'])
-
-                          PXD015890_114263_ArchiveSpectrum_embedded.txt
   python mslookup.py range-search -i testdata/db.index -u testdata/db_ids_usi.csv -e testdata/query_embedded.txt -lt 0.0 -ut 0.099 -o testdata/minor.json
   """
   print(result)

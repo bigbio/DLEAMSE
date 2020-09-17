@@ -126,13 +126,13 @@ def range_search(ctx, index_file, index_ids_usi_file, embedded_spectra, lower_th
 @click.option('--project_accession', '-p', help='ProteomeXchange dataset accession', default="Project_ID")
 @click.option('--index_file', '-i', help='Index file',  default="./dleamse_model_references/database.index")
 @click.option('--index_ids_usi_file', '-u', help="Index's ids_usi data file",  default="./dleamse_model_references/database_ids_usi.csv")
-@click.option('--raw_spectra', '-e', help='Input MS File (supported: mzML, MGF, JSON)', required=True)
+@click.option('--query_spectra', '-e', help='Input MS File (supported: mzML, MGF, JSON)', required=True)
 @click.option('--lower_threshold', '-lt', help='Lower radius for range search', default=0.0)
 @click.option('--upper_threshold', '-ut', help='Upper radius for range search', default=0.07)
 @click.option('--nprobe', '-n', help='Faiss index nprobe', default=DEFAULT_IVF_NLIST)
 @click.option('--output', '-o', help='Output file of range search result', required=True)
 @click.pass_context
-def auto_range_search(ctx, model, ref_spectra, index_file, project_accession, index_ids_usi_file, raw_spectra, lower_threshold, upper_threshold, nprobe, output):
+def auto_range_search(ctx, model, ref_spectra, index_file, project_accession, index_ids_usi_file, query_spectra, lower_threshold, upper_threshold, nprobe, output):
   """
   Automatically search for different spectrum files in the database.
   python mslookup.py auto-range-search -i ./dleamse_model_references/database.index -u ./dleamse_model_references/database_ids_usi.csv -e testdata/query.json -lt 0.0 -ut 0.099 -o testdata/minor.json
@@ -142,18 +142,18 @@ def auto_range_search(ctx, model, ref_spectra, index_file, project_accession, in
   :param ref_spectra: reference spectra from spectra cluster.
   :param project_accession: ProteomeXchange accession for the file
   :param index_file: Input database
-  :param raw_spectra: raw spectra file to be search
+  :param query_spectra: raw spectra file to be search
   :param threshold: threshold to be use for search, default 0.1
   :param output: out file including all the usi that have been found.
   :return:
   """
 
   #embedded spectra
-  encode_and_embed_spectra(model, ref_spectra, project_accession, raw_spectra)
-  dirname, filename = os.path.split(os.path.abspath(raw_spectra))
-  if raw_spectra.endswith(".mgf"):
+  encode_and_embed_spectra(model, ref_spectra, project_accession, query_spectra)
+  dirname, filename = os.path.split(os.path.abspath(query_spectra))
+  if query_spectra.endswith(".mgf"):
     embedded_spectra = dirname + "/" + str(filename.strip(".mgf")) + "_embedded.txt"
-  elif raw_spectra.endswith(".mzML"):
+  elif query_spectra.endswith(".mzML"):
     embedded_spectra = dirname + "/" + str(filename.strip(".mzML")) + "_embedded.txt"
   else:
     embedded_spectra = dirname + "/" + str(filename.strip(".json")) + "_embedded.txt"
@@ -173,14 +173,14 @@ def auto_range_search(ctx, model, ref_spectra, index_file, project_accession, in
               required=True)
 @click.option('--outputdb', '-odb', help='Output index file',required=True)
 
-@click.option('--raw_spectra', '-e', help='Input MS File (supported: mzML, MGF, JSON)', required=True)
+@click.option('--query_spectra', '-e', help='Input MS File (supported: mzML, MGF, JSON)', required=True)
 @click.option('--library_spectra', '-ls', help='Input MS File (supported: mzML, MGF, JSON) to create library', required=True)
 @click.option('--lower_threshold', '-lt', help='Lower radius for range search', default=0.0)
 @click.option('--upper_threshold', '-ut', help='Upper radius for range search', default=0.07)
 @click.option('--nprobe', '-n', help='Faiss index nprobe', default=DEFAULT_IVF_NLIST)
 @click.option('--output', '-o', help='Output file of range search result', required=True)
 @click.pass_context
-def onestop_range_search(ctx, model, ref_spectra, project_accession, database_ids_usi_file, outputdb, raw_spectra, library_spectra, lower_threshold, upper_threshold, nprobe, output):
+def onestop_range_search(ctx, model, ref_spectra, project_accession, database_ids_usi_file, outputdb, query_spectra, library_spectra, lower_threshold, upper_threshold, nprobe, output):
   """
   Automatically search for different spectrum files in the database.
   python mslookup.py onestop-range-search -d testdata/db.csv -odb testdata/db.index -ls testdata/PXD015890_114263_ArchiveSpectrum.json -e testdata/query.json -lt 0.0 -ut 0.099 -o testdata/minor.json
@@ -193,27 +193,28 @@ def onestop_range_search(ctx, model, ref_spectra, project_accession, database_id
   #:param embedded_spectra_path: embedded spectra 32-vector file.
   :param outputdb: index file.
   #:param index_file: Input database
-  :param raw_spectra: raw spectra file to be search
+  :param query_spectra: raw spectra file to be search
   :param threshold: threshold to be use for search, default 0.1
   :param output: out file including all the usi that have been found.
   :return:
   """
 
-  dirnamels, filenamels = os.path.split(os.path.abspath(library_spectra))
-  if raw_spectra.endswith(".mgf"):
-    embedded_spectra_path = dirnamels + "/"
-    #outputdb = dirname + "/" + str(filenamels.strip(".mgf")) + "_DB.index"
-  elif raw_spectra.endswith(".mzML"):
-    embedded_spectra_path = dirnamels + "/"
-    #outputdb = dirname + "/" + str(filenamels.strip(".mgf")) + "_DB.index"
+  dirname, filename = os.path.split(os.path.abspath(query_spectra))
+  if query_spectra.endswith(".mgf"):
+    embedded_spectra = dirname + "/" + str(filename.strip(".mgf")) + "_embedded.txt"
+    embedded_spectra_path = dirname + "/"
+  elif query_spectra.endswith(".mzML"):
+    embedded_spectra = dirname + "/" + str(filename.strip(".mzML")) + "_embedded.txt"
+    embedded_spectra_path = dirname + "/"
   else:
-    embedded_spectra_path = dirnamels + "/"
-    #outputdb = dirname + "/" + str(filenamels.strip(".mgf")) + "_DB.index"
+    embedded_spectra = dirname + "/" + str(filename.strip(".json")) + "_embedded.txt"
+    embedded_spectra_path = dirname + "/"
 
   if "../" in outputdb:
   	index_ids_usi_file = ".."+outputdb.strip('.index') + '_ids_usi.csv'
   else:
   	index_ids_usi_file = outputdb.strip('index').strip(".") + '_ids_usi.csv'
+    
   #create library-embedded
   encode_and_embed_spectra(model, ref_spectra, project_accession, library_spectra)
   # make index
@@ -222,14 +223,8 @@ def onestop_range_search(ctx, model, ref_spectra, project_accession, database_id
 
 
   #embedded spectra query
-  encode_and_embed_spectra(model, ref_spectra, project_accession, raw_spectra)
-  dirname, filename = os.path.split(os.path.abspath(raw_spectra))
-  if raw_spectra.endswith(".mgf"):
-    embedded_spectra = dirname + "/" + str(filename.strip(".mgf")) + "_embedded.txt"
-  elif raw_spectra.endswith(".mzML"):
-    embedded_spectra = dirname + "/" + str(filename.strip(".mzML")) + "_embedded.txt"
-  else:
-    embedded_spectra = dirname + "/" + str(filename.strip(".json")) + "_embedded.txt"
+  encode_and_embed_spectra(model, ref_spectra, project_accession, query_spectra)
+  
   #search
   index_searcher = FaissIndexSearch()
   index_searcher.execute_range_search(outputdb, index_ids_usi_file, embedded_spectra, lower_threshold, upper_threshold, nprobe, output)
