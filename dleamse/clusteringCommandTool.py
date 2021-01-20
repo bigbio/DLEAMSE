@@ -42,6 +42,13 @@ class AppConfigException(object):
 @click.option('--img_title', '-it', help='Name of cluster graph', default="Clustering result graph")
 @click.pass_context 
 def clustering_result_plotter(ctx,vector_directory,clustering_label_file,image_save_path,img_title):
+    
+    if vector_directory.split("/")[-1] != "/":
+        vector_directory = vector_directory+"/"
+        print("end with '/' : ",vector_directory)
+    else:
+        pass
+
     pp = PreProcessing(clustering_label_file,vector_directory)
     draw = Ploting()
     labelMap,vactors = pp.preprocessData()
