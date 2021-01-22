@@ -99,3 +99,8 @@ Range Search query 32D spectra vectors against spectra library's index file, Def
 
 We have released a couple of databases for the users of the `mslookup` tool ftp://ftp.pride.ebi.ac.uk/pride/data/proteogenomics/projects/mslookup/. Databases can be download from the FTP and use locally in your own computer.
 
+## Citation
+
+Deep learning embedder method and tool for mass spectra similarity search. Journal of Proteomics
+. 2021 Feb 10;232:104070. doi:10.1016/j.jprot.2020.104070. Epub 2020 Dec 8 [Manuscript File](https://linkinghub.elsevier.com/retrieve/pii/S1874-3919(20)30438-3)
+
