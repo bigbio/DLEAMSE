@@ -29,6 +29,8 @@ import sklearn.linear_model as lm
 from sklearn.linear_model import LogisticRegressionCV
 import matplotlib as mpl
 
+
+
 def show_plot(batch_size, acc, loss, saveName):
     # plt.plot(iteration, loss)
     # plt.show()
@@ -900,8 +902,8 @@ if __name__ == '__main__':
     # RawDataSet('../SpectraPairsData/0722_all_bins.mgf', '../SpectraPairsData/0722_NP_Sample_Result_Shuf.csv', "0807_NP_NM_2449Bins_500RF_Coded.txt")
 
     # ！！！ In Github, we do not provide the MgfBin_YEAST.mgf file because it is too large and exceeds the push limit
-    train_dataset = RawDataSet('./Data/MgfBin_YEAST.mgf', './Data/NP_SpectraPairsBin_YEAST_TRAIN.csv', "./0807_NP_NM_2449Bins_100RF_Coded_Train.txt")
-    test_dataset = RawDataSet('./Data/MgfBin_YEAST.mgf', './Data/NP_SpectraPairsBin_YEAST_TEST.csv', "./0807_NP_NM_2449Bins_100RF_Coded_Test.txt")
+    train_dataset = RawDataSet('./Data/MgfBin_YEAST.mgf', './Data/NP_SpectraPairsBin_YEAST_TRAIN_200K.csv', "./0807_NP_NM_2449Bins_100RF_Coded_Train.txt")
+    test_dataset = RawDataSet('./Data/MgfBin_YEAST.mgf', './Data/NP_SpectraPairsBin_YEAST_TEST_200K.csv', "./0807_NP_NM_2449Bins_100RF_Coded_Test.txt")
     
     # train_dataset = Dataset_RawDataset("../Data/test-train.txt")
     # test_dataset = Dataset_RawDataset("../Data/test-test.txt")
