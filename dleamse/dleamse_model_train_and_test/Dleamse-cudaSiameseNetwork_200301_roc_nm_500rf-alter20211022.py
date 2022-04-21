@@ -29,8 +29,6 @@ import sklearn.linear_model as lm
 from sklearn.linear_model import LogisticRegressionCV
 import matplotlib as mpl
 
-
-
 def show_plot(batch_size, acc, loss, saveName):
     # plt.plot(iteration, loss)
     # plt.show()
