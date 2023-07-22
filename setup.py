@@ -19,7 +19,7 @@ setup(
     install_requires=['numba>=0.45',
                       'numpy>=1.13.3',
                       'pyteomics>=3.5.1',
-                      'torch==1.0.0',
+                      'torch==1.13.1',
                       'faiss-cpu>=1.5.3',
                       'more_itertools == 7.1.0'],
     platforms=['any'],
